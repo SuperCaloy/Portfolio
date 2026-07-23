@@ -1,9 +1,43 @@
 @import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.styled-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgb(212 212 216);
+    border-radius: 9999px;
+}
+
+.styled-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgb(161 161 170);
+}
+
+.dark .styled-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgb(63 63 70);
+}
+
+.dark .styled-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgb(82 82 91);
+}
+
+.styled-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(212 212 216) transparent;
+}
+
+.dark .styled-scrollbar {
+    scrollbar-color: rgb(63 63 70) transparent;
 }
