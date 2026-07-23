@@ -8,7 +8,7 @@
     <title inertia>{{ config('app.name', 'Portfolio') }}</title>
 
     @viteReactRefresh
-    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+    @vite(['resources/js/app.jsx'])
     @inertiaHead
 </head>
 <body class="antialiased">

@@ -12,6 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: '*');
+
         // Appends Inertia middleware to handle page state across web requests
         $middleware->web(append: [
             HandleInertiaRequests::class,
