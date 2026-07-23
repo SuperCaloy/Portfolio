@@ -18,10 +18,12 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN groupadd -g 1000 www && useradd -u 1000 -ms /bin/bash -g www www
-USER www
-
 WORKDIR /var/www
+
+RUN git config --global --add safe.directory /var/www
+
+RUN docker-php-ext-enable opcache
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 EXPOSE 9000
 CMD ["php-fpm"]
