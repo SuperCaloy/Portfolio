@@ -24,8 +24,5 @@ class Skill extends Model
         'sort_order' => 'integer',
     ];
 
-    public function skills()
-    {
-    return $this->belongsToMany(Skill::class);
-    }
+
 }

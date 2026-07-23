@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
 
             // Name of the technical skill
-            $table->string('name');
+            $table->string('name')->unique();
 
             // Category group for the skill
             $table->enum('category', ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools']);

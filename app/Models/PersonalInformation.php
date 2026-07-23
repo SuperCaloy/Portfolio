@@ -14,14 +14,17 @@ class PersonalInformation extends Model
 
     // Mass assignable attributes
     protected $fillable = [
-        'full_name',
-        'professional_title',
-        'bio',
-        'email',
-        'phone',
-        'github_url',
-        'linkedin_url',
-        'resume_path',
-        'avatar_path',
+    'full_name',
+    'professional_title',
+    'bio',
+    'about_me',
+    'email',
+    'phone',
+    'github_url',
+    'linkedin_url',
+    'resume_path',
+    'resume_public_id',
+    'avatar_path',
+    'avatar_public_id',
     ];
 }

@@ -106,7 +106,7 @@ export default function Projects({ projects = [] }) {
                 <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">{displayProjects.length} project{displayProjects.length > 1 ? 's' : ''}</span>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {displayProjects.map((project) => (
                     <ProjectCard key={project.id ?? project.title} project={project} />
                 ))}
@@ -142,7 +142,7 @@ export default function Projects({ projects = [] }) {
                             </button>
                         </div>
 
-                        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {projects.map((project) => (
                                 <ProjectCard key={project.id ?? project.title} project={project} />
                             ))}
