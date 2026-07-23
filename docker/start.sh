@@ -1,46 +1,24 @@
-# ---- Stage 1: build frontend assets (Vite/Inertia/React) ----
-FROM node:20-alpine AS assets
-WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci
-COPY . .
-RUN npm run build
+#!/bin/sh
+set -e
 
-# ---- Stage 2: PHP runtime ----
-FROM php:8.3-fpm AS app
+# Generate APP_KEY only if it wasn't set via Render's env vars
+if [ -z "$APP_KEY" ]; then
+    php artisan key:generate --force
+fi
 
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libzip-dev \
-    zip \
-    unzip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Make sure storage/bootstrap cache dirs are writable
+mkdir -p storage/framework/{sessions,views,cache}
+chmod -R 775 storage bootstrap/cache
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+php artisan storage:link || true
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Cache config/routes/views for production performance
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
-WORKDIR /var/www
+# Run migrations against your Aiven MySQL database
+php artisan migrate --force
 
-# Install PHP deps first (better layer caching)
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --optimize-autoloader
-
-# Copy app code
-COPY . .
-
-# Bring in the built frontend assets from stage 1
-COPY --from=assets /app/public/build ./public/build
-
-RUN composer dump-autoload --optimize --no-dev
-
-RUN chmod +x docker/start.sh
-
-# Render sets $PORT at runtime — the app must listen on it
-EXPOSE 10000
-
-CMD ["docker/start.sh"]
+# Render injects $PORT — the app MUST listen on it
+php artisan serve --host 0.0.0.0 --port "${PORT:-10000}"
