@@ -1,10 +1,16 @@
 # ---- Stage 1: build frontend assets (Vite/Inertia/React) ----
 FROM node:20-alpine AS assets
 WORKDIR /app
+
+# Render auto-forwards dashboard Environment vars as build args,
+# but only for ARGs explicitly declared here
+ARG VITE_ADMIN_SLUG
+ENV VITE_ADMIN_SLUG=$VITE_ADMIN_SLUG
+ARG VITE_APP_NAME
+ENV VITE_APP_NAME=$VITE_APP_NAME
+
 COPY package.json package-lock.json* ./
 RUN npm ci
-COPY . .
-RUN npm run build
 
 # ---- Stage 2: PHP runtime ----
 FROM php:8.3-fpm AS app
