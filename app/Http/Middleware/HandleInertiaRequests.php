@@ -37,7 +37,9 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+            'adminSlug' => config('app.admin_slug'),
         ];
     }
+
+    
 }

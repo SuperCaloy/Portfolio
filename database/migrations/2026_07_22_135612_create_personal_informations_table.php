@@ -36,8 +36,13 @@ return new class extends Migration
             // Link to LinkedIn profile
             $table->string('linkedin_url')->nullable();
 
-            // Saved file path for downloadable PDF resume
+            // Saved Cloudinary URL for downloadable PDF resume
             $table->string('resume_path')->nullable();
+            $table->string('resume_public_id')->nullable();
+
+            // Saved Cloudinary URL for profile photo
+            $table->string('avatar_path')->nullable();
+            $table->string('avatar_public_id')->nullable();
 
             // Standard created_at and updated_at timestamps
             $table->timestamps();

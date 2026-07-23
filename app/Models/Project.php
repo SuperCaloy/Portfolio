@@ -10,15 +10,15 @@ class Project extends Model
     use HasFactory;
 
     // Mass assignable attributes
-        protected $fillable = [
+    protected $fillable = [
         'title',
-        'slug',
-        'summary',
+        'subtitle',
         'description',
         'tech_stack',
-        'featured_image',
+        'image_path',
+        'image_public_id',
         'github_url',
-        'live_demo_url',
+        'demo_url',
         'status',
         'is_featured',
         'sort_order',
@@ -30,8 +30,5 @@ class Project extends Model
         'is_featured' => 'boolean',
         'sort_order' => 'integer',
     ];
-    public function skills()
-    {
-    return $this->belongsToMany(Skill::class);
-    }
+
 }

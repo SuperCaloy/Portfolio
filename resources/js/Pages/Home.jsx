@@ -58,7 +58,7 @@ export default function Home({
                 onSecretTrigger={() => setShowAdminLogin(true)}
             />
 
-            <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-20">
+            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
                 <Hero personal={personal} />
                 <Projects projects={projects} />
                 <Skills skills={skills} />

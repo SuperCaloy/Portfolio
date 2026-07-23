@@ -69,7 +69,7 @@ export default function Hero({ personal }) {
 
                 {personal?.resume_path && (
                     <a
-                        href={`/storage/${personal.resume_path}`}
+                        href="/resume"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-xs font-medium transition-all"

@@ -6,6 +6,7 @@ export default function AdminLoginModal({ onClose }) {
     const [step, setStep] = useState('credentials');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [otp, setOtp] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -57,6 +58,15 @@ export default function AdminLoginModal({ onClose }) {
         }
     };
 
+    const handleBackToCredentials = () => {
+    setEmail('');
+    setPassword('');
+    setOtp('');
+    setError('');
+    setLoading(false);
+    setStep('credentials');
+    };
+
     return (
         <div
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
@@ -92,15 +102,24 @@ export default function AdminLoginModal({ onClose }) {
                             autoComplete="off"
                             className="w-full text-sm px-3 py-2 rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                            required
-                            autoComplete="off"
-                            className="w-full text-sm px-3 py-2 rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password"
+                                required
+                                autoComplete="off"
+                                className="w-full text-sm px-3 py-2 pr-16 rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                            >
+                                {showPassword ? 'Hide' : 'Show'}
+                            </button>
+                        </div>
                         <button
                             type="submit"
                             disabled={loading}
@@ -132,7 +151,7 @@ export default function AdminLoginModal({ onClose }) {
                         </button>
                         <button
                             type="button"
-                            onClick={() => setStep('credentials')}
+                            onClick={handleBackToCredentials}
                             className="w-full text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
                         >
                             Back

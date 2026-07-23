@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SendOtpRequest;
 use App\Http\Requests\Admin\VerifyOtpRequest;
 use App\Services\AdminAuthService;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -14,12 +14,14 @@ class AdminAuthController extends Controller
 {
     public function __construct(private AdminAuthService $authService) {}
 
-    public function sendOtp(SendOtpRequest $request): RedirectResponse
+    public function sendOtp(SendOtpRequest $request): JsonResponse
     {
         $key = 'send-otp:' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
-            return back()->withErrors(['email' => 'Too many attempts, try again later.']);
+            return response()->json([
+                'errors' => ['email' => ['Too many attempts, try again later.']],
+            ], 429);
         }
 
         RateLimiter::hit($key, 600);
@@ -30,18 +32,22 @@ class AdminAuthController extends Controller
         );
 
         if (! $success) {
-            return back()->withErrors(['email' => 'Invalid credentials.']);
+            return response()->json([
+                'errors' => ['email' => ['Invalid credentials.']],
+            ], 422);
         }
 
-        return back()->with('otp_sent', true);
+        return response()->json(['message' => 'OTP sent.']);
     }
 
-    public function verifyOtp(VerifyOtpRequest $request): RedirectResponse
+    public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
         $key = 'verify-otp:' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
-            return back()->withErrors(['otp_code' => 'Too many attempts, try again later.']);
+            return response()->json([
+                'errors' => ['otp_code' => ['Too many attempts, try again later.']],
+            ], 429);
         }
 
         RateLimiter::hit($key, 600);
@@ -52,16 +58,20 @@ class AdminAuthController extends Controller
         );
 
         if (! $user) {
-            return back()->withErrors(['otp_code' => 'Invalid or expired code.']);
+            return response()->json([
+                'errors' => ['otp_code' => ['Invalid or expired code.']],
+            ], 422);
         }
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->intended('/' . config('app.admin_slug') . '/dashboard');
+        return response()->json([
+            'redirect' => '/' . config('app.admin_slug') . '/dashboard',
+        ]);
     }
 
-    public function logout(): RedirectResponse
+    public function logout(): \Illuminate\Http\RedirectResponse
     {
         Auth::logout();
         request()->session()->invalidate();
