@@ -37,8 +37,12 @@ return new class extends Migration
             // Certificate completion status
             $table->enum('status', ['Completed', 'In Progress', 'Expired'])->default('Completed');
 
+            //Cerificate Id
+            $table->string('image_public_id')->nullable();
+
             // Standard timestamps
             $table->timestamps();
+           
         });
     }
 

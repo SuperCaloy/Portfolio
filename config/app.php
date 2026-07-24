@@ -124,4 +124,5 @@ return [
     ],
 
     'admin_slug' => env('ADMIN_PANEL_SLUG', 'admin'),
+    'keep_alive_token' => env('KEEP_ALIVE_TOKEN'),
 ];
