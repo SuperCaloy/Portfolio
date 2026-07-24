@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\MessageController;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Admin\DashboardController;
+
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/projects', [HomeController::class, 'index']);
@@ -39,7 +41,7 @@ Route::prefix(config('app.admin_slug'))->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
-        Route::get('/dashboard', fn () => inertia('Admin/Dashboard'))->name('admin.dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
         Route::get('/dashboard/profile', [ProfileController::class, 'edit'])->name('admin.profile.edit');
         Route::put('/dashboard/profile', [ProfileController::class, 'update'])->name('admin.profile.update');

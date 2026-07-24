@@ -21,21 +21,25 @@ class CloudinaryService
     }
 
     public function upload(UploadedFile $file, string $folder): array
-    {
-        $result = $this->cloudinary->uploadApi()->upload(
-            $file->getRealPath(),
-            [
-                'folder' => $folder,
-                'resource_type' => 'auto',
-            ]
-        );
+{
+    $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
 
-        return [
-            'url' => $result['secure_url'],
-            'public_id' => $result['public_id'],
-        ];
-    }
+    $result = $this->cloudinary->uploadApi()->upload(
+        $file->getRealPath(),
+        [
+            'folder' => $folder,
+            'resource_type' => 'auto',
+            'filename' => $originalName,
+            'use_filename' => true,
+            'unique_filename' => true,
+        ]
+    );
 
+    return [
+        'url' => $result['secure_url'],
+        'public_id' => $result['public_id'],
+    ];
+}
     public function delete(string $publicId): void
     {
         $this->cloudinary->uploadApi()->destroy($publicId);

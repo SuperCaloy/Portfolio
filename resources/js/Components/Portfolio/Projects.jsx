@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import ViewProjectModal from '../Shared/ViewProjectModal';
+
 const STATUS_STYLES = {
     'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
     'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
     'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
 };
 
-function ProjectCard({ project }) {
+function ProjectCard({ project, onSelect }) {
     return (
-        <div
-            key={project.id ?? project.title}
-            className="group relative p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 transition-all space-y-3"
+        <button
+            onClick={() => onSelect(project)}
+            className="group relative p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all space-y-3 text-left w-full"
         >
             <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1.5">
@@ -25,9 +27,9 @@ function ProjectCard({ project }) {
                 </div>
             </div>
 
-            {(project.summary || project.description) && (
+            {(project.subtitle || project.description) && (
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    {project.summary || project.description}
+                    {project.subtitle || project.description}
                 </p>
             )}
 
@@ -44,43 +46,23 @@ function ProjectCard({ project }) {
                 </div>
             )}
 
-            <div className="flex items-center gap-4 pt-1">
-                {project.github_url && (
-                    <a
-                        href={project.github_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-                    >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        View Code
-                    </a>
-                )}
-
-                {project.live_demo_url && (
-                    <a
-                        href={project.live_demo_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-                    >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                        Live Demo
-                    </a>
-                )}
+            <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-4">
+                    {project.github_url && <span className="text-xs font-medium text-zinc-500">View Code</span>}
+                    {project.demo_url && <span className="text-xs font-medium text-zinc-500">Live Demo</span>}
+                </div>
+                <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    View details →
+                </span>
             </div>
-        </div>
+        </button>
     );
 }
 
 export default function Projects({ projects = [] }) {
     const [showModal, setShowModal] = useState(false);
-    const featuredProjects = projects.filter((p) => p.is_featured);
-    const displayProjects = featuredProjects.length > 0 ? featuredProjects : projects;
+    const [selectedProject, setSelectedProject] = useState(null);
+    const displayProjects = projects.slice(0, 4);
 
     useEffect(() => {
         if (!showModal) return;
@@ -106,9 +88,9 @@ export default function Projects({ projects = [] }) {
                 <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">{displayProjects.length} project{displayProjects.length > 1 ? 's' : ''}</span>
             </div>
 
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {displayProjects.map((project) => (
-                    <ProjectCard key={project.id ?? project.title} project={project} />
+                    <ProjectCard key={project.id ?? project.title} project={project} onSelect={setSelectedProject} />
                 ))}
             </div>
 
@@ -144,12 +126,19 @@ export default function Projects({ projects = [] }) {
 
                         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {projects.map((project) => (
-                                <ProjectCard key={project.id ?? project.title} project={project} />
+                                <ProjectCard key={project.id ?? project.title} project={project} onSelect={setSelectedProject} />
                             ))}
                         </div>
-           </div>
+                    </div>
                 </div>,
                 document.body
+            )}
+
+            {selectedProject && (
+                <ViewProjectModal
+                    project={selectedProject}
+                    onClose={() => setSelectedProject(null)}
+                />
             )}
         </section>
     );

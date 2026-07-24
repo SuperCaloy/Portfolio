@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ViewExperienceModal from '../Shared/ViewExperienceModal';
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
-    // Takes the 'YYYY-MM-DD' part before the 'T'
     return dateString.split('T')[0];
 };
 
 export default function Experience({ experiences = [] }) {
+    const [selectedExperience, setSelectedExperience] = useState(null);
+
     if (experiences.length === 0) return null;
 
     return (
@@ -17,11 +19,15 @@ export default function Experience({ experiences = [] }) {
 
             <div className="space-y-6 border-l border-zinc-200/80 dark:border-zinc-800/80 pl-4 ml-1">
                 {experiences.map((exp) => (
-                    <div key={exp.id ?? exp.company} className="relative space-y-1.5">
-                        <div className="absolute -left-[21px] top-1.5 w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-700 border border-white dark:border-zinc-950" />
+                    <button
+                        key={exp.id ?? exp.company}
+                        onClick={() => setSelectedExperience(exp)}
+                        className="group relative space-y-1.5 text-left w-full p-2 -ml-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors"
+                    >
+                        <div className="absolute -left-[25px] top-3.5 w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-700 border border-white dark:border-zinc-950 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400 transition-colors" />
 
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
-                            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                                 {exp.role || exp.title} <span className="text-zinc-500 font-normal">at {exp.company}</span>
                             </h3>
                             <span className="text-xs font-mono text-zinc-500">
@@ -34,9 +40,20 @@ export default function Experience({ experiences = [] }) {
                                 {exp.description}
                             </p>
                         )}
-                    </div>
+
+                        <span className="inline-block text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                            View details →
+                        </span>
+                    </button>
                 ))}
             </div>
+
+            {selectedExperience && (
+                <ViewExperienceModal
+                    experience={selectedExperience}
+                    onClose={() => setSelectedExperience(null)}
+                />
+            )}
         </section>
     );
 }

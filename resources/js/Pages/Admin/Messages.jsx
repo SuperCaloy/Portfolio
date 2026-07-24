@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import { router, usePage, useForm } from '@inertiajs/react';
+import ConfirmModal from '../../Components/Shared/ConfirmModal';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -14,6 +15,7 @@ function formatDate(dateString) {
 
 function MessageRow({ message, isExpanded, onToggleExpand }) {
     const { adminSlug } = usePage().props;
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
     const { data, setData, put, processing } = useForm({
         admin_notes: message.admin_notes || '',
     });
@@ -32,9 +34,9 @@ function MessageRow({ message, isExpanded, onToggleExpand }) {
         });
     };
 
-    const handleDelete = () => {
-        if (!confirm('Delete this message?')) return;
+    const confirmDelete = () => {
         router.delete(`/${adminSlug}/dashboard/messages/${message.id}`);
+        setConfirmingDelete(false);
     };
 
     return (
@@ -97,7 +99,7 @@ function MessageRow({ message, isExpanded, onToggleExpand }) {
                         <div className="flex items-center justify-between pt-1">
                             <button
                                 type="button"
-                                onClick={handleDelete}
+                                onClick={() => setConfirmingDelete(true)}
                                 className="text-xs text-rose-500 hover:text-rose-600 font-medium"
                             >
                                 Delete message
@@ -113,18 +115,37 @@ function MessageRow({ message, isExpanded, onToggleExpand }) {
                     </form>
                 </div>
             )}
+
+            {confirmingDelete && (
+                <ConfirmModal
+                    title="Delete this message?"
+                    message="This action cannot be undone."
+                    danger
+                    onConfirm={confirmDelete}
+                    onCancel={() => setConfirmingDelete(false)}
+                />
+            )}
         </div>
     );
 }
 
 export default function Messages({ messages }) {
     const [expandedId, setExpandedId] = useState(null);
+    const [search, setSearch] = useState('');
 
     const handleToggleExpand = (id) => {
         setExpandedId((prev) => (prev === id ? null : id));
     };
 
     const unreadCount = messages.filter((m) => !m.is_read).length;
+
+    const filteredMessages = messages.filter((message) => {
+        const query = search.trim().toLowerCase();
+        if (!query) return true;
+        const inSender = message.sender_name?.toLowerCase().includes(query);
+        const inSubject = message.subject?.toLowerCase().includes(query);
+        return inSender || inSubject;
+    });
 
     return (
         <AdminLayout title="Messages" currentPath="/messages">
@@ -134,12 +155,26 @@ export default function Messages({ messages }) {
                 </p>
             )}
 
+            <div className="mb-3">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search messages by sender or subject"
+                    className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                />
+            </div>
+
             <div className="space-y-2">
                 {messages.length === 0 && (
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">No messages received yet.</p>
                 )}
 
-                {messages.map((message) => (
+                {messages.length > 0 && filteredMessages.length === 0 && (
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No messages match your search.</p>
+                )}
+
+                {filteredMessages.map((message) => (
                     <MessageRow
                         key={message.id}
                         message={message}
