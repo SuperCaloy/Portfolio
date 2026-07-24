@@ -44,11 +44,25 @@ class ProjectController extends Controller
     // Update an existing project, replaces cover image only if a new one is provided
     public function update(ProjectRequest $request, Project $project)
     {
-        $data = $request->safe()->except(['image']);
+        $data = $request->safe()->except(['image', 'remove_image']);
 
-        if ($request->hasFile('image')) {
+        if ($request->boolean('remove_image')) {
             if ($project->image_public_id) {
-                $this->cloudinary->delete($project->image_public_id);
+                try {
+                    $this->cloudinary->delete($project->image_public_id);
+                } catch (\Throwable $e) {
+                    // Cloud asset may already be gone, do not block the database update
+                }
+            }
+            $data['image_path'] = null;
+            $data['image_public_id'] = null;
+        } elseif ($request->hasFile('image')) {
+            if ($project->image_public_id) {
+                try {
+                    $this->cloudinary->delete($project->image_public_id);
+                } catch (\Throwable $e) {
+                    // Old asset delete failed, proceed with new upload regardless
+                }
             }
             $uploaded = $this->cloudinary->upload($request->file('image'), 'portfolio/projects');
             $data['image_path'] = $uploaded['url'];

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useForm, router, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
+import ConfirmModal from '../../Components/Shared/ConfirmModal';
 
 const CATEGORIES = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
 
@@ -115,6 +116,7 @@ export default function Skills({ skills }) {
     const { adminSlug } = usePage().props;
     const [editingSkill, setEditingSkill] = useState(null);
     const [draggedIndex, setDraggedIndex] = useState(null);
+    const [deletingSkillId, setDeletingSkillId] = useState(null);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
@@ -130,9 +132,9 @@ export default function Skills({ skills }) {
         });
     };
 
-    const handleDelete = (id) => {
-        if (!confirm('Delete this skill?')) return;
-        router.delete(`/${adminSlug}/dashboard/skills/${id}`);
+    const confirmDelete = () => {
+        router.delete(`/${adminSlug}/dashboard/skills/${deletingSkillId}`);
+        setDeletingSkillId(null);
     };
 
     const persistOrder = (newOrder) => {
@@ -298,7 +300,7 @@ export default function Skills({ skills }) {
                                 Edit
                             </button>
                             <button
-                                onClick={() => handleDelete(skill.id)}
+                                onClick={() => setDeletingSkillId(skill.id)}
                                 className="text-xs text-rose-500 hover:text-rose-600"
                             >
                                 Delete
@@ -310,6 +312,16 @@ export default function Skills({ skills }) {
 
             {editingSkill && (
                 <EditSkillModal skill={editingSkill} onClose={() => setEditingSkill(null)} adminSlug={adminSlug} />
+            )}
+
+            {deletingSkillId && (
+                <ConfirmModal
+                    title="Delete this skill?"
+                    message="This action cannot be undone."
+                    danger
+                    onConfirm={confirmDelete}
+                    onCancel={() => setDeletingSkillId(null)}
+                />
             )}
         </AdminLayout>
     );

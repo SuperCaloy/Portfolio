@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 
 const STATUS_STYLES = {
@@ -8,6 +8,8 @@ const STATUS_STYLES = {
 };
 
 export default function ViewProjectModal({ project, onClose, onEdit }) {
+    const [showLightbox, setShowLightbox] = useState(false);
+
     if (!project) return null;
 
     return createPortal(
@@ -36,18 +38,19 @@ export default function ViewProjectModal({ project, onClose, onEdit }) {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-                    
                 </div>
-                    
+
                 {project.image_path && (
                     <img
                         src={project.image_path}
                         alt={project.title}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800"
+                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 cursor-zoom-in"
+                        onClick={() => setShowLightbox(true)}
+                        onError={(e) => { e.target.style.display = 'none'; }}
                     />
                 )}
 
-                {(project.subtitle  || project.description) && (
+                {(project.subtitle || project.description) && (
                     <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap">
                         {project.subtitle || project.description}
                     </p>
@@ -81,14 +84,13 @@ export default function ViewProjectModal({ project, onClose, onEdit }) {
                         </a>
                     )}
 
-                    {project.demo_url &&  (
+                    {project.demo_url && (
                         <a
                             href={project.demo_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
                         >
-                            
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>
@@ -108,6 +110,28 @@ export default function ViewProjectModal({ project, onClose, onEdit }) {
                     </div>
                 )}
             </div>
+
+            {showLightbox && (
+                <div
+                    className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90"
+                    onClick={(e) => { e.stopPropagation(); setShowLightbox(false); }}
+                >
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setShowLightbox(false); }}
+                        className="absolute top-4 right-4 p-2 rounded-md text-white hover:bg-white/10"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    <img
+                        src={project.image_path}
+                        alt={project.title}
+                        className="max-w-full max-h-full object-contain rounded-lg"
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
         </div>,
         document.body
     );

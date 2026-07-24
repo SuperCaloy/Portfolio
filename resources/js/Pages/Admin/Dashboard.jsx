@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePage, Link } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
+import ViewProjectModal from '../../Components/Shared/ViewProjectModal';
+import EditProjectModal from '../../Components/Admin/EditProjectModal';
+import ViewExperienceModal from '../../Components/Shared/ViewExperienceModal';
+import EditExperienceModal from '../../Components/Admin/EditExperienceModal';
+import ViewCertificateModal from '../../Components/Shared/ViewCertificateModal';
+import EditCertificateModal from '../../Components/Admin/EditCertificateModal';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -30,7 +36,7 @@ function QuickAction({ label, href }) {
     );
 }
 
-function RecentActivityCard({ label, title, subtitle, date, href, image }) {
+function RecentActivityCard({ label, title, subtitle, date, image, onClick }) {
     if (!title) {
         return (
             <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80">
@@ -43,9 +49,9 @@ function RecentActivityCard({ label, title, subtitle, date, href, image }) {
     }
 
     return (
-        <Link
-            href={href}
-            className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+        <button
+            onClick={onClick}
+            className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors text-left w-full"
         >
             {image ? (
                 <img src={image} alt={title} className="w-12 h-12 rounded-lg object-cover shrink-0" />
@@ -62,13 +68,22 @@ function RecentActivityCard({ label, title, subtitle, date, href, image }) {
                 )}
             </div>
             <span className="text-[11px] text-zinc-400 dark:text-zinc-500 shrink-0">{timeAgo(date)}</span>
-        </Link>
+        </button>
     );
 }
 
-export default function Dashboard({ stats, recentMessages, recentProject, recentExperience, recentCertificate }) {
+export default function Dashboard({ stats, recentMessages, recentProject, recentExperience, recentCertificate, availableSkills }) {
     const { url, props } = usePage();
     const { adminSlug } = props;
+
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [editingProject, setEditingProject] = useState(null);
+
+    const [selectedExperience, setSelectedExperience] = useState(null);
+    const [editingExperience, setEditingExperience] = useState(null);
+
+    const [selectedCertificate, setSelectedCertificate] = useState(null);
+    const [editingCertificate, setEditingCertificate] = useState(null);
 
     return (
         <AdminLayout title="Dashboard" currentPath={url}>
@@ -151,21 +166,21 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
                         title={recentProject?.title}
                         date={recentProject?.created_at}
                         image={recentProject?.image_path}
-                        href={`/${adminSlug}/dashboard/projects`}
+                        onClick={() => setSelectedProject(recentProject)}
                     />
                     <RecentActivityCard
                         label="Experience"
                         title={recentExperience?.role}
                         subtitle={recentExperience?.company}
                         date={recentExperience?.created_at}
-                        href={`/${adminSlug}/dashboard/experience`}
+                        onClick={() => setSelectedExperience(recentExperience)}
                     />
                     <RecentActivityCard
                         label="Certificate"
                         title={recentCertificate?.title}
                         subtitle={recentCertificate?.issuer}
                         date={recentCertificate?.created_at}
-                        href={`/${adminSlug}/dashboard/certificates`}
+                        onClick={() => setSelectedCertificate(recentCertificate)}
                     />
                 </div>
             </div>
@@ -181,6 +196,58 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
                     <QuickAction label="View Messages" href={`/${adminSlug}/dashboard/messages`} />
                 </div>
             </div>
+
+            {selectedProject && (
+                <ViewProjectModal
+                    project={selectedProject}
+                    onClose={() => setSelectedProject(null)}
+                    onEdit={(proj) => {
+                        setSelectedProject(null);
+                        setEditingProject(proj);
+                    }}
+                />
+            )}
+            {editingProject && (
+                <EditProjectModal
+                    project={editingProject}
+                    availableSkills={availableSkills}
+                    onClose={() => setEditingProject(null)}
+                />
+            )}
+
+            {selectedExperience && (
+                <ViewExperienceModal
+                    experience={selectedExperience}
+                    onClose={() => setSelectedExperience(null)}
+                    onEdit={(exp) => {
+                        setSelectedExperience(null);
+                        setEditingExperience(exp);
+                    }}
+                />
+            )}
+            {editingExperience && (
+                <EditExperienceModal
+                    experience={editingExperience}
+                    onClose={() => setEditingExperience(null)}
+                />
+            )}
+
+            {selectedCertificate && (
+                <ViewCertificateModal
+                    certificate={selectedCertificate}
+                    onClose={() => setSelectedCertificate(null)}
+                    onEdit={(cert) => {
+                        setSelectedCertificate(null);
+                        setEditingCertificate(cert);
+                    }}
+                />
+            )}
+            {editingCertificate && (
+                <EditCertificateModal
+                    certificate={editingCertificate}
+                    onClose={() => setEditingCertificate(null)}
+                />
+            )}
         </AdminLayout>
     );
 }

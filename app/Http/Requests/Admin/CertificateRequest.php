@@ -23,6 +23,7 @@ class CertificateRequest extends FormRequest
             'credential_url' => ['nullable', 'url', 'max:255'],
             'image' => ['nullable', 'file', 'image', 'max:4096'],
             'status' => ['required', Rule::in(['Completed', 'In Progress', 'Expired'])],
+            'remove_image' => ['nullable', 'boolean'],
         ];
     }
 }

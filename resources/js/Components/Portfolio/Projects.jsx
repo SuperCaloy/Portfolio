@@ -12,7 +12,7 @@ function ProjectCard({ project, onSelect }) {
     return (
         <button
             onClick={() => onSelect(project)}
-            className="group relative p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 transition-all space-y-3 text-left w-full"
+            className="group relative p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all space-y-3 text-left w-full"
         >
             <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1.5">
@@ -27,9 +27,9 @@ function ProjectCard({ project, onSelect }) {
                 </div>
             </div>
 
-            {(project.summary || project.description) && (
+            {(project.subtitle || project.description) && (
                 <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    {project.summary || project.description}
+                    {project.subtitle || project.description}
                 </p>
             )}
 
@@ -46,9 +46,14 @@ function ProjectCard({ project, onSelect }) {
                 </div>
             )}
 
-            <div className="flex items-center gap-4 pt-1">
-                {project.github_url && <span className="text-xs font-medium text-zinc-500">View Code</span>}
-                {project.live_demo_url && <span className="text-xs font-medium text-zinc-500">Live Demo</span>}
+            <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-4">
+                    {project.github_url && <span className="text-xs font-medium text-zinc-500">View Code</span>}
+                    {project.demo_url && <span className="text-xs font-medium text-zinc-500">Live Demo</span>}
+                </div>
+                <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                    View details →
+                </span>
             </div>
         </button>
     );
@@ -57,8 +62,7 @@ function ProjectCard({ project, onSelect }) {
 export default function Projects({ projects = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
-    const featuredProjects = projects.filter((p) => p.is_featured);
-    const displayProjects = featuredProjects.length > 0 ? featuredProjects : projects;
+    const displayProjects = projects.slice(0, 4);
 
     useEffect(() => {
         if (!showModal) return;

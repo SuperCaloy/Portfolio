@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import { router, usePage, useForm } from '@inertiajs/react';
+import ConfirmModal from '../../Components/Shared/ConfirmModal';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -14,6 +15,7 @@ function formatDate(dateString) {
 
 function MessageRow({ message, isExpanded, onToggleExpand }) {
     const { adminSlug } = usePage().props;
+    const [confirmingDelete, setConfirmingDelete] = useState(false);
     const { data, setData, put, processing } = useForm({
         admin_notes: message.admin_notes || '',
     });
@@ -32,9 +34,9 @@ function MessageRow({ message, isExpanded, onToggleExpand }) {
         });
     };
 
-    const handleDelete = () => {
-        if (!confirm('Delete this message?')) return;
+    const confirmDelete = () => {
         router.delete(`/${adminSlug}/dashboard/messages/${message.id}`);
+        setConfirmingDelete(false);
     };
 
     return (
@@ -97,7 +99,7 @@ function MessageRow({ message, isExpanded, onToggleExpand }) {
                         <div className="flex items-center justify-between pt-1">
                             <button
                                 type="button"
-                                onClick={handleDelete}
+                                onClick={() => setConfirmingDelete(true)}
                                 className="text-xs text-rose-500 hover:text-rose-600 font-medium"
                             >
                                 Delete message
@@ -112,6 +114,16 @@ function MessageRow({ message, isExpanded, onToggleExpand }) {
                         </div>
                     </form>
                 </div>
+            )}
+
+            {confirmingDelete && (
+                <ConfirmModal
+                    title="Delete this message?"
+                    message="This action cannot be undone."
+                    danger
+                    onConfirm={confirmDelete}
+                    onCancel={() => setConfirmingDelete(false)}
+                />
             )}
         </div>
     );

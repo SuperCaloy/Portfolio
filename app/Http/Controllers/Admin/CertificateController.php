@@ -41,11 +41,25 @@ class CertificateController extends Controller
     // Update an existing certificate, replaces image only if a new one is provided
     public function update(CertificateRequest $request, Certificate $certificate)
     {
-        $data = $request->safe()->except(['image']);
+        $data = $request->safe()->except(['image', 'remove_image']);
 
-        if ($request->hasFile('image')) {
+        if ($request->boolean('remove_image')) {
             if ($certificate->image_public_id) {
-                $this->cloudinary->delete($certificate->image_public_id);
+                try {
+                    $this->cloudinary->delete($certificate->image_public_id);
+                } catch (\Throwable $e) {
+                    // Cloud asset may already be gone, do not block the database update
+                }
+            }
+            $data['image_path'] = null;
+            $data['image_public_id'] = null;
+        } elseif ($request->hasFile('image')) {
+            if ($certificate->image_public_id) {
+                try {
+                    $this->cloudinary->delete($certificate->image_public_id);
+                } catch (\Throwable $e) {
+                    // Old asset delete failed, proceed with new upload regardless
+                }
             }
             $uploaded = $this->cloudinary->upload($request->file('image'), 'portfolio/certificates');
             $data['image_path'] = $uploaded['url'];
