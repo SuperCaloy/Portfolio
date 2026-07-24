@@ -35,9 +35,13 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $adminSlug = config('app.admin_slug');
+
         return [
             ...parent::share($request),
-            'adminSlug' => config('app.admin_slug'),
+            'adminSlug' => $request->is($adminSlug . '/*') || $request->is($adminSlug)
+                ? $adminSlug
+                : null,
         ];
     }
 

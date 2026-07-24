@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Certificate extends Model
 {
@@ -27,4 +28,16 @@ class Certificate extends Model
         'issue_date' => 'date',
         'expiration_date' => 'date',
     ];
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->public_id)) {
+                $model->public_id = Str::random(20);
+            }
+        });
+    }
 }
