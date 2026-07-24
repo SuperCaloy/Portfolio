@@ -20,8 +20,10 @@ Route::get('/projects', [HomeController::class, 'index']);
 Route::get('/skills', [HomeController::class, 'index']);
 Route::get('/experience', [HomeController::class, 'index']);
 Route::get('/certificates', [HomeController::class, 'index']);
-Route::post('/api/contact', [ContactController::class, 'send'])->middleware('throttle:3,1');
 Route::get('/resume', [ResumeController::class, 'download'])->name('resume.download');
+
+Route::post('/api/contact', [ContactController::class, 'send'])
+    ->middleware(['throttle:3,1', 'throttle:10,1440']);
 
 Route::get('/system/keep-alive', function (Illuminate\Http\Request $request) {
     if ($request->query('token') !== config('app.keep_alive_token')) {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Experience extends Model
 {
@@ -28,4 +29,17 @@ class Experience extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
+
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->public_id)) {
+                $model->public_id = Str::random(20);
+            }
+        });
+    }
 }
