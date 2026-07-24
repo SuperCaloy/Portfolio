@@ -34,12 +34,11 @@ export default function EditProjectModal({ project, availableSkills, onClose }) 
     };
 
     return createPortal(
-        <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md"
-            onClick={onClose}
-        >
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md">
+
             <div
-className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"                onClick={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                     <h2 className="text-base font-bold text-zinc-900 dark:text-white">Edit Project</h2>
