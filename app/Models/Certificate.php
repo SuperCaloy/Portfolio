@@ -18,6 +18,7 @@ class Certificate extends Model
         'credential_id',
         'credential_url',
         'image_path',
+        'image_public_id',
         'status',
     ];
 
