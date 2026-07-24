@@ -3,14 +3,19 @@ import { createPortal } from 'react-dom';
 import { useForm, usePage } from '@inertiajs/react';
 import CertificateFormFields from './CertificateFormFields';
 
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return dateString.split('T')[0];
+};
+
 export default function EditCertificateModal({ certificate, onClose }) {
     const { adminSlug } = usePage().props;
 
     const { data, setData, post, processing, errors } = useForm({
         title: certificate.title,
         issuer: certificate.issuer,
-        issue_date: certificate.issue_date,
-        expiration_date: certificate.expiration_date || '',
+        issue_date: formatDate(certificate.issue_date),
+        expiration_date: formatDate(certificate.expiration_date),
         credential_id: certificate.credential_id || '',
         credential_url: certificate.credential_url || '',
         status: certificate.status,

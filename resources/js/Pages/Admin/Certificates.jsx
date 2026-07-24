@@ -11,6 +11,7 @@ export default function Certificates({ certificates }) {
     const [editingCertificate, setEditingCertificate] = useState(null);
     const [selectedCertificate, setSelectedCertificate] = useState(null);
     const [deletingCertificateId, setDeletingCertificateId] = useState(null);
+    const [search, setSearch] = useState('');
 
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
@@ -36,6 +37,14 @@ export default function Certificates({ certificates }) {
         setDeletingCertificateId(null);
     };
 
+    const filteredCertificates = certificates.filter((certificate) => {
+        const query = search.trim().toLowerCase();
+        if (!query) return true;
+        const inTitle = certificate.title?.toLowerCase().includes(query);
+        const inIssuer = certificate.issuer?.toLowerCase().includes(query);
+        return inTitle || inIssuer;
+    });
+
     return (
         <AdminLayout title="Certificates" currentPath="/certificates">
             <form onSubmit={handleCreate} className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 space-y-4 mb-6">
@@ -53,12 +62,26 @@ export default function Certificates({ certificates }) {
                 </div>
             </form>
 
+            <div className="mb-3">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search certificates by title or issuer"
+                    className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                />
+            </div>
+
             <div className="space-y-2">
                 {certificates.length === 0 && (
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">No certificates added yet.</p>
                 )}
 
-                {certificates.map((certificate) => (
+                {certificates.length > 0 && filteredCertificates.length === 0 && (
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No certificates match your search.</p>
+                )}
+
+                {filteredCertificates.map((certificate) => (
                     <div
                         key={certificate.id}
                         onClick={() => setSelectedCertificate(certificate)}

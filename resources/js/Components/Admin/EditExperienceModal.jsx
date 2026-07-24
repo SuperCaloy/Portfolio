@@ -3,6 +3,11 @@ import { createPortal } from 'react-dom';
 import { useForm, usePage } from '@inertiajs/react';
 import ExperienceFormFields from './ExperienceFormFields';
 
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return dateString.split('T')[0];
+};
+
 export default function EditExperienceModal({ experience, onClose }) {
     const { adminSlug } = usePage().props;
 
@@ -10,8 +15,8 @@ export default function EditExperienceModal({ experience, onClose }) {
         company: experience.company,
         role: experience.role,
         location: experience.location || '',
-        start_date: experience.start_date,
-        end_date: experience.end_date || '',
+        start_date: formatDate(experience.start_date),
+        end_date: formatDate(experience.end_date),
         is_current: experience.is_current,
         description: experience.description,
         achievements: experience.achievements || [],
@@ -31,7 +36,8 @@ export default function EditExperienceModal({ experience, onClose }) {
             onClick={onClose}
         >
             <div
-className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"                onClick={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                     <h2 className="text-base font-bold text-zinc-900 dark:text-white">Edit Experience</h2>

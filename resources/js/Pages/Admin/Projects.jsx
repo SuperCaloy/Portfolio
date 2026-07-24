@@ -13,6 +13,7 @@ export default function Projects({ projects, availableSkills }) {
     const [selectedProject, setSelectedProject] = useState(null);
     const [draggedIndex, setDraggedIndex] = useState(null);
     const [deletingProjectId, setDeletingProjectId] = useState(null);
+    const [search, setSearch] = useState('');
 
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
@@ -63,6 +64,14 @@ export default function Projects({ projects, availableSkills }) {
         persistOrder(newOrder);
     };
 
+    const filteredProjects = projects.filter((project) => {
+        const query = search.trim().toLowerCase();
+        if (!query) return true;
+        const inTitle = project.title?.toLowerCase().includes(query);
+        const inTech = (project.tech_stack || []).some((tag) => tag.toLowerCase().includes(query));
+        return inTitle || inTech;
+    });
+
     return (
         <AdminLayout title="Projects" currentPath="/projects">
             <form onSubmit={handleCreate} className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 space-y-4 mb-6">
@@ -96,15 +105,29 @@ export default function Projects({ projects, availableSkills }) {
                 </div>
             </form>
 
+            <div className="mb-3">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search projects by title or tech stack"
+                    className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                />
+            </div>
+
             <div className="space-y-2">
                 {projects.length === 0 && (
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">No projects added yet.</p>
                 )}
 
-                {projects.map((project, index) => (
+                {projects.length > 0 && filteredProjects.length === 0 && (
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No projects match your search.</p>
+                )}
+
+                {filteredProjects.map((project, index) => (
                     <div
                         key={project.id}
-                        draggable
+                        draggable={!search.trim()}
                         onDragStart={() => handleDragStart(index)}
                         onDragOver={handleDragOver}
                         onDrop={() => handleDrop(index)}

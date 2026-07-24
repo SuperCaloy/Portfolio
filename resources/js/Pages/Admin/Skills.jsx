@@ -117,6 +117,7 @@ export default function Skills({ skills }) {
     const [editingSkill, setEditingSkill] = useState(null);
     const [draggedIndex, setDraggedIndex] = useState(null);
     const [deletingSkillId, setDeletingSkillId] = useState(null);
+    const [search, setSearch] = useState('');
 
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
@@ -170,6 +171,12 @@ export default function Skills({ skills }) {
         setDraggedIndex(null);
         persistOrder(newOrder);
     };
+
+    const filteredSkills = skills.filter((skill) => {
+        const query = search.trim().toLowerCase();
+        if (!query) return true;
+        return skill.name?.toLowerCase().includes(query);
+    });
 
     return (
         <AdminLayout title="Skills" currentPath={`/${adminSlug}/dashboard/skills`}>
@@ -233,15 +240,29 @@ export default function Skills({ skills }) {
                 </div>
             </form>
 
+            <div className="mb-3">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search skills by name"
+                    className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                />
+            </div>
+
             <div className="space-y-2">
                 {skills.length === 0 && (
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">No skills added yet.</p>
                 )}
 
-                {skills.map((skill, index) => (
+                {skills.length > 0 && filteredSkills.length === 0 && (
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No skills match your search.</p>
+                )}
+
+                {filteredSkills.map((skill, index) => (
                     <div
                         key={skill.id}
-                        draggable
+                        draggable={!search.trim()}
                         onDragStart={() => handleDragStart(index)}
                         onDragOver={handleDragOver}
                         onDrop={() => handleDrop(index)}
@@ -261,7 +282,7 @@ export default function Skills({ skills }) {
                             <div className="flex flex-col sm:hidden">
                                 <button
                                     onClick={() => move(index, -1)}
-                                    disabled={index === 0}
+                                    disabled={index === 0 || !!search.trim()}
                                     className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 disabled:opacity-30"
                                 >
                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +291,7 @@ export default function Skills({ skills }) {
                                 </button>
                                 <button
                                     onClick={() => move(index, 1)}
-                                    disabled={index === skills.length - 1}
+                                    disabled={index === filteredSkills.length - 1 || !!search.trim()}
                                     className="text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 disabled:opacity-30"
                                 >
                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
