@@ -22,8 +22,8 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
             >
                 <div className="flex items-start justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                     <div className="space-y-1">
-                        <h2 className="text-base font-bold text-zinc-900 dark:text-white">{certificate.title}</h2>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{certificate.issuer}</p>
+                        <h2 className="text-lg font-bold text-zinc-900 dark:text-white">{certificate.title}</h2>
+                        <p className="text-base text-zinc-500 dark:text-zinc-400">{certificate.issuer}</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -45,7 +45,7 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
                     />
                 )}
 
-                <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                         <p className="text-zinc-500 dark:text-zinc-400">Issued</p>
                         <p className="font-mono text-zinc-800 dark:text-zinc-200">{formatDate(certificate.issue_date)}</p>
@@ -59,7 +59,7 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
                 </div>
 
                 {certificate.credential_id && (
-                    <div className="text-xs">
+                    <div className="text-sm">
                         <p className="text-zinc-500 dark:text-zinc-400">Credential ID</p>
                         <p className="font-mono text-zinc-800 dark:text-zinc-200">{certificate.credential_id}</p>
                     </div>
@@ -70,7 +70,7 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
                         href={certificate.credential_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
                     >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />

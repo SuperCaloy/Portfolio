@@ -34,7 +34,7 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
 
     return (
         <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60">
-            <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-xs">
+            <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-sm">
                 <a href="/" onClick={handleNameTap} className="flex items-center gap-2.5 font-medium text-zinc-800 dark:text-zinc-200 hover:text-zinc-950 dark:hover:text-white transition-colors select-none">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                     <span className="font-semibold tracking-tight truncate max-w-[140px] sm:max-w-none">{name}</span>
@@ -101,7 +101,7 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
             </div>
 
             {menuOpen && (
-                <nav className="sm:hidden border-t border-zinc-200/60 dark:border-zinc-800/60 px-4 py-3 flex flex-col gap-3 text-xs font-medium text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-950">
+                <nav className="sm:hidden border-t border-zinc-200/60 dark:border-zinc-800/60 px-4 py-3 flex flex-col gap-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-950">
                     {navLinks.map((link) => (
                         <a
                             key={link.id}

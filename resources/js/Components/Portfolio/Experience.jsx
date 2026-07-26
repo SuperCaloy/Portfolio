@@ -27,21 +27,21 @@ export default function Experience({ experiences = [] }) {
                         <div className="absolute -left-[25px] top-3.5 w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-700 border border-white dark:border-zinc-950 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400 transition-colors" />
 
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
-                            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
+                            <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                                 {exp.role || exp.title} <span className="text-zinc-500 font-normal">at {exp.company}</span>
                             </h3>
-                            <span className="text-xs font-mono text-zinc-500">
+                            <span className="text-sm font-mono text-zinc-500">
                                 {formatDate(exp.start_date)} — {exp.end_date ? formatDate(exp.end_date) : 'Present'}
                             </span>
                         </div>
 
                         {exp.description && (
-                            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                                 {exp.description}
                             </p>
                         )}
 
-                        <span className="inline-block text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
                             View details →
                         </span>
                     </button>

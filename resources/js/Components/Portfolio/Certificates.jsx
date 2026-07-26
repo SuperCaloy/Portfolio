@@ -14,15 +14,15 @@ function CertificateCard({ cert, onSelect }) {
             className="group p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-between text-left w-full"
         >
             <div>
-                <h3 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
+                <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
                     {cert.title}
                 </h3>
-                <p className="text-[11px] text-zinc-500 mt-0.5">{cert.issuer}</p>
-                <span className="inline-block text-[10px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                <p className="text-xs text-zinc-500 mt-0.5">{cert.issuer}</p>
+                <span className="inline-block text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
                     View details →
                 </span>
             </div>
-            <span className="text-[11px] font-mono text-zinc-500 shrink-0">{formatDate(cert.issue_date)}</span>
+            <span className="text-xs font-mono text-zinc-500 shrink-0">{formatDate(cert.issue_date)}</span>
         </button>
     );
 }
@@ -58,7 +58,7 @@ export default function Certificates({ certificates = [] }) {
                 <h2 className="text-sm font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase font-mono">
                     Certifications
                 </h2>
-                <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">{displayCertificates.length} shown</span>
+                <span className="text-sm text-zinc-500 dark:text-zinc-600 font-mono">{displayCertificates.length} shown</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -70,7 +70,7 @@ export default function Certificates({ certificates = [] }) {
             {sortedCertificates.length > displayCertificates.length && (
                 <button
                     onClick={() => setShowModal(true)}
-                    className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors underline underline-offset-4"
+                    className="text-sm font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors underline underline-offset-4"
                 >
                     View All Certificates ({sortedCertificates.length})
                 </button>
