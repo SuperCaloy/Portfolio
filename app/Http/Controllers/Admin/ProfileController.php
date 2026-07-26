@@ -28,7 +28,7 @@ class ProfileController extends Controller
     public function update(UpdateProfileRequest $request)
     {
         $profile = PersonalInformation::firstOrNew();
-        $data = $request->safe()->except(['avatar', 'resume']);
+        $data = $request->safe()->except(['avatar', 'resume', 'remove_avatar']);
 
         if ($request->hasFile('avatar')) {
             if ($profile->avatar_public_id) {
@@ -37,6 +37,10 @@ class ProfileController extends Controller
             $uploaded = $this->cloudinary->upload($request->file('avatar'), 'portfolio/avatar');
             $data['avatar_path'] = $uploaded['url'];
             $data['avatar_public_id'] = $uploaded['public_id'];
+        } elseif ($request->boolean('remove_avatar') && $profile->avatar_public_id) {
+            $this->cloudinary->delete($profile->avatar_public_id);
+            $data['avatar_path'] = null;
+            $data['avatar_public_id'] = null;
         }
 
         if ($request->hasFile('resume')) {

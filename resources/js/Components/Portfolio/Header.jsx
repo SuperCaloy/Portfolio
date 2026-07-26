@@ -27,13 +27,13 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
 
     const navLinks = [
         { id: 'projects', path: '/projects', label: 'Projects' },
-        { id: 'skills', path: '/skills', label: 'Skills' },
+        { id: 'tech', path: '/tech', label: 'Skills' },       
         { id: 'experience', path: '/experience', label: 'Experience' },
         ...(hasCertificates ? [{ id: 'certificates', path: '/certificates', label: 'Certs' }] : []),
     ];
 
     return (
-        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60">
+        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60 transition-colors duration-200">
             <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-sm">
                 <a href="/" onClick={handleNameTap} className="flex items-center gap-2.5 font-medium text-zinc-800 dark:text-zinc-200 hover:text-zinc-950 dark:hover:text-white transition-colors select-none">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />

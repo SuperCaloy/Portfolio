@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ViewProjectModal from '../Shared/ViewProjectModal';
+import useInView from '../../hooks/useInView';
 
 const STATUS_STYLES = {
     'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
@@ -14,7 +15,7 @@ function ProjectCard({ project, onSelect }) {
     return (
         <button
             onClick={() => onSelect(project)}
-            className="group relative h-full flex flex-col overflow-hidden p-6 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
+            className="group relative h-full flex flex-col overflow-hidden p-5 sm:p-6 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
         >
             <div className="space-y-3 flex-1">
                 <div className="flex items-start justify-between gap-4">
@@ -30,9 +31,13 @@ function ProjectCard({ project, onSelect }) {
                     </div>
                 </div>
 
-                {(project.subtitle || project.description) && (
+                {project.subtitle || project.description ? (
                     <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                         {project.subtitle || project.description}
+                    </p>
+                ) : (
+                    <p className="text-sm text-zinc-400 dark:text-zinc-600 italic leading-relaxed">
+                        Details coming soon.
                     </p>
                 )}
 
@@ -90,6 +95,7 @@ function ProjectCard({ project, onSelect }) {
 export default function Projects({ projects = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
+    const [sectionRef, isInView] = useInView();
     const displayProjects = projects.slice(0, 3);
 
     const gridColsClass = (count) => {
@@ -115,7 +121,11 @@ export default function Projects({ projects = [] }) {
     if (projects.length === 0) return null;
 
     return (
-        <section id="projects" className="space-y-4">
+        <section
+            id="projects"
+            ref={sectionRef}
+            className={`space-y-4 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+        >
             <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase font-mono">
                     Projects
@@ -124,8 +134,8 @@ export default function Projects({ projects = [] }) {
             </div>
 
             <div className={`grid ${gridColsClass(displayProjects.length)} gap-4`}>
-                {displayProjects.map((project) => (
-                    <ProjectCard key={project.id ?? project.title} project={project} onSelect={setSelectedProject} />
+                {displayProjects.map((project, idx) => (
+                    <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} onSelect={setSelectedProject} />
                 ))}
             </div>
 
@@ -134,7 +144,7 @@ export default function Projects({ projects = [] }) {
                     onClick={() => setShowModal(true)}
                     className="text-sm font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors underline underline-offset-4"
                 >
-                    View All Projects
+                    View All Projects ({projects.length})
                 </button>
             )}
 
@@ -160,8 +170,8 @@ export default function Projects({ projects = [] }) {
                         </div>
 
                         <div className={`p-6 grid ${gridColsClass(Math.min(projects.length, 2))} gap-5`}>
-                            {projects.map((project) => (
-                                <ProjectCard key={project.id ?? project.title} project={project} onSelect={setSelectedProject} />
+                            {projects.map((project, idx) => (
+                                <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} onSelect={setSelectedProject} />
                             ))}
                         </div>
                     </div>

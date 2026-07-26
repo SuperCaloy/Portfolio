@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
+import ConfirmModal from '../../Components/Shared/ConfirmModal';
 
 export default function Profile({ profile }) {
     const { adminSlug } = usePage().props;
     const [avatarPreview, setAvatarPreview] = useState(profile.avatar_path || null);
+    const [confirmingRemoveAvatar, setConfirmingRemoveAvatar] = useState(false);
+    const [previewOpen, setPreviewOpen] = useState(false);
 
     const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
         full_name: profile.full_name || '',
@@ -16,6 +20,7 @@ export default function Profile({ profile }) {
         github_url: profile.github_url || '',
         linkedin_url: profile.linkedin_url || '',
         avatar: null,
+        remove_avatar: false,
         resume: null,
         _method: 'put',
     });
@@ -24,7 +29,15 @@ export default function Profile({ profile }) {
         const file = e.target.files[0];
         if (!file) return;
         setData('avatar', file);
+        setData('remove_avatar', false);
         setAvatarPreview(URL.createObjectURL(file));
+    };
+
+    const handleRemoveAvatar = () => {
+        setData('avatar', null);
+        setData('remove_avatar', true);
+        setAvatarPreview(null);
+        setConfirmingRemoveAvatar(false);
     };
 
     const handleSubmit = (e) => {
@@ -55,7 +68,10 @@ export default function Profile({ profile }) {
                 )}
 
                 <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex items-center justify-center shrink-0">
+                    <div
+                        onClick={() => avatarPreview && setPreviewOpen(true)}
+                        className={`w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden flex items-center justify-center shrink-0 ${avatarPreview ? 'cursor-pointer' : ''}`}
+                    >
                         {avatarPreview ? (
                             <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />
                         ) : (
@@ -65,16 +81,66 @@ export default function Profile({ profile }) {
 
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block">Avatar</label>
-                        <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium cursor-pointer transition-all">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>{data.avatar ? data.avatar.name : 'Choose Photo'}</span>
-                            <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-                        </label>
+                        {avatarPreview ? (
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <label className="px-2.5 py-1.5 rounded-md bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-[11px] font-medium cursor-pointer">
+                                    Replace
+                                    <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={() => setConfirmingRemoveAvatar(true)}
+                                    className="px-2.5 py-1.5 rounded-md bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400 text-[11px] font-medium"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ) : (
+                            <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium cursor-pointer transition-all">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span>Choose Photo</span>
+                                <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+                            </label>
+                        )}
                         {errors.avatar && <p className="text-[11px] text-rose-500">{errors.avatar}</p>}
                     </div>
                 </div>
+
+                {confirmingRemoveAvatar && (
+                    <ConfirmModal
+                        title="Remove avatar?"
+                        message="The current avatar will be removed once you save."
+                        danger
+                        onConfirm={handleRemoveAvatar}
+                        onCancel={() => setConfirmingRemoveAvatar(false)}
+                    />
+                )}
+
+                {previewOpen && avatarPreview && createPortal(
+                    <div
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/90 backdrop-blur-md"
+                        onClick={() => setPreviewOpen(false)}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setPreviewOpen(false)}
+                            className="absolute top-4 right-4 p-1.5 rounded-md text-zinc-300 hover:text-white hover:bg-zinc-800"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <img
+                            src={avatarPreview}
+                            alt="Avatar full preview"
+                            className="max-w-full max-h-[80vh] rounded-xl object-contain"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>,
+                    document.body
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {field('full_name', 'Full Name')}
