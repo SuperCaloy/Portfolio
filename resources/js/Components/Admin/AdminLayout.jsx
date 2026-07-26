@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import useTheme from '../../hooks/useTheme';
-
+import ConfirmModal from '../Shared/ConfirmModal';
 
 export default function AdminLayout({ title, currentPath, children }) {
     const { adminSlug } = usePage().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [confirmingLogout, setConfirmingLogout] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
     const { theme, toggleTheme } = useTheme();
 
     const NAV_ITEMS = [
@@ -19,7 +21,10 @@ export default function AdminLayout({ title, currentPath, children }) {
     ];
 
     const handleLogout = () => {
-        router.post(`/${adminSlug}/logout`);
+        setLoggingOut(true);
+        router.post(`/${adminSlug}/logout`, {}, {
+            onError: () => setLoggingOut(false),
+        });
     };
 
     const segments = currentPath
@@ -70,10 +75,14 @@ export default function AdminLayout({ title, currentPath, children }) {
                 <div className="px-3 py-4 border-t border-zinc-200/60 dark:border-zinc-800/60">
                     <button
                         type="button"
-                        onClick={handleLogout}
-                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-mono font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                        onClick={() => setConfirmingLogout(true)}
+                        disabled={loggingOut}
+                        className="w-full flex items-center gap-2 text-left px-3 py-2 rounded-lg text-xs font-mono font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors disabled:opacity-60"
                     >
-                        Logout
+                        {loggingOut && (
+                            <span className="w-3 h-3 rounded-full border-2 border-rose-300 dark:border-rose-800 border-t-rose-600 dark:border-t-rose-400 animate-spin shrink-0" />
+                        )}
+                        {loggingOut ? 'Logging out...' : 'Logout'}
                     </button>
                 </div>
             </aside>
@@ -125,6 +134,25 @@ export default function AdminLayout({ title, currentPath, children }) {
 
                 <main className="flex-1 px-4 md:px-8 py-6">{children}</main>
             </div>
+
+            {confirmingLogout && !loggingOut && (
+                <ConfirmModal
+                    title="Log out?"
+                    message="You will need to sign in again to access the admin dashboard."
+                    danger
+                    onConfirm={handleLogout}
+                    onCancel={() => setConfirmingLogout(false)}
+                />
+            )}
+
+            {loggingOut && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/70 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 px-8 py-6 shadow-xl">
+                        <span className="w-8 h-8 rounded-full border-2 border-zinc-200 dark:border-zinc-800 border-t-rose-500 animate-spin" />
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400">Logging out...</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
