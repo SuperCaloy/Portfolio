@@ -20,10 +20,10 @@ export default function ViewExperienceModal({ experience, onClose, onEdit }) {
             >
                 <div className="flex items-start justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                     <div className="space-y-1">
-                        <h2 className="text-base font-bold text-zinc-900 dark:text-white">
+                        <h2 className="text-lg font-bold text-zinc-900 dark:text-white">
                             {experience.role || experience.title}
                         </h2>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                        <p className="text-base text-zinc-500 dark:text-zinc-400">
                             {experience.company}
                             {experience.location && ` · ${experience.location}`}
                         </p>
@@ -38,7 +38,7 @@ export default function ViewExperienceModal({ experience, onClose, onEdit }) {
                     </button>
                 </div>
 
-                <p className="text-xs font-mono text-zinc-500">
+                <p className="text-sm font-mono text-zinc-500">
                     {formatDate(experience.start_date)} — {experience.end_date ? formatDate(experience.end_date) : 'Present'}
                 </p>
 
@@ -50,10 +50,10 @@ export default function ViewExperienceModal({ experience, onClose, onEdit }) {
 
                 {experience.achievements && Array.isArray(experience.achievements) && experience.achievements.length > 0 && (
                     <div className="space-y-1.5">
-                        <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Key Achievements</p>
+                        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Key Achievements</p>
                         <ul className="space-y-1">
                             {experience.achievements.map((item, idx) => (
-                                <li key={idx} className="text-xs text-zinc-600 dark:text-zinc-400 flex gap-2">
+                                <li key={idx} className="text-sm text-zinc-600 dark:text-zinc-400 flex gap-2">
                                     <span className="text-zinc-400 dark:text-zinc-600 shrink-0">•</span>
                                     <span>{item}</span>
                                 </li>

@@ -9,49 +9,77 @@ const STATUS_STYLES = {
 };
 
 function ProjectCard({ project, onSelect }) {
+    const [linksHovered, setLinksHovered] = useState(false);
+
     return (
         <button
             onClick={() => onSelect(project)}
-            className="group relative p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all space-y-3 text-left w-full"
+            className="group relative h-full flex flex-col overflow-hidden p-6 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
         >
-            <div className="flex items-start justify-between gap-4">
-                <div className="space-y-1.5">
-                    <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
-                        {project.title}
-                    </h3>
-                    {project.status && (
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
-                            {project.status}
-                        </span>
-                    )}
+            <div className="space-y-3 flex-1">
+                <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1.5">
+                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
+                            {project.title}
+                        </h3>
+                        {project.status && (
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
+                                {project.status}
+                            </span>
+                        )}
+                    </div>
                 </div>
+
+                {(project.subtitle || project.description) && (
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                        {project.subtitle || project.description}
+                    </p>
+                )}
+
+                {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                        {project.tech_stack.map((tech, idx) => (
+                            <span
+                                key={idx}
+                                className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono text-xs"
+                            >
+                                {tech}
+                            </span>
+                        ))}
+                    </div>
+                )}
             </div>
 
-            {(project.subtitle || project.description) && (
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                    {project.subtitle || project.description}
-                </p>
-            )}
-
-            {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                    {project.tech_stack.map((tech, idx) => (
-                        <span
-                            key={idx}
-                            className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono text-[11px]"
+            <div className="flex items-center flex-wrap justify-between gap-y-1 pt-3 mt-3 border-t border-zinc-200/60 dark:border-zinc-800/60">
+                <div
+                    className="flex items-center gap-4"
+                    onMouseEnter={() => setLinksHovered(true)}
+                    onMouseLeave={() => setLinksHovered(false)}
+                >
+                    {project.github_url && (
+                        <a
+                            href={project.github_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 whitespace-nowrap"
                         >
-                            {tech}
-                        </span>
-                    ))}
+                            View Code
+                        </a>
+                    )}
+                    {project.demo_url && (
+                        <a
+                            href={project.demo_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 whitespace-nowrap"
+                        >
+                            Live Preview
+                        </a>
+                    )}
                 </div>
-            )}
-
-            <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center gap-4">
-                    {project.github_url && <span className="text-xs font-medium text-zinc-500">View Code</span>}
-                    {project.demo_url && <span className="text-xs font-medium text-zinc-500">Live Demo</span>}
-                </div>
-                <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className={`text-[11px] font-mono text-zinc-400 dark:text-zinc-600 whitespace-nowrap shrink-0 ml-3 transition-opacity ${linksHovered ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
                     View details →
                 </span>
             </div>
@@ -62,7 +90,14 @@ function ProjectCard({ project, onSelect }) {
 export default function Projects({ projects = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
-    const displayProjects = projects.slice(0, 4);
+    const displayProjects = projects.slice(0, 3);
+
+    const gridColsClass = (count) => {
+        if (count <= 1) return 'grid-cols-1';
+        if (count === 2) return 'grid-cols-1 sm:grid-cols-2';
+        if (count === 3) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+        return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+    };
 
     useEffect(() => {
         if (!showModal) return;
@@ -83,12 +118,12 @@ export default function Projects({ projects = [] }) {
         <section id="projects" className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase font-mono">
-                    Featured Projects
+                    Projects
                 </h2>
-                <span className="text-xs text-zinc-500 dark:text-zinc-600 font-mono">{displayProjects.length} project{displayProjects.length > 1 ? 's' : ''}</span>
+                <span className="text-sm text-zinc-500 dark:text-zinc-600 font-mono">{projects.length} project{projects.length > 1 ? 's' : ''}</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+            <div className={`grid ${gridColsClass(displayProjects.length)} gap-4`}>
                 {displayProjects.map((project) => (
                     <ProjectCard key={project.id ?? project.title} project={project} onSelect={setSelectedProject} />
                 ))}
@@ -97,9 +132,9 @@ export default function Projects({ projects = [] }) {
             {projects.length > displayProjects.length && (
                 <button
                     onClick={() => setShowModal(true)}
-                    className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors underline underline-offset-4"
+                    className="text-sm font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors underline underline-offset-4"
                 >
-                    View All Projects ({projects.length})
+                    View All Projects
                 </button>
             )}
 
@@ -109,7 +144,7 @@ export default function Projects({ projects = [] }) {
                     onClick={() => setShowModal(false)}
                 >
                     <div
-                        className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto styled-scrollbar"
+                        className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-5xl max-h-[85vh] overflow-y-auto styled-scrollbar"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
@@ -124,7 +159,7 @@ export default function Projects({ projects = [] }) {
                             </button>
                         </div>
 
-                        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className={`p-6 grid ${gridColsClass(Math.min(projects.length, 2))} gap-5`}>
                             {projects.map((project) => (
                                 <ProjectCard key={project.id ?? project.title} project={project} onSelect={setSelectedProject} />
                             ))}

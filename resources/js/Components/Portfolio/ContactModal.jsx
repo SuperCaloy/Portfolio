@@ -67,19 +67,19 @@ export default function ContactModal({ isOpen, onClose }) {
                             </svg>
                         </div>
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Message Sent!</h3>
-                        <p className="text-xs text-zinc-500">Thanks for reaching out. I will get back to you soon.</p>
+                        <p className="text-sm text-zinc-500">Thanks for reaching out. I will get back to you soon.</p>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {status.error && (
-                            <div className="p-3 text-xs rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400">
+                            <div className="p-3 text-sm rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400">
                                 {status.error}
                             </div>
                         )}
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-1">
-                                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Name</label>
+                                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
                                 <input
                                     type="text"
                                     name="name"
@@ -89,12 +89,12 @@ export default function ContactModal({ isOpen, onClose }) {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="Your Name"
-                                    className="w-full px-3 py-2 rounded-lg text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                                    className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                                 />
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Email</label>
+                                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Email</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -104,13 +104,13 @@ export default function ContactModal({ isOpen, onClose }) {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="your@email.com"
-                                    className="w-full px-3 py-2 rounded-lg text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                                    className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Subject</label>
+                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Subject</label>
                             <input
                                 type="text"
                                 name="subject"
@@ -119,12 +119,12 @@ export default function ContactModal({ isOpen, onClose }) {
                                 value={formData.subject}
                                 onChange={handleChange}
                                 placeholder="Project Inquiry / Job Opportunity"
-                                className="w-full px-3 py-2 rounded-lg text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                                className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                             />
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Message</label>
+                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Message</label>
                             <textarea
                                 name="message"
                                 id="message"
@@ -133,14 +133,14 @@ export default function ContactModal({ isOpen, onClose }) {
                                 value={formData.message}
                                 onChange={handleChange}
                                 placeholder="Write your message here..."
-                                className="w-full px-3 py-2 rounded-lg text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 resize-none"
+                                className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 resize-none"
                             ></textarea>
                         </div>
 
                         <button
                             type="submit"
                             disabled={status.loading}
-                            className="w-full py-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-xs transition-all disabled:opacity-50"
+                            className="w-full py-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-sm transition-all disabled:opacity-50"
                         >
                             {status.loading ? 'Sending...' : 'Send Message'}
                         </button>
