@@ -139,6 +139,7 @@ export default function Experience({ experiences }) {
 
             {editingExperience && (
                 <EditExperienceModal
+                    key={editingExperience.id}
                     experience={editingExperience}
                     onClose={() => setEditingExperience(null)}
                 />

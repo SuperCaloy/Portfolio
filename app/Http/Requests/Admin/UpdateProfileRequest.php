@@ -24,6 +24,7 @@ class UpdateProfileRequest extends FormRequest
             'github_url' => ['nullable', 'url', 'max:255'],
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'avatar' => ['nullable', 'file', 'image', 'max:4096'],
+            'remove_avatar' => ['nullable', 'boolean'],
             'resume' => ['nullable', 'file', 'mimes:pdf', 'max:8192'],
         ];
     }

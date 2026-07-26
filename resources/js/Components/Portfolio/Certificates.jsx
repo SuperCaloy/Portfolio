@@ -61,7 +61,7 @@ export default function Certificates({ certificates = [] }) {
                 <span className="text-sm text-zinc-500 dark:text-zinc-600 font-mono">{displayCertificates.length} shown</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {displayCertificates.map((cert) => (
                     <CertificateCard key={cert.id ?? cert.title} cert={cert} onSelect={setSelectedCertificate} />
                 ))}
@@ -115,4 +115,4 @@ export default function Certificates({ certificates = [] }) {
             )}
         </section>
     );
-}
+}   

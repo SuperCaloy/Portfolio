@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ViewExperienceModal from '../Shared/ViewExperienceModal';
+import useInView from '../../hooks/useInView';
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -8,11 +9,16 @@ const formatDate = (dateString) => {
 
 export default function Experience({ experiences = [] }) {
     const [selectedExperience, setSelectedExperience] = useState(null);
+    const [sectionRef, isInView] = useInView();
 
     if (experiences.length === 0) return null;
 
     return (
-        <section id="experience" className="space-y-6">
+        <section
+            id="experience"
+            ref={sectionRef}
+            className={`space-y-6 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+        >
             <h2 className="text-sm font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase font-mono">
                 Work Experience
             </h2>
@@ -22,7 +28,7 @@ export default function Experience({ experiences = [] }) {
                     <button
                         key={exp.id ?? exp.company}
                         onClick={() => setSelectedExperience(exp)}
-                        className="group relative space-y-1.5 text-left w-full p-2 -ml-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/40 transition-colors"
+                        className="group relative space-y-1.5 text-left w-full p-2 -ml-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/40 hover:-translate-y-0.5 hover:shadow-sm transition-all"
                     >
                         <div className="absolute -left-[25px] top-3.5 w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-700 border border-white dark:border-zinc-950 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400 transition-colors" />
 

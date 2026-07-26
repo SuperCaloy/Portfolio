@@ -3,8 +3,29 @@ import { createPortal } from 'react-dom';
 import { useForm, router, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import ConfirmModal from '../../Components/Shared/ConfirmModal';
+import { getSkillIcon, getSkillColor } from '../../utils/skillIcon';
 
 const CATEGORIES = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
+
+// Shows a live preview of the icon that will be used, based on the
+// override field if filled, otherwise guessed from the name typed.
+function IconPreview({ name, iconOverride }) {
+    const Icon = getSkillIcon({ name, icon_name: iconOverride });
+    const color = getSkillColor({ name, icon_name: iconOverride });
+
+    return (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+            {Icon ? (
+                <Icon className="w-4 h-4 shrink-0" style={color ? { color } : undefined} />
+            ) : (
+                <span className="w-4 h-4 shrink-0 rounded-full border border-dashed border-zinc-400 dark:border-zinc-600" />
+            )}
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                {Icon ? 'Icon matched' : 'No icon match, will show as text only'}
+            </span>
+        </div>
+    );
+}
 
 function EditSkillModal({ skill, onClose, adminSlug }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -68,13 +89,15 @@ function EditSkillModal({ skill, onClose, adminSlug }) {
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Icon Name (optional)</label>
+                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Icon Override (optional)</label>
                         <input
                             type="text"
                             value={data.icon_name}
                             onChange={(e) => setData('icon_name', e.target.value)}
+                            placeholder="Leave blank to auto match from name"
                             className="w-full px-3 py-2 rounded-lg text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                         />
+                        <IconPreview name={data.name} iconOverride={data.icon_name} />
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -209,13 +232,15 @@ export default function Skills({ skills }) {
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Icon Name (optional)</label>
+                        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Icon Override (optional)</label>
                         <input
                             type="text"
                             value={data.icon_name}
                             onChange={(e) => setData('icon_name', e.target.value)}
+                            placeholder="Leave blank to auto match from name"
                             className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                         />
+                        <IconPreview name={data.name} iconOverride={data.icon_name} />
                     </div>
                 </div>
 
