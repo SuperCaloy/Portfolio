@@ -43,6 +43,7 @@ export default function AdminLayout({ title, currentPath, children }) {
         { label: 'Experience', href: `/${adminSlug}/dashboard/experience` },
         { label: 'Certificates', href: `/${adminSlug}/dashboard/certificates` },
         { label: 'Messages', href: `/${adminSlug}/dashboard/messages` },
+        { label: 'Activity Log', href: `/${adminSlug}/dashboard/login-activity` },
     ];
 
     const handleLogout = () => {
