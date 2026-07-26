@@ -13,6 +13,7 @@ export default function Projects({ projects, availableSkills }) {
     const [selectedProject, setSelectedProject] = useState(null);
     const [draggedIndex, setDraggedIndex] = useState(null);
     const [deletingProjectId, setDeletingProjectId] = useState(null);
+    const [confirmingCreate, setConfirmingCreate] = useState(false);
     const [search, setSearch] = useState('');
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -33,6 +34,11 @@ export default function Projects({ projects, availableSkills }) {
 
     const handleCreate = (e) => {
         e.preventDefault();
+        setConfirmingCreate(true);
+    };
+
+    const confirmCreate = () => {
+        setConfirmingCreate(false);
         post(`/${adminSlug}/dashboard/projects`, {
             forceFormData: true,
             onSuccess: () => reset(),
@@ -75,7 +81,7 @@ export default function Projects({ projects, availableSkills }) {
     return (
         <AdminLayout title="Projects" currentPath="/projects">
             <form onSubmit={handleCreate} className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 space-y-4 mb-6">
-                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add Project</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Add Project</h2>
                 <ProjectFormFields
                     data={data}
                     setData={setData}
@@ -85,7 +91,7 @@ export default function Projects({ projects, availableSkills }) {
                 />
 
                 <div className="flex items-center justify-between">
-                    <label className="inline-flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300">
+                    <label className="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                         <input
                             type="checkbox"
                             checked={data.is_featured}
@@ -98,7 +104,7 @@ export default function Projects({ projects, availableSkills }) {
                     <button
                         type="submit"
                         disabled={processing}
-                        className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-xs transition-all disabled:opacity-50"
+                        className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-sm transition-all disabled:opacity-50"
                     >
                         {processing ? 'Adding...' : 'Add Project'}
                     </button>
@@ -111,7 +117,7 @@ export default function Projects({ projects, availableSkills }) {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search projects by title or tech stack"
-                    className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                    className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                 />
             </div>
 
@@ -132,11 +138,11 @@ export default function Projects({ projects, availableSkills }) {
                         onDragOver={handleDragOver}
                         onDrop={() => handleDrop(index)}
                         onClick={() => setSelectedProject(project)}
-                        className={`group p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                        className={`group p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 transition-all flex flex-wrap items-center justify-between gap-3 cursor-pointer ${
                             draggedIndex === index ? 'opacity-40' : 'opacity-100'
                         }`}
                     >
-                        <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
                             <div
                                 onClick={(e) => e.stopPropagation()}
                                 className="cursor-grab active:cursor-grabbing text-zinc-300 dark:text-zinc-700 hover:text-zinc-500 dark:hover:text-zinc-500 hidden sm:block shrink-0"
@@ -149,34 +155,34 @@ export default function Projects({ projects, availableSkills }) {
                             </div>
 
                             <div className="min-w-0">
-                                <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                                <p className="text-base font-medium text-zinc-900 dark:text-zinc-100 truncate">
                                     {project.title}
                                     {project.is_featured && (
-                                        <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
+                                        <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
                                             Featured
                                         </span>
                                     )}
                                 </p>
-                                <p className="text-xs text-zinc-500 dark:text-zinc-400 font-mono truncate">{project.status}</p>
-                                <span className="inline-block text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400 font-mono truncate">{project.status}</p>
+                                <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
                                     View details →
                                 </span>
                             </div>
                         </div>
 
-                        <div className="flex gap-2 shrink-0">
-                            <span
+                        <div className="flex gap-1 shrink-0">
+                            <button
                                 onClick={(e) => { e.stopPropagation(); setEditingProject(project); }}
-                                className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-md text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
                             >
                                 Edit
-                            </span>
-                            <span
+                            </button>
+                            <button
                                 onClick={(e) => { e.stopPropagation(); setDeletingProjectId(project.id); }}
-                                className="text-xs text-rose-500 hover:text-rose-600 cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-md text-sm text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
                             >
                                 Delete
-                            </span>
+                            </button>
                         </div>
                     </div>
                 ))}
@@ -198,6 +204,15 @@ export default function Projects({ projects, availableSkills }) {
                     project={editingProject}
                     availableSkills={skillOptions}
                     onClose={() => setEditingProject(null)}
+                />
+            )}
+
+            {confirmingCreate && (
+                <ConfirmModal
+                    title="Add this project?"
+                    message="The project will be added to your public projects list."
+                    onConfirm={confirmCreate}
+                    onCancel={() => setConfirmingCreate(false)}
                 />
             )}
 

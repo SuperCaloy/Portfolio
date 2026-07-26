@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import useTheme from '../../hooks/useTheme';
 import ConfirmModal from '../Shared/ConfirmModal';
@@ -8,6 +8,31 @@ export default function AdminLayout({ title, currentPath, children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [confirmingLogout, setConfirmingLogout] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
+
+    const [navigating, setNavigating] = useState(false);
+    const [navLabel, setNavLabel] = useState('Loading...');
+
+    useEffect(() => {
+        // Picks a label based on the HTTP method of the request, so delete,
+        // save, and plain navigation all show a message that matches what
+        // is actually happening instead of one generic "Loading..." text.
+        const removeStart = router.on('start', (event) => {
+            const method = event.detail.visit.method;
+            if (method === 'delete') {
+                setNavLabel('Deleting...');
+            } else if (method === 'put' || method === 'patch' || method === 'post') {
+                setNavLabel('Saving...');
+            } else {
+                setNavLabel('Loading...');
+            }
+            setNavigating(true);
+        });
+        const removeFinish = router.on('finish', () => setNavigating(false));
+        return () => {
+            removeStart();
+            removeFinish();
+        };
+    }, []);
     const { theme, toggleTheme } = useTheme();
 
     const NAV_ITEMS = [
@@ -146,10 +171,21 @@ export default function AdminLayout({ title, currentPath, children }) {
             )}
 
             {loggingOut && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/70 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-zinc-950/70 backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 px-8 py-6 shadow-xl">
                         <span className="w-8 h-8 rounded-full border-2 border-zinc-200 dark:border-zinc-800 border-t-rose-500 animate-spin" />
                         <p className="text-sm text-zinc-600 dark:text-zinc-400">Logging out...</p>
+                    </div>
+                </div>
+            )}
+            {navigating && !loggingOut && (
+                // z-[200] keeps this above any open modal or confirm dialog
+                // (both use z-[100]), so it stays visible instead of being
+                // covered while a modal is still open during save/delete.
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-zinc-950/50 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 px-8 py-6 shadow-xl">
+                        <span className="w-8 h-8 rounded-full border-2 border-zinc-200 dark:border-zinc-800 border-t-zinc-900 dark:border-t-zinc-100 animate-spin" />
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400">{navLabel}</p>
                     </div>
                 </div>
             )}

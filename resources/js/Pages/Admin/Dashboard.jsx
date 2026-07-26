@@ -127,7 +127,7 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
                 )}
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80">
                     <p className="text-2xl font-mono font-semibold text-zinc-900 dark:text-zinc-100">
                         {stats.projects}

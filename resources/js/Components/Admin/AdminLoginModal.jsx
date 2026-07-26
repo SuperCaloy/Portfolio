@@ -159,7 +159,7 @@ export default function AdminLoginModal({ onClose }) {
                                     disabled={loading}
                                     className="w-full text-sm font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg py-3 mt-2 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
                                 >
-                                    {loading ? 'Sending code...' : 'Continue'}
+                                    {loading ? 'Verifying...' : 'Continue'}
                                 </button>
                             </form>
                         ) : (
