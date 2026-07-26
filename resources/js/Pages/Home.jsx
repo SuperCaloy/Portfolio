@@ -23,9 +23,9 @@ export default function Home({
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const name = personal?.full_name || 'Your Name';
     const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
         setMounted(true);
-        document.getElementById('initial-loader')?.remove();
     }, []);
     // Experience label calculated by summing the actual duration of every
     // experience entry, not the span since the earliest start date. This
