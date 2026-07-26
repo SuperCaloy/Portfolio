@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-
+import React, { useState, useEffect } from 'react';
 const formatDate = (dateString) => {
     if (!dateString) return '';
     return dateString.split('T')[0];
@@ -10,6 +9,19 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
     const [showLightbox, setShowLightbox] = useState(false);
 
     if (!certificate) return null;
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                if (showLightbox) {
+                    setShowLightbox(false);
+                } else {
+                    onClose();
+                }
+            }
+        };
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [showLightbox, onClose]);
 
     return createPortal(
         <div

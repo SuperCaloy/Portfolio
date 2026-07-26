@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 const formatDate = (dateString) => {
@@ -8,7 +8,13 @@ const formatDate = (dateString) => {
 
 export default function ViewExperienceModal({ experience, onClose, onEdit }) {
     if (!experience) return null;
-
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [onClose]);
     return createPortal(
         <div
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md overflow-y-auto"

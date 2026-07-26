@@ -15,9 +15,20 @@ function ProjectCard({ project, onSelect }) {
     return (
         <button
             onClick={() => onSelect(project)}
-            className="group relative h-full flex flex-col overflow-hidden p-5 sm:p-6 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
+            className="group relative h-full flex flex-col overflow-hidden rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
         >
-            <div className="space-y-3 flex-1">
+            {project.image_path && (
+                <div className="w-full aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                    <img
+                        src={project.image_path}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => { e.target.parentElement.style.display = 'none'; }}
+                    />
+                </div>
+            )}
+
+            <div className="space-y-3 flex-1 p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1.5">
                         <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
@@ -55,7 +66,7 @@ function ProjectCard({ project, onSelect }) {
                 )}
             </div>
 
-            <div className="flex items-center flex-wrap justify-between gap-y-1 pt-3 mt-3 border-t border-zinc-200/60 dark:border-zinc-800/60">
+            <div className="flex items-center flex-wrap justify-between gap-y-1 pt-3 mt-3 mx-5 sm:mx-6 mb-5 sm:mb-6 border-t border-zinc-200/60 dark:border-zinc-800/60">
                 <div
                     className="flex items-center gap-4"
                     onMouseEnter={() => setLinksHovered(true)}

@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import ContactModal from './ContactModal';
+import useInView from '../../hooks/useInView';
 
 export default function Hero({ personal, stats }) {
     const [isContactOpen, setIsContactOpen] = useState(false);
+    const [sectionRef, isInView] = useInView();
 
     const name = personal?.full_name || 'Your Name';
     const title = personal?.professional_title || 'Software Engineer';
     const bio = personal?.bio || personal?.about_me || 'Passionate engineer creating clean, high-performance web applications and digital tools.';
 
     return (
-        <section id="about" className="pt-4">
+        <section
+            id="about"
+            ref={sectionRef}
+            className={`pt-4 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+        >
             <div className="flex flex-col-reverse md:flex-row items-stretch md:items-start justify-between gap-8">
                 <div className="space-y-6 min-w-0">
                     <div className="space-y-3">
@@ -42,9 +48,9 @@ export default function Hero({ personal, stats }) {
                     <div className="flex flex-wrap items-center gap-3 pt-2">
                         <button
                             onClick={() => setIsContactOpen(true)}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-sm transition-all shadow-sm active:scale-95"
+                            className="group inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-sm transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95"
                         >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3.5 h-3.5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 002-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                             <span>Contact Me</span>
