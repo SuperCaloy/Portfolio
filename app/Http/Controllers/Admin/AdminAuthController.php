@@ -10,6 +10,8 @@ use App\Services\AdminAuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Jenssegers\Agent\Agent;
 
@@ -87,17 +89,23 @@ class AdminAuthController extends Controller
         return redirect('/');
     }
 
-    // Records every login stage attempt with parsed device info for the
-    // admin activity log. Failures never block the response, logging must
-    // not interrupt the actual login flow.
+    // Records every login stage attempt with parsed device info and rough
+    // IP based location for the admin activity log. Failures never block
+    // the response, logging must not interrupt the actual login flow.
     private function logAttempt(Request $request, string $stage, string $status): void
     {
         $agent = new Agent();
         $agent->setUserAgent($request->userAgent());
 
+        $location = $this->lookupLocation($request->ip());
+
         LoginAttempt::create([
             'email' => $request->string('email'),
             'ip_address' => $request->ip(),
+            'city' => $location['city'] ?? null,
+            'region' => $location['region'] ?? null,
+            'country' => $location['country'] ?? null,
+            'isp' => $location['isp'] ?? null,
             'user_agent' => $request->userAgent(),
             'device' => $agent->device() ?: null,
             'platform' => $agent->platform() ?: null,
@@ -105,5 +113,31 @@ class AdminAuthController extends Controller
             'stage' => $stage,
             'status' => $status,
         ]);
+    }
+
+    // Looks up rough geolocation for the given IP using ip-api.com free
+    // tier. Returns an empty array on any failure so login logging never
+    // breaks because of a third party outage.
+    private function lookupLocation(string $ip): array
+    {
+        try {
+            $response = Http::timeout(3)->get("http://ip-api.com/json/{$ip}", [
+                'fields' => 'status,country,regionName,city,isp',
+            ]);
+
+            if (! $response->successful() || $response->json('status') !== 'success') {
+                return [];
+            }
+
+            return [
+                'country' => $response->json('country'),
+                'region' => $response->json('regionName'),
+                'city' => $response->json('city'),
+                'isp' => $response->json('isp'),
+            ];
+        } catch (\Throwable $e) {
+            Log::warning('IP location lookup failed', ['ip' => $ip, 'error' => $e->getMessage()]);
+            return [];
+        }
     }
 }

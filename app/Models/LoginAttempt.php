@@ -9,6 +9,10 @@ class LoginAttempt extends Model
     protected $fillable = [
         'email',
         'ip_address',
+        'city',
+        'region',
+        'country',
+        'isp',
         'user_agent',
         'device',
         'platform',
