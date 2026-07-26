@@ -22,7 +22,11 @@ export default function Home({
     const { theme, toggleTheme } = useTheme();
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const name = personal?.full_name || 'Your Name';
-
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+        document.getElementById('initial-loader')?.remove();
+    }, []);
     // Experience label calculated by summing the actual duration of every
     // experience entry, not the span since the earliest start date. This
     // avoids overcounting gaps between jobs and correctly adds up multiple
@@ -66,7 +70,7 @@ export default function Home({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Scroll to matching section if landing directly on /projects, /skills, etc
+    // Scroll to matching section if landing directly on /projects, /tech, etc
     useEffect(() => {
         const path = window.location.pathname;
         const sectionId = path === '/' ? 'about' : path.replace('/', '');
@@ -74,11 +78,21 @@ export default function Home({
     }, []);
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-900 dark:selection:text-white transition-colors duration-200">
-            <Head title={name} />
+        <div className={`min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-900 dark:selection:text-white transition-colors duration-200 transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+            <Head title={name}>
+                <meta name="description" content={`${name}, ${personal?.professional_title || 'Software Engineer'}. ${personal?.bio || personal?.about_me || 'Portfolio showcasing projects, skills, and experience.'}`} />
+            </Head>
 
             <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-zinc-300/20 dark:from-zinc-800/20 to-transparent blur-[120px] rounded-full" />
+                <div className="absolute top-[15%] right-[5%] w-[300px] h-[300px] bg-emerald-400/10 dark:bg-emerald-500/10 blur-[100px] rounded-full" />
+                <div
+                    className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
+                    style={{
+                        backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
+                        backgroundSize: '32px 32px',
+                    }}
+                />
             </div>
 
             <Header
@@ -89,7 +103,7 @@ export default function Home({
                 onSecretTrigger={() => setShowAdminLogin(true)}
             />
 
-            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
+            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16 lg:space-y-20">
                 <Hero personal={personal} stats={stats} />
                 <Projects projects={projects} />
                 <Skills skills={skills} />

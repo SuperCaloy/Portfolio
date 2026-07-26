@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
 export default function ContactModal({ isOpen, onClose }) {
     const [formData, setFormData] = useState({
@@ -10,6 +10,15 @@ export default function ContactModal({ isOpen, onClose }) {
         message: '',
     });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
@@ -44,7 +53,7 @@ export default function ContactModal({ isOpen, onClose }) {
             onClick={onClose}
         >
             <div
-className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto styled-scrollbar shadow-2xl space-y-4 p-6"                onClick={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto styled-scrollbar shadow-2xl space-y-4 p-6"                onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                     <h2 className="text-base font-bold text-zinc-900 dark:text-white">Send a Message</h2>

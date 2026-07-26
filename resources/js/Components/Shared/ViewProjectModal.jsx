@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 const STATUS_STYLES = {
@@ -12,6 +12,19 @@ export default function ViewProjectModal({ project, onClose, onEdit }) {
 
     if (!project) return null;
 
+    useEffect(() => {
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                if (showLightbox) {
+                    setShowLightbox(false);
+                } else {
+                    onClose();
+                }
+            }
+        };
+        document.addEventListener('keydown', handleEsc);
+        return () => document.removeEventListener('keydown', handleEsc);
+    }, [showLightbox, onClose]);
     return createPortal(
         <div
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md overflow-y-auto"

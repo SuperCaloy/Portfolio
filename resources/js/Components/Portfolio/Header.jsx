@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 export default function Header({ name, hasCertificates, theme, toggleTheme, onSecretTrigger }) {
     const tapCount = useRef(0);
@@ -27,10 +27,36 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
 
     const navLinks = [
         { id: 'projects', path: '/projects', label: 'Projects' },
-        { id: 'tech', path: '/tech', label: 'Skills' },       
+        { id: 'tech', path: '/tech', label: 'Tech' },
         { id: 'experience', path: '/experience', label: 'Experience' },
         ...(hasCertificates ? [{ id: 'certificates', path: '/certificates', label: 'Certs' }] : []),
     ];
+
+    const [activeSection, setActiveSection] = useState('about');
+
+    // Tracks which section is currently most visible while scrolling,
+    // used to highlight the matching nav link.
+    useEffect(() => {
+        const sectionIds = ['about', ...navLinks.map((link) => link.id)];
+        const sections = sectionIds
+            .map((id) => document.getElementById(id))
+            .filter(Boolean);
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visible = entries
+                    .filter((entry) => entry.isIntersecting)
+                    .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+                if (visible[0]) {
+                    setActiveSection(visible[0].target.id);
+                }
+            },
+            { rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+        );
+
+        sections.forEach((section) => observer.observe(section));
+        return () => observer.disconnect();
+    }, [hasCertificates]);
 
     return (
         <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60 transition-colors duration-200">
@@ -46,7 +72,11 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                             key={link.id}
                             href={link.path}
                             onClick={(e) => scrollToSection(e, link.id, link.path)}
-                            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                            className={`transition-colors ${
+                                activeSection === link.id
+                                    ? 'text-zinc-900 dark:text-zinc-100'
+                                    : 'hover:text-zinc-900 dark:hover:text-zinc-100'
+                            }`}
                         >
                             {link.label}
                         </a>
@@ -107,7 +137,11 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                             key={link.id}
                             href={link.path}
                             onClick={(e) => scrollToSection(e, link.id, link.path)}
-                            className="hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                            className={`transition-colors ${
+                                activeSection === link.id
+                                    ? 'text-zinc-900 dark:text-zinc-100'
+                                    : 'hover:text-zinc-900 dark:hover:text-zinc-100'
+                            }`}
                         >
                             {link.label}
                         </a>

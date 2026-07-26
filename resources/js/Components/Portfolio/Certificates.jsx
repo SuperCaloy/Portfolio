@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ViewCertificateModal from '../Shared/ViewCertificateModal';
+import useInView from '../../hooks/useInView';
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -30,6 +31,7 @@ function CertificateCard({ cert, onSelect }) {
 export default function Certificates({ certificates = [] }) {
     const [selectedCertificate, setSelectedCertificate] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [sectionRef, isInView] = useInView();
 
     // Latest first, fallback to 0 if issue_date missing
     const sortedCertificates = [...certificates].sort((a, b) => {
@@ -53,7 +55,11 @@ export default function Certificates({ certificates = [] }) {
     if (certificates.length === 0) return null;
 
     return (
-        <section id="certificates" className="space-y-4">
+        <section
+            id="certificates"
+            ref={sectionRef}
+            className={`space-y-4 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+        >
             <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase font-mono">
                     Certifications
@@ -97,7 +103,7 @@ export default function Certificates({ certificates = [] }) {
                             </button>
                         </div>
 
-                        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             {sortedCertificates.map((cert) => (
                                 <CertificateCard key={cert.id ?? cert.title} cert={cert} onSelect={setSelectedCertificate} />
                             ))}
@@ -115,4 +121,4 @@ export default function Certificates({ certificates = [] }) {
             )}
         </section>
     );
-}   
+}
