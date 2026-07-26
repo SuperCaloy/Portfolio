@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ViewProjectModal from '../Shared/ViewProjectModal';
 import useInView from '../../hooks/useInView';
+import { getSkillIcon, getSkillColor } from '../../utils/skillIcon';
 
 const STATUS_STYLES = {
     'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
@@ -9,7 +10,16 @@ const STATUS_STYLES = {
     'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
 };
 
-function ProjectCard({ project, onSelect }) {
+// Matches a tech stack tag to a Skill record by name, case insensitive.
+// If the skill has an icon override, that override is used for lookup.
+// If no matching skill exists, falls back to the raw tag string.
+function resolveTechSkill(tag, skills) {
+    const match = skills.find((s) => s.name?.toLowerCase() === tag.toLowerCase());
+    if (!match) return { name: tag };
+    return { name: match.icon_name || match.name };
+}
+
+function ProjectCard({ project, skills, onSelect }) {
     const [linksHovered, setLinksHovered] = useState(false);
 
     return (
@@ -54,14 +64,20 @@ function ProjectCard({ project, onSelect }) {
 
                 {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 pt-1">
-                        {project.tech_stack.map((tech, idx) => (
-                            <span
-                                key={idx}
-                                className="px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono text-xs"
-                            >
-                                {tech}
-                            </span>
-                        ))}
+                        {project.tech_stack.map((tech, idx) => {
+                            const resolved = resolveTechSkill(tech, skills);
+                            const Icon = getSkillIcon(resolved);
+                            const color = getSkillColor(resolved);
+                            return (
+                                <span
+                                    key={idx}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono text-xs"
+                                >
+                                    {Icon && <Icon className="w-3 h-3 shrink-0" style={color ? { color } : undefined} />}
+                                    {tech}
+                                </span>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -103,7 +119,7 @@ function ProjectCard({ project, onSelect }) {
     );
 }
 
-export default function Projects({ projects = [] }) {
+export default function Projects({ projects = [], skills = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
     const [sectionRef, isInView] = useInView();
@@ -146,7 +162,7 @@ export default function Projects({ projects = [] }) {
 
             <div className={`grid ${gridColsClass(displayProjects.length)} gap-4`}>
                 {displayProjects.map((project, idx) => (
-                    <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} onSelect={setSelectedProject} />
+                    <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} skills={skills} onSelect={setSelectedProject} />
                 ))}
             </div>
 
@@ -182,7 +198,7 @@ export default function Projects({ projects = [] }) {
 
                         <div className={`p-6 grid ${gridColsClass(Math.min(projects.length, 2))} gap-5`}>
                             {projects.map((project, idx) => (
-                                <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} onSelect={setSelectedProject} />
+                                <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} skills={skills} onSelect={setSelectedProject} />
                             ))}
                         </div>
                     </div>

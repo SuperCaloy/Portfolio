@@ -16,6 +16,7 @@ export default function Experience({ experiences }) {
     const [editingExperience, setEditingExperience] = useState(null);
     const [selectedExperience, setSelectedExperience] = useState(null);
     const [deletingExperienceId, setDeletingExperienceId] = useState(null);
+    const [confirmingCreate, setConfirmingCreate] = useState(false);
     const [search, setSearch] = useState('');
 
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -31,6 +32,11 @@ export default function Experience({ experiences }) {
 
     const handleCreate = (e) => {
         e.preventDefault();
+        setConfirmingCreate(true);
+    };
+
+    const confirmCreate = () => {
+        setConfirmingCreate(false);
         post(`/${adminSlug}/dashboard/experience`, {
             onSuccess: () => reset(),
         });
@@ -52,14 +58,14 @@ export default function Experience({ experiences }) {
     return (
         <AdminLayout title="Experience" currentPath="/experience">
             <form onSubmit={handleCreate} className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 space-y-4 mb-6">
-                <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add Experience</h2>
+                <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Add Experience</h2>
                 <ExperienceFormFields data={data} setData={setData} errors={errors} />
 
                 <div className="flex justify-end pt-1">
                     <button
                         type="submit"
                         disabled={processing}
-                        className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-xs transition-all disabled:opacity-50"
+                        className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-sm transition-all disabled:opacity-50"
                     >
                         {processing ? 'Adding...' : 'Add Experience'}
                     </button>
@@ -72,7 +78,7 @@ export default function Experience({ experiences }) {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search experience by role or company"
-                    className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                    className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                 />
             </div>
 
@@ -86,43 +92,43 @@ export default function Experience({ experiences }) {
                 )}
 
                 {filteredExperiences.map((experience) => (
-                    <button
+                    <div
                         key={experience.id}
                         onClick={() => setSelectedExperience(experience)}
-                        className="group w-full text-left p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 transition-all flex items-center justify-between gap-3"
+                        className="group w-full text-left p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 transition-all flex flex-wrap items-center justify-between gap-3 cursor-pointer"
                     >
-                        <div className="min-w-0">
-                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                        <div className="min-w-0 flex-1">
+                            <p className="text-base font-medium text-zinc-900 dark:text-zinc-100 truncate">
                                 {experience.role} at {experience.company}
                                 {experience.is_current && (
-                                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400">
+                                    <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400">
                                         Current
                                     </span>
                                 )}
                             </p>
-                            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-mono truncate">
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 font-mono truncate">
                                 {formatDate(experience.start_date)} to {experience.is_current ? 'Present' : formatDate(experience.end_date)}
                             </p>
-                            <span className="inline-block text-[11px] font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                            <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
                                 View details →
                             </span>
                         </div>
 
-                        <div className="flex gap-2 shrink-0">
-                            <span
+                        <div className="flex gap-1 shrink-0">
+                            <button
                                 onClick={(e) => { e.stopPropagation(); setEditingExperience(experience); }}
-                                className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                                className="px-2.5 py-1.5 rounded-md text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
                             >
                                 Edit
-                            </span>
-                            <span
+                            </button>
+                            <button
                                 onClick={(e) => { e.stopPropagation(); setDeletingExperienceId(experience.id); }}
-                                className="text-xs text-rose-500 hover:text-rose-600"
+                                className="px-2.5 py-1.5 rounded-md text-sm text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
                             >
                                 Delete
-                            </span>
+                            </button>
                         </div>
-                    </button>
+                    </div>
                 ))}
             </div>
 
@@ -142,6 +148,15 @@ export default function Experience({ experiences }) {
                     key={editingExperience.id}
                     experience={editingExperience}
                     onClose={() => setEditingExperience(null)}
+                />
+            )}
+
+            {confirmingCreate && (
+                <ConfirmModal
+                    title="Add this experience entry?"
+                    message="The entry will be added to your public experience list."
+                    onConfirm={confirmCreate}
+                    onCancel={() => setConfirmingCreate(false)}
                 />
             )}
 

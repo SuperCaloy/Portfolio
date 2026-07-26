@@ -105,7 +105,7 @@ export default function Home({
 
             <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16 lg:space-y-20">
                 <Hero personal={personal} stats={stats} />
-                <Projects projects={projects} />
+                <Projects projects={projects} skills={skills} />
                 <Skills skills={skills} />
                 <Experience experiences={experiences} />
                 <Certificates certificates={certificates} />
