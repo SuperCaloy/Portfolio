@@ -79,6 +79,8 @@ Route::prefix(config('app.admin_slug'))->group(function () {
         Route::put('/dashboard/messages/{message}/notes', [MessageController::class, 'updateNotes'])->name('admin.messages.notes');
         Route::delete('/dashboard/messages/{message}', [MessageController::class, 'destroy'])->name('admin.messages.destroy');
 
+
+        Route::get('/dashboard/login-activity', [\App\Http\Controllers\Admin\LoginActivityController::class, 'index'])->name('admin.login-activity.index');
         });
 });
 
