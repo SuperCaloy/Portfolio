@@ -215,6 +215,31 @@ export default function ProjectFormFields({ data, setData, errors, availableSkil
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Start Date</label>
+                    <input
+                        type="date"
+                        value={data.start_date || ''}
+                        onChange={(e) => setData('start_date', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
+                    />
+                    {errors.start_date && <p className="text-[11px] text-rose-500">{errors.start_date}</p>}
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">End Date</label>
+                    <input
+                        type="date"
+                        value={data.end_date || ''}
+                        onChange={(e) => setData('end_date', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
+                    />
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Leave empty if still in progress.</p>
+                    {errors.end_date && <p className="text-[11px] text-rose-500">{errors.end_date}</p>}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
                     <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Status</label>
                     <select
                         value={data.status}

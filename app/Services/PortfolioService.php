@@ -10,7 +10,6 @@ use App\Models\Skill;
 
 class PortfolioService
 {
-    // Public profile fields only, resume_path excluded, served through ResumeController instead
     public function getPersonalInformation()
     {
         return PersonalInformation::first([
@@ -53,6 +52,8 @@ class PortfolioService
                 'demo_url',
                 'image_path',
                 'status',
+                'start_date',
+                'end_date',
                 'is_featured',
             ])
             ->map(function ($project) {

@@ -3,7 +3,9 @@ import { createPortal } from 'react-dom';
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
-    return dateString.split('T')[0];
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 };
 
 export default function ViewExperienceModal({ experience, onClose, onEdit }) {
@@ -21,7 +23,7 @@ export default function ViewExperienceModal({ experience, onClose, onEdit }) {
             onClick={onClose}
         >
             <div
-                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-start justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
@@ -44,7 +46,7 @@ export default function ViewExperienceModal({ experience, onClose, onEdit }) {
                     </button>
                 </div>
 
-                <p className="text-sm font-mono text-zinc-500">
+                <p className="text-sm font-mono font-medium text-zinc-700 dark:text-zinc-300">
                     {formatDate(experience.start_date)} — {experience.end_date ? formatDate(experience.end_date) : 'Present'}
                 </p>
 

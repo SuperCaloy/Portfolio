@@ -24,6 +24,8 @@ class ProjectRequest extends FormRequest
             'github_url' => ['nullable', 'url', 'max:255'],
             'image' => ['nullable', 'file', 'image', 'max:4096'],
             'status' => ['required', Rule::in(['Completed', 'In Progress', 'Archived'])],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'is_featured' => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
         ];

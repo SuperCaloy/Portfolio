@@ -8,6 +8,24 @@ const STATUS_STYLES = {
     'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
 };
 
+// Formats project dates for public display, month and year only, no day.
+// Shows a range when both dates exist, "Present" when still ongoing.
+function formatProjectDate(project) {
+    const monthYear = (value) => {
+        const date = new Date(value);
+        if (isNaN(date)) return null;
+        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    };
+
+    const start = project.start_date ? monthYear(project.start_date) : null;
+    const end = project.end_date ? monthYear(project.end_date) : null;
+
+    if (!start) return null;
+    if (!end) return `${start} – Present`;
+    if (start === end) return start;
+    return `${start} – ${end}`;
+}
+
 export default function ViewProjectModal({ project, skills = [], onClose, onEdit }) {
     const [showLightbox, setShowLightbox] = useState(false);
 
@@ -32,16 +50,21 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
             onClick={onClose}
         >
             <div
-                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-start justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                         <h2 className="text-lg font-bold text-zinc-900 dark:text-white">{project.title}</h2>
                         {project.status && (
                             <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
                                 {project.status}
                             </span>
+                        )}
+                        {formatProjectDate(project) && (
+                            <p className="text-sm font-mono font-medium text-zinc-700 dark:text-zinc-300">
+                                {formatProjectDate(project)}
+                            </p>
                         )}
                     </div>
                     <button
@@ -58,7 +81,7 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
                     <img
                         src={project.image_path}
                         alt={project.title}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 cursor-zoom-in"
+                        className="w-full max-h-[50vh] object-contain rounded-lg border border-zinc-200 dark:border-zinc-800 cursor-zoom-in bg-zinc-50 dark:bg-zinc-900"
                         onClick={() => setShowLightbox(true)}
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />
@@ -84,9 +107,9 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
                             return (
                                 <span
                                     key={idx}
-                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono text-xs"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-sm"
                                 >
-                                    {Icon && <Icon className="w-3 h-3 shrink-0" style={color ? { color } : undefined} />}
+                                    {Icon && <Icon className="w-3.5 h-3.5 shrink-0" style={color ? { color } : undefined} />}
                                     {tech}
                                 </span>
                             );

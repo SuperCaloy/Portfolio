@@ -1,23 +1,51 @@
 import { createPortal } from 'react-dom';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function ContactModal({ isOpen, onClose }) {
+    const MESSAGE_MAX_LENGTH = 1000;
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         subject: '',
         message: '',
+        website: '', // honeypot, must stay empty, hidden from real users
     });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
+    const modalRef = useRef(null);
+    const nameInputRef = useRef(null);
 
     useEffect(() => {
         if (!isOpen) return;
-        const handleEsc = (e) => {
-            if (e.key === 'Escape') onClose();
+
+        // Autofocus the first field when the modal opens
+        nameInputRef.current?.focus();
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                onClose();
+                return;
+            }
+            // Focus trap, keeps Tab navigation inside the modal
+            if (e.key === 'Tab' && modalRef.current) {
+                const focusable = modalRef.current.querySelectorAll(
+                    'input, textarea, button, a[href]'
+                );
+                if (focusable.length === 0) return;
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
         };
-        document.addEventListener('keydown', handleEsc);
-        return () => document.removeEventListener('keydown', handleEsc);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose]);
 
     if (!isOpen) return null;
@@ -33,7 +61,7 @@ export default function ContactModal({ isOpen, onClose }) {
         try {
             await axios.post('/api/contact', formData);
             setStatus({ loading: false, success: true, error: null });
-            setFormData({ name: '', email: '', subject: '', message: '' });
+            setFormData({ name: '', email: '', subject: '', message: '', website: '' });
             setTimeout(() => {
                 onClose();
                 setStatus({ loading: false, success: false, error: null });
@@ -52,8 +80,16 @@ export default function ContactModal({ isOpen, onClose }) {
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md overflow-y-auto"
             onClick={onClose}
         >
+            <style>{`
+                @keyframes modalIn {
+                    from { opacity: 0; transform: scale(0.97) translateY(4px); }
+                    to { opacity: 1; transform: scale(1) translateY(0); }
+                }
+            `}</style>
             <div
-                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto styled-scrollbar shadow-2xl space-y-4 p-6"                onClick={(e) => e.stopPropagation()}
+                ref={modalRef}
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto styled-scrollbar shadow-2xl space-y-4 p-6 animate-[modalIn_0.18s_ease-out]"
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                     <h2 className="text-base font-bold text-zinc-900 dark:text-white">Send a Message</h2>
@@ -68,7 +104,7 @@ export default function ContactModal({ isOpen, onClose }) {
                 </div>
 
                 {status.success ? (
-                    <div className="py-8 text-center space-y-2">
+                    <div className="py-8 text-center space-y-2" role="status" aria-live="polite">
                         <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -80,15 +116,32 @@ export default function ContactModal({ isOpen, onClose }) {
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {status.error && (
-                            <div className="p-3 text-sm rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400">
+                            <div
+                                className="p-3 text-sm rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400"
+                                role="alert"
+                                aria-live="assertive"
+                            >
                                 {status.error}
                             </div>
                         )}
+
+                        {/* Honeypot field, hidden from real users, bots tend to fill every field */}
+                        <input
+                            type="text"
+                            name="website"
+                            value={formData.website}
+                            onChange={handleChange}
+                            tabIndex="-1"
+                            autoComplete="off"
+                            className="absolute -left-[9999px] w-px h-px opacity-0"
+                            aria-hidden="true"
+                        />
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
                                 <input
+                                    ref={nameInputRef}
                                     type="text"
                                     name="name"
                                     id="name"
@@ -137,11 +190,11 @@ export default function ContactModal({ isOpen, onClose }) {
                                 name="message"
                                 id="message"
                                 required
-                                rows="4"
+                                rows="6"
                                 value={formData.message}
                                 onChange={handleChange}
                                 placeholder="Write your message here..."
-                                className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 resize-none"
+                                className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 resize-y"
                             ></textarea>
                         </div>
 

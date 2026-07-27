@@ -4,7 +4,9 @@ import useInView from '../../hooks/useInView';
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
-    return dateString.split('T')[0];
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 };
 
 export default function Experience({ experiences = [] }) {
@@ -36,7 +38,7 @@ export default function Experience({ experiences = [] }) {
                             <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                                 {exp.role || exp.title} <span className="text-zinc-500 font-normal">at {exp.company}</span>
                             </h3>
-                            <span className="text-sm font-mono text-zinc-500">
+                            <span className="text-sm font-mono font-medium text-zinc-600 dark:text-zinc-300">
                                 {formatDate(exp.start_date)} — {exp.end_date ? formatDate(exp.end_date) : 'Present'}
                             </span>
                         </div>

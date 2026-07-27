@@ -1,8 +1,11 @@
 import { createPortal } from 'react-dom';
 import React, { useState, useEffect } from 'react';
+
 const formatDate = (dateString) => {
     if (!dateString) return '';
-    return dateString.split('T')[0];
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 };
 
 export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
@@ -51,7 +54,7 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
                     <img
                         src={certificate.image_path}
                         alt={certificate.title}
-                        className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 cursor-zoom-in"
+                        className="w-full max-h-[50vh] object-contain rounded-lg border border-zinc-200 dark:border-zinc-800 cursor-zoom-in bg-zinc-50 dark:bg-zinc-900"
                         onClick={() => setShowLightbox(true)}
                         onError={(e) => { e.target.style.display = 'none'; }}
                     />
@@ -60,12 +63,12 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
                 <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                         <p className="text-zinc-500 dark:text-zinc-400">Issued</p>
-                        <p className="font-mono text-zinc-800 dark:text-zinc-200">{formatDate(certificate.issue_date)}</p>
+                        <p className="font-mono font-medium text-zinc-800 dark:text-zinc-200">{formatDate(certificate.issue_date)}</p>
                     </div>
                     {certificate.expiration_date && (
                         <div>
                             <p className="text-zinc-500 dark:text-zinc-400">Expires</p>
-                            <p className="font-mono text-zinc-800 dark:text-zinc-200">{formatDate(certificate.expiration_date)}</p>
+                            <p className="font-mono font-medium text-zinc-800 dark:text-zinc-200">{formatDate(certificate.expiration_date)}</p>
                         </div>
                     )}
                 </div>

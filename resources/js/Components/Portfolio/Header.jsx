@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
+import ContactModal from './ContactModal';
 
 export default function Header({ name, hasCertificates, theme, toggleTheme, onSecretTrigger }) {
     const tapCount = useRef(0);
     const tapTimer = useRef(null);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isContactOpen, setIsContactOpen] = useState(false);
 
     const handleNameTap = (e) => {
         scrollToSection(e, 'about', '/');
@@ -29,7 +31,7 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
         { id: 'projects', path: '/projects', label: 'Projects' },
         { id: 'tech', path: '/tech', label: 'Tech' },
         { id: 'experience', path: '/experience', label: 'Experience' },
-        ...(hasCertificates ? [{ id: 'certificates', path: '/certificates', label: 'Certs' }] : []),
+        ...(hasCertificates ? [{ id: 'certificates', path: '/certificates', label: 'Certificate' }] : []),
     ];
 
     const [activeSection, setActiveSection] = useState('about');
@@ -58,15 +60,20 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
         return () => observer.disconnect();
     }, [hasCertificates]);
 
+    const openContact = () => {
+        setIsContactOpen(true);
+        setMenuOpen(false);
+    };
+
     return (
         <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60 transition-colors duration-200">
-            <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between text-sm">
+            <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <a href="/" onClick={handleNameTap} className="flex items-center gap-2.5 font-medium text-zinc-800 dark:text-zinc-200 hover:text-zinc-950 dark:hover:text-white transition-colors select-none">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                    <span className="font-semibold tracking-tight truncate max-w-[140px] sm:max-w-none">{name}</span>
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <span className="font-semibold tracking-tight text-base truncate max-w-[140px] sm:max-w-none">{name}</span>
                 </a>
 
-                <nav className="hidden sm:flex items-center gap-4 text-zinc-500 dark:text-zinc-400 font-medium">
+                <nav className="hidden sm:flex items-center gap-5 text-zinc-500 dark:text-zinc-400 font-medium text-[15px]">
                     {navLinks.map((link) => (
                         <a
                             key={link.id}
@@ -81,6 +88,12 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                             {link.label}
                         </a>
                     ))}
+                    <button
+                        onClick={openContact}
+                        className="transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+                    >
+                        Contact
+                    </button>
                     <button
                         onClick={toggleTheme}
                         className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
@@ -146,8 +159,19 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                             {link.label}
                         </a>
                     ))}
+                    <button
+                        onClick={openContact}
+                        className="text-left transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+                    >
+                        Contact
+                    </button>
                 </nav>
             )}
+
+            <ContactModal
+                isOpen={isContactOpen}
+                onClose={() => setIsContactOpen(false)}
+            />
         </header>
     );
 }

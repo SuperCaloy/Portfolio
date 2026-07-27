@@ -17,6 +17,8 @@ export default function EditProjectModal({ project, availableSkills, onClose }) 
         github_url: project.github_url || '',
         demo_url: project.demo_url || '',
         status: project.status,
+        start_date: project.start_date ? project.start_date.substring(0, 10) : '',
+        end_date: project.end_date ? project.end_date.substring(0, 10) : '',
         is_featured: project.is_featured,
         image: null,
         remove_image: false,
