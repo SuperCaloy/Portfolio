@@ -41,3 +41,21 @@ export function getSkillIcon(skill) {
 export function getSkillColor(skill) {
     return lookupColor(skill.icon_name) || lookupColor(skill.name);
 }
+
+// Matches a project tech stack tag (plain string) to a Skill record by
+// name, case insensitive. If a matching skill has an icon override, that
+// override is used for lookup. Falls back to the raw tag string when no
+// matching skill exists. Shared by every place project tech tags render
+// an icon, so override behavior stays consistent everywhere.
+function resolveProjectTechName(tag, skills = []) {
+    const match = skills.find((s) => s.name?.toLowerCase() === tag.toLowerCase());
+    return match?.icon_name || match?.name || tag;
+}
+
+export function getProjectTechIcon(tag, skills = []) {
+    return lookupIcon(resolveProjectTechName(tag, skills));
+}
+
+export function getProjectTechColor(tag, skills = []) {
+    return lookupColor(resolveProjectTechName(tag, skills));
+}
