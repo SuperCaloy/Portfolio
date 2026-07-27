@@ -10,6 +10,24 @@ const STATUS_STYLES = {
     'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
 };
 
+// Formats project dates for public display, month and year only, no day.
+// Shows a range when both dates exist, "Present" when still ongoing.
+function formatProjectDate(project) {
+    const monthYear = (value) => {
+        const date = new Date(value);
+        if (isNaN(date)) return null;
+        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    };
+
+    const start = project.start_date ? monthYear(project.start_date) : null;
+    const end = project.end_date ? monthYear(project.end_date) : null;
+
+    if (!start) return null;
+    if (!end) return `${start} – Present`;
+    if (start === end) return start;
+    return `${start} – ${end}`;
+}
+
 function ProjectCard({ project, skills, onSelect }) {
     const [linksHovered, setLinksHovered] = useState(false);
 
@@ -31,8 +49,8 @@ function ProjectCard({ project, skills, onSelect }) {
 
             <div className="space-y-3 flex-1 p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1.5">
-                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
+                    <div className="space-y-1">
+                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors line-clamp-2">
                             {project.title}
                         </h3>
                         {project.status && (
@@ -40,11 +58,16 @@ function ProjectCard({ project, skills, onSelect }) {
                                 {project.status}
                             </span>
                         )}
+                        {formatProjectDate(project) && (
+                            <p className="text-sm font-mono font-medium text-zinc-700 dark:text-zinc-300">
+                                {formatProjectDate(project)}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 {project.subtitle || project.description ? (
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-3">
                         {project.subtitle || project.description}
                     </p>
                 ) : (
@@ -61,9 +84,9 @@ function ProjectCard({ project, skills, onSelect }) {
                             return (
                                 <span
                                     key={idx}
-                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-mono text-xs"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-sm"
                                 >
-                                    {Icon && <Icon className="w-3 h-3 shrink-0" style={color ? { color } : undefined} />}
+                                    {Icon && <Icon className="w-3.5 h-3.5 shrink-0" style={color ? { color } : undefined} />}
                                     {tech}
                                 </span>
                             );

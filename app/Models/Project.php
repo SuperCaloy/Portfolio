@@ -21,15 +21,19 @@ class Project extends Model
         'github_url',
         'demo_url',
         'status',
+        'start_date',
+        'end_date',
         'is_featured',
         'sort_order',
     ];
 
-    // Attribute casting for JSON array and boolean conversion
+    // Attribute casting for JSON array, date, and boolean conversion
     protected $casts = [
         'tech_stack' => 'array',
         'is_featured' => 'boolean',
         'sort_order' => 'integer',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
 

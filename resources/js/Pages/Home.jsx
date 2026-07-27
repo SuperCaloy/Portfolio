@@ -103,13 +103,13 @@ export default function Home({
                 onSecretTrigger={() => setShowAdminLogin(true)}
             />
 
-            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16 lg:space-y-20">
+            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16 lg:space-y-20">
                 <Hero personal={personal} stats={stats} />
                 <Projects projects={projects} skills={skills} />
                 <Skills skills={skills} />
                 <Experience experiences={experiences} />
                 <Certificates certificates={certificates} />
-                <Footer name={name} />
+                <Footer name={name} githubUrl={personal?.github_url} linkedinUrl={personal?.linkedin_url} />
             </main>
 
             {showAdminLogin && (

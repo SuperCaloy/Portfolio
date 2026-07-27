@@ -24,6 +24,8 @@ export default function Projects({ projects, availableSkills }) {
         github_url: '',
         demo_url: '',
         status: 'Completed',
+        start_date: '',
+        end_date: '',
         is_featured: false,
         image: null,
     });
