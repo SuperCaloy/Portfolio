@@ -191,6 +191,7 @@ export default function Projects({ projects, availableSkills }) {
             {selectedProject && (
                 <ViewProjectModal
                     project={selectedProject}
+                    skills={skillOptions}
                     onClose={() => setSelectedProject(null)}
                     onEdit={(proj) => {
                         setSelectedProject(null);

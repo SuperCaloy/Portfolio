@@ -2,22 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ViewProjectModal from '../Shared/ViewProjectModal';
 import useInView from '../../hooks/useInView';
-import { getSkillIcon, getSkillColor } from '../../utils/skillIcon';
+import { getProjectTechIcon, getProjectTechColor } from '../../utils/skillIcon';
 
 const STATUS_STYLES = {
     'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
     'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
     'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
 };
-
-// Matches a tech stack tag to a Skill record by name, case insensitive.
-// If the skill has an icon override, that override is used for lookup.
-// If no matching skill exists, falls back to the raw tag string.
-function resolveTechSkill(tag, skills) {
-    const match = skills.find((s) => s.name?.toLowerCase() === tag.toLowerCase());
-    if (!match) return { name: tag };
-    return { name: match.icon_name || match.name };
-}
 
 function ProjectCard({ project, skills, onSelect }) {
     const [linksHovered, setLinksHovered] = useState(false);
@@ -65,9 +56,8 @@ function ProjectCard({ project, skills, onSelect }) {
                 {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 pt-1">
                         {project.tech_stack.map((tech, idx) => {
-                            const resolved = resolveTechSkill(tech, skills);
-                            const Icon = getSkillIcon(resolved);
-                            const color = getSkillColor(resolved);
+                            const Icon = getProjectTechIcon(tech, skills);
+                            const color = getProjectTechColor(tech, skills);
                             return (
                                 <span
                                     key={idx}
@@ -209,6 +199,7 @@ export default function Projects({ projects = [], skills = [] }) {
             {selectedProject && (
                 <ViewProjectModal
                     project={selectedProject}
+                    skills={skills}
                     onClose={() => setSelectedProject(null)}
                 />
             )}
