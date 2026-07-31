@@ -4,10 +4,21 @@ import useTheme from '../../hooks/useTheme';
 import ConfirmModal from '../Shared/ConfirmModal';
 
 export default function AdminLayout({ title, currentPath, children }) {
-    const { adminSlug } = usePage().props;
+    const { adminSlug, unreadMessagesCount } = usePage().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [confirmingLogout, setConfirmingLogout] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
+
+    // Desktop sidebar open/closed state, persisted across reloads
+    const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(() => {
+        if (typeof window === 'undefined') return true;
+        const stored = localStorage.getItem('adminSidebarOpen');
+        return stored === null ? true : stored === 'true';
+    });
+
+    useEffect(() => {
+        localStorage.setItem('adminSidebarOpen', desktopSidebarOpen);
+    }, [desktopSidebarOpen]);
 
     const [navigating, setNavigating] = useState(false);
     const [navLabel, setNavLabel] = useState('Loading...');
@@ -16,7 +27,12 @@ export default function AdminLayout({ title, currentPath, children }) {
         // Picks a label based on the HTTP method of the request, so delete,
         // save, and plain navigation all show a message that matches what
         // is actually happening instead of one generic "Loading..." text.
+        // Skips requests marked with X-Silent-Navigation, used by pages
+        // that show their own local loading state (e.g. search inputs).
         const removeStart = router.on('start', (event) => {
+            const headers = event.detail.visit.headers || {};
+            if (headers['X-Silent-Navigation']) return;
+
             const method = event.detail.visit.method;
             if (method === 'delete') {
                 setNavLabel('Deleting...');
@@ -69,16 +85,16 @@ export default function AdminLayout({ title, currentPath, children }) {
             )}
 
             <aside
-                className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-zinc-950 border-r border-zinc-200/60 dark:border-zinc-800/60 flex flex-col transition-transform duration-200 ${
-                    sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-                }`}
+                className={`fixed inset-y-0 left-0 z-50 w-64 h-screen bg-white dark:bg-zinc-950 border-r border-zinc-200/60 dark:border-zinc-800/60 flex flex-col transition-transform duration-200 ${
+                    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                } ${desktopSidebarOpen ? 'md:translate-x-0' : 'md:-translate-x-full'}`}
             >
-                <div className="px-5 h-16 flex items-center gap-2.5 border-b border-zinc-200/60 dark:border-zinc-800/60">
+                <div className="px-5 h-16 flex items-center gap-2.5 border-b border-zinc-200/60 dark:border-zinc-800/60 shrink-0">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                     <span className="text-sm font-semibold tracking-tight text-zinc-800 dark:text-zinc-200">Admin Panel</span>
                 </div>
 
-                <nav className="flex-1 px-3 py-4 space-y-1">
+                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                     {NAV_ITEMS.map((item) => {
                         const isActive = currentPath === item.href;
                         return (
@@ -86,24 +102,33 @@ export default function AdminLayout({ title, currentPath, children }) {
                                 key={item.href}
                                 href={item.href}
                                 onClick={() => setSidebarOpen(false)}
-                                className={`block px-3 py-2 rounded-lg text-xs font-medium font-mono transition-all ${
+                                className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                                     isActive
                                         ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950'
                                         : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100'
                                 }`}
                             >
-                                {item.label}
+                                <span>{item.label}</span>
+                                {item.label === 'Messages' && unreadMessagesCount > 0 && (
+                                    <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${
+                                        isActive
+                                            ? 'bg-white/20 text-white dark:bg-zinc-950/20 dark:text-zinc-950'
+                                            : 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400'
+                                    }`}>
+                                        {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                                    </span>
+                                )}
                             </Link>
                         );
                     })}
                 </nav>
 
-                <div className="px-3 py-4 border-t border-zinc-200/60 dark:border-zinc-800/60">
+                <div className="px-3 py-4 border-t border-zinc-200/60 dark:border-zinc-800/60 shrink-0">
                     <button
                         type="button"
                         onClick={() => setConfirmingLogout(true)}
                         disabled={loggingOut}
-                        className="w-full flex items-center gap-2 text-left px-3 py-2 rounded-lg text-xs font-mono font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors disabled:opacity-60"
+                        className="w-full flex items-center gap-2 text-left px-3 py-2 rounded-lg text-sm font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors disabled:opacity-60"
                     >
                         {loggingOut && (
                             <span className="w-3 h-3 rounded-full border-2 border-rose-300 dark:border-rose-800 border-t-rose-600 dark:border-t-rose-400 animate-spin shrink-0" />
@@ -113,7 +138,7 @@ export default function AdminLayout({ title, currentPath, children }) {
                 </div>
             </aside>
 
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className={`flex-1 flex flex-col min-w-0 transition-all duration-200 ${desktopSidebarOpen ? 'md:ml-64' : 'md:ml-0'}`}>
                 <header className="sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 h-16 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60">
                     <div className="flex items-center gap-3">
                         <button
@@ -126,9 +151,23 @@ export default function AdminLayout({ title, currentPath, children }) {
                                 <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" />
                             </svg>
                         </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setDesktopSidebarOpen((prev) => !prev)}
+                            className="hidden md:inline-flex text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 p-1.5 rounded-md transition-colors"
+                            aria-label={desktopSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                            title={desktopSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="3" y="4" width="18" height="16" rx="2" />
+                                <line x1="9" y1="4" x2="9" y2="20" />
+                            </svg>
+                        </button>
+
                         <div>
-                            <h1 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{title}</h1>
-                            <p className="text-[11px] font-mono text-zinc-500 dark:text-zinc-600">
+                            <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{title}</h1>
+                            <p className="text-xs font-mono text-zinc-500 dark:text-zinc-600">
                                 dashboard / {breadcrumb}
                             </p>
                         </div>

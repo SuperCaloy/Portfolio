@@ -5,15 +5,25 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ExperienceRequest;
 use App\Models\Experience;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ExperienceController extends Controller
 {
-    // List all experiences ordered by most recent start date
-    public function index()
+    // List experiences, most recent start date first, supports search and pagination
+    public function index(Request $request)
     {
+        $experiences = Experience::when($request->search, function ($query, $search) {
+                $query->where('role', 'like', "%{$search}%")
+                      ->orWhere('company', 'like', "%{$search}%");
+            })
+            ->orderBy('start_date', 'desc')
+            ->paginate(12)
+            ->withQueryString();
+
         return Inertia::render('Admin/Experience', [
-            'experiences' => Experience::orderBy('start_date', 'desc')->get(),
+            'experiences' => $experiences,
+            'filters' => $request->only('search'),
         ]);
     }
 

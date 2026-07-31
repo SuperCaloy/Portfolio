@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import { useForm, router, usePage } from '@inertiajs/react';
 import CertificateFormFields from '../../Components/Admin/CertificateFormFields';
 import EditCertificateModal from '../../Components/Admin/EditCertificateModal';
 import ViewCertificateModal from '../../Components/Shared/ViewCertificateModal';
 import ConfirmModal from '../../Components/Shared/ConfirmModal';
+import Pagination from '../../Components/Shared/Pagination';
 
-export default function Certificates({ certificates }) {
+export default function Certificates({ certificates, filters }) {
     const { adminSlug } = usePage().props;
     const [editingCertificate, setEditingCertificate] = useState(null);
     const [selectedCertificate, setSelectedCertificate] = useState(null);
     const [deletingCertificateId, setDeletingCertificateId] = useState(null);
     const [confirmingCreate, setConfirmingCreate] = useState(false);
-    const [search, setSearch] = useState('');
+    const [search, setSearch] = useState(filters?.search || '');
+    const [isSearching, setIsSearching] = useState(false);
+    const debounceTimer = useRef(null);
+    const isFirstRender = useRef(true);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         title: '',
@@ -43,16 +47,34 @@ export default function Certificates({ certificates }) {
         setDeletingCertificateId(null);
     };
 
-    const filteredCertificates = certificates.filter((certificate) => {
-        const query = search.trim().toLowerCase();
-        if (!query) return true;
-        const inTitle = certificate.title?.toLowerCase().includes(query);
-        const inIssuer = certificate.issuer?.toLowerCase().includes(query);
-        return inTitle || inIssuer;
-    });
+    // Debounced server side search by title or issuer, resets to page 1 each time.
+    // Marked silent so AdminLayout's global overlay does not cover the list
+    // while typing, the input's own spinner handles that feedback instead.
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
+
+        debounceTimer.current = setTimeout(() => {
+            router.get(`/${adminSlug}/dashboard/certificates`, { search, page: 1 }, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                showProgress: false,
+                headers: { 'X-Silent-Navigation': 'true' },
+                onStart: () => setIsSearching(true),
+                onFinish: () => setIsSearching(false),
+            });
+        }, 550);
+
+        return () => clearTimeout(debounceTimer.current);
+    }, [search]);
 
     return (
-        <AdminLayout title="Certificates" currentPath="/certificates">
+        <AdminLayout title="Certificates" currentPath={`/${adminSlug}/dashboard/certificates`}>
             <form onSubmit={handleCreate} className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 space-y-4 mb-6">
                 <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Add Certificate</h2>
                 <CertificateFormFields data={data} setData={setData} errors={errors} />
@@ -68,26 +90,44 @@ export default function Certificates({ certificates }) {
                 </div>
             </form>
 
-            <div className="mb-3">
+            <div className="relative mb-3">
                 <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search certificates by title or issuer"
-                    className="w-full px-3 py-2 rounded-lg text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                    className="w-full px-3 py-2 pr-9 rounded-lg text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
                 />
+                {isSearching && !search && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <div className="w-4 h-4 rounded-full border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-600 dark:border-t-zinc-300 animate-spin" />
+                    </div>
+                )}
+                {search && (
+                    <button
+                        type="button"
+                        onClick={() => setSearch('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+                    >
+                        {isSearching ? (
+                            <div className="w-4 h-4 rounded-full border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-600 dark:border-t-zinc-300 animate-spin" />
+                        ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        )}
+                    </button>
+                )}
             </div>
 
             <div className="space-y-2">
-                {certificates.length === 0 && (
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No certificates added yet.</p>
+                {certificates.data.length === 0 && (
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                        {search ? 'No certificates match your search.' : 'No certificates added yet.'}
+                    </p>
                 )}
 
-                {certificates.length > 0 && filteredCertificates.length === 0 && (
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No certificates match your search.</p>
-                )}
-
-                {filteredCertificates.map((certificate) => (
+                {certificates.data.map((certificate) => (
                     <div
                         key={certificate.id}
                         onClick={() => setSelectedCertificate(certificate)}
@@ -125,6 +165,8 @@ export default function Certificates({ certificates }) {
                     </div>
                 ))}
             </div>
+
+            <Pagination links={certificates.links} />
 
             {selectedCertificate && (
                 <ViewCertificateModal

@@ -54,14 +54,12 @@ Route::prefix(config('app.admin_slug'))->group(function () {
         Route::post('/dashboard/skills', [SkillController::class, 'store'])->name('admin.skills.store');
         Route::put('/dashboard/skills/{skill}', [SkillController::class, 'update'])->name('admin.skills.update');
         Route::delete('/dashboard/skills/{skill}', [SkillController::class, 'destroy'])->name('admin.skills.destroy');
-        Route::post('/dashboard/skills/reorder', [SkillController::class, 'reorder'])->name('admin.skills.reorder');
         Route::post('/dashboard/skills/quick-add', [SkillController::class, 'quickAdd'])->name('admin.skills.quickadd');
         //projects
         Route::get('/dashboard/projects', [ProjectController::class, 'index'])->name('admin.projects.index');
         Route::post('/dashboard/projects', [ProjectController::class, 'store'])->name('admin.projects.store');
         Route::put('/dashboard/projects/{project}', [ProjectController::class, 'update'])->name('admin.projects.update');
         Route::delete('/dashboard/projects/{project}', [ProjectController::class, 'destroy'])->name('admin.projects.destroy');
-        Route::post('/dashboard/projects/reorder', [ProjectController::class, 'reorder'])->name('admin.projects.reorder');
         //experience
         Route::get('/dashboard/experience', [ExperienceController::class, 'index'])->name('admin.experience.index');
         Route::post('/dashboard/experience', [ExperienceController::class, 'store'])->name('admin.experience.store');
@@ -75,11 +73,12 @@ Route::prefix(config('app.admin_slug'))->group(function () {
         Route::delete('/dashboard/certificates/{certificate}', [CertificateController::class, 'destroy'])->name('admin.certificates.destroy');
         //messages
         Route::get('/dashboard/messages', [MessageController::class, 'index'])->name('admin.messages.index');
+        Route::put('/dashboard/messages/bulk/read', [MessageController::class, 'bulkMarkAsRead'])->name('admin.messages.bulk-read');
+        Route::delete('/dashboard/messages/bulk', [MessageController::class, 'bulkDelete'])->name('admin.messages.bulk-delete');
         Route::put('/dashboard/messages/{message}/read', [MessageController::class, 'markAsRead'])->name('admin.messages.read');
         Route::put('/dashboard/messages/{message}/notes', [MessageController::class, 'updateNotes'])->name('admin.messages.notes');
         Route::delete('/dashboard/messages/{message}', [MessageController::class, 'destroy'])->name('admin.messages.destroy');
-
-
+        
         Route::get('/dashboard/login-activity', [\App\Http\Controllers\Admin\LoginActivityController::class, 'index'])->name('admin.login-activity.index');
         });
 });

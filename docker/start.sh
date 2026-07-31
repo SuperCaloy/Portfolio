@@ -20,5 +20,9 @@ php artisan view:cache
 # Run migrations against your Aiven MySQL database
 php artisan migrate --force
 
-# Render injects $PORT — the app MUST listen on it
-php artisan serve --host 0.0.0.0 --port "${PORT:-10000}"
+# Substitute Render's dynamic $PORT into the Nginx config template
+export PORT="${PORT:-10000}"
+envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+
+# Hands off to supervisord, which keeps both php-fpm and nginx running
+exec supervisord -c /etc/supervisor/conf.d/supervisord.conf

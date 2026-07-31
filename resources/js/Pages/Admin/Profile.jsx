@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useForm, usePage } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import ConfirmModal from '../../Components/Shared/ConfirmModal';
 
@@ -10,8 +10,9 @@ export default function Profile({ profile }) {
     const [confirmingRemoveAvatar, setConfirmingRemoveAvatar] = useState(false);
     const [confirmingSave, setConfirmingSave] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
+    const [pendingUrl, setPendingUrl] = useState(null);
 
-    const { data, setData, post, processing, errors, recentlySuccessful } = useForm({
+    const { data, setData, post, processing, errors, recentlySuccessful, isDirty } = useForm({
         full_name: profile.full_name || '',
         professional_title: profile.professional_title || '',
         bio: profile.bio || '',
@@ -25,6 +26,35 @@ export default function Profile({ profile }) {
         resume: null,
         _method: 'put',
     });
+
+    // Warns before closing or refreshing the tab while unsaved changes exist.
+    // Native browser dialog, cannot be styled, browsers block that for security.
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (!isDirty) return;
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isDirty]);
+
+    // Intercepts in-app navigation while unsaved changes exist, holds the
+    // attempted destination and shows ConfirmModal instead of a native confirm.
+    useEffect(() => {
+        const removeListener = router.on('before', (event) => {
+            if (!isDirty || pendingUrl) return;
+            event.preventDefault();
+            setPendingUrl(event.detail.visit.url.href);
+        });
+        return () => removeListener();
+    }, [isDirty, pendingUrl]);
+
+    const confirmLeave = () => {
+        const url = pendingUrl;
+        setPendingUrl(null);
+        router.visit(url);
+    };
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
@@ -68,7 +98,7 @@ export default function Profile({ profile }) {
 
     return (
         <AdminLayout title="Profile" currentPath={`/${adminSlug}/dashboard/profile`}>
-            <form onSubmit={handleSubmit} className="max-w-6xl space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 {recentlySuccessful && (
                     <div className="p-3 text-sm rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-600 dark:text-emerald-400">
                         Profile updated.
@@ -217,6 +247,16 @@ export default function Profile({ profile }) {
                     message="Your profile information will be updated with the details you entered."
                     onConfirm={confirmSave}
                     onCancel={() => setConfirmingSave(false)}
+                />
+            )}
+
+            {pendingUrl && (
+                <ConfirmModal
+                    title="Leave this page?"
+                    message="You have unsaved changes. If you leave now, they will be lost."
+                    danger
+                    onConfirm={confirmLeave}
+                    onCancel={() => setPendingUrl(null)}
                 />
             )}
 

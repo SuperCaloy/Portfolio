@@ -36,6 +36,13 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
 
     const [activeSection, setActiveSection] = useState('about');
 
+    // First and last word only, used on narrow screens so the full name
+    // doesn't get cut off or crowd the nav.
+    const nameParts = (name || '').trim().split(/\s+/).filter(Boolean);
+    const shortName = nameParts.length > 1
+        ? `${nameParts[0]} ${nameParts[nameParts.length - 1]}`
+        : name;
+
     // Tracks which section is currently most visible while scrolling,
     // used to highlight the matching nav link.
     useEffect(() => {
@@ -70,7 +77,8 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
             <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <a href="/" onClick={handleNameTap} className="flex items-center gap-2.5 font-medium text-zinc-800 dark:text-zinc-200 hover:text-zinc-950 dark:hover:text-white transition-colors select-none">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                    <span className="font-semibold tracking-tight text-base truncate max-w-[140px] sm:max-w-none">{name}</span>
+                    <span className="sm:hidden font-semibold tracking-tight text-base truncate max-w-[180px]">{shortName}</span>
+                    <span className="hidden sm:inline font-semibold tracking-tight text-base">{name}</span>
                 </a>
 
                 <nav className="hidden sm:flex items-center gap-5 text-zinc-500 dark:text-zinc-400 font-medium text-[15px]">
@@ -114,7 +122,7 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                 <div className="flex sm:hidden items-center gap-1">
                     <button
                         onClick={toggleTheme}
-                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                         title="Toggle theme"
                     >
                         {theme === 'dark' ? (

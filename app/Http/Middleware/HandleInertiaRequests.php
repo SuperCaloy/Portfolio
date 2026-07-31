@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\Message;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -33,15 +34,17 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-    public function share(Request $request): array
+   public function share(Request $request): array
     {
         $adminSlug = config('app.admin_slug');
+        $isAdmin = $request->is($adminSlug . '/*') || $request->is($adminSlug);
 
         return [
             ...parent::share($request),
-            'adminSlug' => $request->is($adminSlug . '/*') || $request->is($adminSlug)
-                ? $adminSlug
-                : null,
+            'adminSlug' => $isAdmin ? $adminSlug : null,
+            'unreadMessagesCount' => $isAdmin && $request->user()
+                ? Message::where('is_read', false)->count()
+                : 0,
         ];
     }
 
