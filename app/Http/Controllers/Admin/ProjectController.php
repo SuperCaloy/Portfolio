@@ -5,30 +5,39 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProjectRequest;
 use App\Models\Project;
+use App\Models\Skill;
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Skill;
+
 class ProjectController extends Controller
 {
     public function __construct(protected CloudinaryService $cloudinary)
     {
     }
 
-    // List all projects ordered for display
-    public function index()
+    // List projects, most recent start date first, supports search and pagination
+    public function index(Request $request)
     {
+        $projects = Project::when($request->search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%")
+                      ->orWhereJsonContains('tech_stack', $search);
+            })
+            ->orderBy('start_date', 'desc')
+            ->paginate(12)
+            ->withQueryString();
+
         return Inertia::render('Admin/Projects', [
-            'projects' => Project::orderBy('sort_order')->get(),
+            'projects' => $projects,
+            'filters' => $request->only('search'),
             'availableSkills' => Skill::pluck('name'),
         ]);
     }
 
-    // Create a new project, appended to the end of the current order
+    // Create a new project
     public function store(ProjectRequest $request)
     {
         $data = $request->safe()->except(['image']);
-        $data['sort_order'] = Project::max('sort_order') + 1;
 
         if ($request->hasFile('image')) {
             $uploaded = $this->cloudinary->upload($request->file('image'), 'portfolio/projects');
@@ -83,20 +92,5 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()->back()->with('success', 'Project deleted.');
-    }
-
-    // Persist new display order after reorder
-    public function reorder(Request $request)
-    {
-        $request->validate([
-            'order' => ['required', 'array'],
-            'order.*' => ['integer', 'exists:projects,id'],
-        ]);
-
-        foreach ($request->order as $index => $id) {
-            Project::where('id', $id)->update(['sort_order' => $index]);
-        }
-
-        return redirect()->back()->with('success', 'Order updated.');
     }
 }

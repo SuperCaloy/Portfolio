@@ -32,7 +32,7 @@ export default function Experience({ experiences = [] }) {
                         onClick={() => setSelectedExperience(exp)}
                         className="group relative space-y-1.5 text-left w-full p-2 -ml-2 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-900/40 hover:-translate-y-0.5 hover:shadow-sm transition-all"
                     >
-                        <div className="absolute -left-[25px] top-3.5 w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-700 border border-white dark:border-zinc-950 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400 transition-colors" />
+                        <div className="absolute -left-[25px] top-3.5 w-2 h-2 rounded-full bg-emerald-500 border border-white dark:border-zinc-950 group-hover:bg-emerald-600 dark:group-hover:bg-emerald-400 transition-colors" />
 
                         <div className="flex flex-wrap items-baseline justify-between gap-2">
                             <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">

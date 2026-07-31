@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CertificateRequest;
 use App\Models\Certificate;
 use App\Services\CloudinaryService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CertificateController extends Controller
@@ -14,11 +15,20 @@ class CertificateController extends Controller
     {
     }
 
-    // List all certificates ordered by most recent issue date
-    public function index()
+    // List certificates, most recent issue date first, supports search and pagination
+    public function index(Request $request)
     {
+        $certificates = Certificate::when($request->search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%")
+                      ->orWhere('issuer', 'like', "%{$search}%");
+            })
+            ->orderBy('issue_date', 'desc')
+            ->paginate(12)
+            ->withQueryString();
+
         return Inertia::render('Admin/Certificates', [
-            'certificates' => Certificate::orderBy('issue_date', 'desc')->get(),
+            'certificates' => $certificates,
+            'filters' => $request->only('search'),
         ]);
     }
 

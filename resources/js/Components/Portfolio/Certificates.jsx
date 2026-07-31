@@ -15,18 +15,19 @@ function CertificateCard({ cert, onSelect }) {
     return (
         <button
             onClick={() => onSelect(cert)}
-            className="group p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-between text-left w-full"
+            className="group p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full space-y-1"
         >
-            <div>
-                <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
-                    {cert.title}
-                </h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-0.5">{cert.issuer}</p>
-                <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
-                    View details →
-                </span>
+            <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
+                {cert.title}
+            </h3>
+            <div className="flex items-center gap-2 text-sm">
+                <span className="text-zinc-600 dark:text-zinc-400">{cert.issuer}</span>
+                <span className="text-zinc-300 dark:text-zinc-700">·</span>
+                <span className="font-mono font-medium text-zinc-600 dark:text-zinc-300">{formatDate(cert.issue_date)}</span>
             </div>
-            <span className="text-sm font-mono font-medium text-zinc-600 dark:text-zinc-300 shrink-0">{formatDate(cert.issue_date)}</span>
+            <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                View details →
+            </span>
         </button>
     );
 }
@@ -71,27 +72,30 @@ export default function Certificates({ certificates = [] }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {displayCertificates.map((cert) => (
-                    <CertificateCard key={cert.id ?? cert.title} cert={cert} onSelect={setSelectedCertificate} />
+                {displayCertificates.map((cert, idx) => (
+                    <CertificateCard key={`cert-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
                 ))}
             </div>
 
             {sortedCertificates.length > displayCertificates.length && (
                 <button
                     onClick={() => setShowModal(true)}
-                    className="text-sm font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors underline underline-offset-4"
+                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-sm font-medium transition-all"
                 >
-                    View All Certificates ({sortedCertificates.length})
+                    <span>View All Certificates</span>
+                    <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
                 </button>
             )}
 
             {showModal && createPortal(
                 <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-10 bg-black/60 backdrop-blur-sm"
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md overflow-y-auto"
                     onClick={() => setShowModal(false)}
                 >
                     <div
-                        className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto styled-scrollbar"
+                        className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto styled-scrollbar shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
@@ -107,8 +111,8 @@ export default function Certificates({ certificates = [] }) {
                         </div>
 
                         <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {sortedCertificates.map((cert) => (
-                                <CertificateCard key={cert.id ?? cert.title} cert={cert} onSelect={setSelectedCertificate} />
+                            {sortedCertificates.map((cert, idx) => (
+                                <CertificateCard key={`cert-all-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
                             ))}
                         </div>
                     </div>

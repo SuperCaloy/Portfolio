@@ -22,11 +22,7 @@ export default function Home({
     const { theme, toggleTheme } = useTheme();
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const name = personal?.full_name || 'Your Name';
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    
     // Experience label calculated by summing the actual duration of every
     // experience entry, not the span since the earliest start date. This
     // avoids overcounting gaps between jobs and correctly adds up multiple
@@ -78,7 +74,7 @@ export default function Home({
     }, []);
 
     return (
-        <div className={`min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-900 dark:selection:text-white transition-colors duration-200 transition-opacity duration-500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-900 dark:selection:text-white transition-colors duration-200">
             <Head title={name}>
                 <meta name="description" content={`${name}, ${personal?.professional_title || 'Software Engineer'}. ${personal?.bio || personal?.about_me || 'Portfolio showcasing projects, skills, and experience.'}`} />
             </Head>

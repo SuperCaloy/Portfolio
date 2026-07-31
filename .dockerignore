@@ -8,4 +8,5 @@ storage/framework/sessions/*
 storage/framework/views/*
 docker-compose.yml
 docker/nginx
+!docker/nginx/default.conf
 docker/php

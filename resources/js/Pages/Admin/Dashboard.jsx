@@ -29,7 +29,7 @@ function QuickAction({ label, href }) {
     return (
         <Link
             href={href}
-            className="px-3.5 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-medium transition-all"
+            className="px-3.5 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm font-medium transition-all"
         >
             {label}
         </Link>
@@ -40,10 +40,10 @@ function RecentActivityCard({ label, title, subtitle, date, image, onClick }) {
     if (!title) {
         return (
             <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80">
-                <p className="text-xs font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-2">
+                <p className="text-sm font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-2">
                     {label}
                 </p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">None added yet.</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">None added yet.</p>
             </div>
         );
     }
@@ -53,13 +53,16 @@ function RecentActivityCard({ label, title, subtitle, date, image, onClick }) {
             onClick={onClick}
             className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-3 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors text-left w-full"
         >
-            {image ? (
-                <img src={image} alt={title} className="w-12 h-12 rounded-lg object-cover shrink-0" />
-            ) : (
-                <div className="w-12 h-12 rounded-lg bg-zinc-200 dark:bg-zinc-800 shrink-0" />
+            {image && (
+                <img
+                    src={image}
+                    alt={title}
+                    className="w-12 h-12 rounded-lg object-cover shrink-0"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                />
             )}
             <div className="min-w-0 flex-1">
-                <p className="text-xs font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-1">
+                <p className="text-sm font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-1">
                     {label}
                 </p>
                 <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{title}</p>
@@ -67,7 +70,7 @@ function RecentActivityCard({ label, title, subtitle, date, image, onClick }) {
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{subtitle}</p>
                 )}
             </div>
-            <span className="text-[11px] text-zinc-400 dark:text-zinc-500 shrink-0">{timeAgo(date)}</span>
+            <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0">{timeAgo(date)}</span>
         </button>
     );
 }
@@ -89,7 +92,7 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
         <AdminLayout title="Dashboard" currentPath={url}>
             <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 mb-6">
                 <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                    <p className="text-sm font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                         Unread Messages
                     </p>
                     <p className="text-2xl font-mono font-semibold text-zinc-900 dark:text-zinc-100">
@@ -98,7 +101,7 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
                 </div>
 
                 {recentMessages.length === 0 ? (
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">No messages yet.</p>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">No messages yet.</p>
                 ) : (
                     <div className="space-y-2">
                         {recentMessages.map((message) => (
@@ -111,14 +114,14 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                                 )}
                                 <div className="min-w-0 flex-1">
-                                    <p className="text-xs font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                                         {message.subject || 'No subject'}
                                     </p>
-                                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
                                         {message.sender_name}
                                     </p>
                                 </div>
-                                <span className="text-[11px] text-zinc-400 dark:text-zinc-500 shrink-0">
+                                <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0">
                                     {formatDate(message.created_at)}
                                 </span>
                             </Link>
@@ -157,7 +160,7 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
             </div>
 
             <div className="mb-6">
-                <p className="text-xs font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-3">
+                <p className="text-sm font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-3">
                     Recently Added
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -186,7 +189,7 @@ export default function Dashboard({ stats, recentMessages, recentProject, recent
             </div>
 
             <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80">
-                <p className="text-xs font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-3">
+                <p className="text-sm font-mono uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-3">
                     Quick Actions
                 </p>
                 <div className="flex flex-wrap gap-2">

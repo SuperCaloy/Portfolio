@@ -10,21 +10,32 @@ use Inertia\Inertia;
 
 class SkillController extends Controller
 {
-    // List all skills ordered for display
-    public function index()
+    // Fixed category order, matches the enum and the public Tech section grouping
+    protected const CATEGORY_ORDER = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
+
+    // List skills, grouped by fixed category order then alphabetically, supports search and pagination
+    public function index(Request $request)
     {
+        $categoryOrder = implode(',', array_map(fn ($c) => "'{$c}'", self::CATEGORY_ORDER));
+
+        $skills = Skill::when($request->search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderByRaw("FIELD(category, {$categoryOrder})")
+            ->orderBy('name')
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('Admin/Skills', [
-            'skills' => Skill::orderBy('sort_order')->get(),
+            'skills' => $skills,
+            'filters' => $request->only('search'),
         ]);
     }
 
-    // Create a new skill, appended to the end of the current order
+    // Create a new skill
     public function store(SkillRequest $request)
     {
-        $data = $request->validated();
-        $data['sort_order'] = Skill::max('sort_order') + 1;
-
-        Skill::create($data);
+        Skill::create($request->validated());
 
         return redirect()->back()->with('success', 'Skill added.');
     }
@@ -45,21 +56,6 @@ class SkillController extends Controller
         return redirect()->back()->with('success', 'Skill deleted.');
     }
 
-    // Persist new display order after a drag and drop reorder
-    public function reorder(Request $request)
-    {
-        $request->validate([
-            'order' => ['required', 'array'],
-            'order.*' => ['integer', 'exists:skills,id'],
-        ]);
-
-        foreach ($request->order as $index => $id) {
-            Skill::where('id', $id)->update(['sort_order' => $index]);
-        }
-
-        return redirect()->back()->with('success', 'Order updated.');
-    }
-
     // Create a skill inline from the Projects tech stack input, minimal fields only
     public function quickAdd(Request $request)
     {
@@ -70,7 +66,6 @@ class SkillController extends Controller
         $skill = Skill::create([
             'name' => $validated['name'],
             'category' => 'Tools',
-            'sort_order' => Skill::max('sort_order') + 1,
         ]);
 
         return response()->json(['name' => $skill->name]);
