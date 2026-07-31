@@ -26,7 +26,7 @@ function SkillCard({ category, items, spanFull }) {
                             key={skill.id ?? skill.name}
                             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-mono text-sm hover:border-zinc-300 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-white transition-all"
                         >
-                            {Icon && <Icon className="w-3.5 h-3.5 shrink-0" style={color ? { color } : undefined} />}
+                            {Icon && <Icon aria-hidden="true" className="w-3.5 h-3.5 shrink-0" style={color ? { color } : undefined} />}
                             {skill.name}
                         </span>
                     );
