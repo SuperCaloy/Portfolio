@@ -21,8 +21,10 @@ php artisan view:cache
 php artisan migrate --force
 
 # Substitute Render's dynamic $PORT into the Nginx config template
+# Substitute Render's dynamic PORT and the sibling process fastcgi target
 export PORT="${PORT:-10000}"
-envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+export FASTCGI_PASS="127.0.0.1:9000"
+envsubst '${PORT} ${FASTCGI_PASS}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
 # Hands off to supervisord, which keeps both php-fpm and nginx running
 exec supervisord -c /etc/supervisor/conf.d/supervisord.conf
