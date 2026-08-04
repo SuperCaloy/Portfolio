@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState } from 'react';
+import Modal from '../Shared/Modal';
 import ViewProjectModal from '../Shared/ViewProjectModal';
 import useInView from '../../hooks/useInView';
-import { getProjectTechIcon, getProjectTechColor } from '../../utils/skillIcon';
-
+import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
 const STATUS_STYLES = {
     'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
     'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
@@ -28,105 +27,113 @@ function formatProjectDate(project) {
     return `${start} – ${end}`;
 }
 
+function TechTag({ tech, skills }) {
+    return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-xs">
+            <BrandIcon name={resolveProjectTechName(tech, skills)} className="w-3 h-3 shrink-0" />
+            {tech}
+        </span>
+    );
+}
+
 function ProjectCard({ project, skills, onSelect }) {
-    const [linksHovered, setLinksHovered] = useState(false);
+    const [imageError, setImageError] = useState(false);
 
     return (
         <button
             onClick={() => onSelect(project)}
-            className="group relative h-full flex flex-col overflow-hidden rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full"
+            className="group relative h-full w-full text-left p-1.5 rounded-[1.75rem] bg-zinc-100/80 dark:bg-zinc-900/40 ring-1 ring-zinc-200/70 dark:ring-zinc-800/70 hover:ring-zinc-300 dark:hover:ring-zinc-700 hover:shadow-soft-lg hover:-translate-y-1 active:translate-y-0 active:scale-[0.99] transition-all duration-500 ease-fluid"
         >
-            {project.image_path && (
-                <div className="w-full aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-                    <img
-                        src={project.image_path}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => { e.target.parentElement.style.display = 'none'; }}
-                    />
+            <div className="h-full flex flex-col overflow-hidden rounded-[1.375rem] bg-white dark:bg-zinc-950/70 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+                <div className="w-full aspect-video overflow-hidden bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 flex items-center justify-center">
+                    {project.image_path && !imageError ? (
+                        <img
+                            src={project.image_path}
+                            alt={`Screenshot of the ${project.title} project`}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-fluid"
+                            onError={() => setImageError(true)}
+                        />
+                    ) : (
+                        <div className="flex flex-col items-center gap-2 text-zinc-300 dark:text-zinc-700 group-hover:text-zinc-400 dark:group-hover:text-zinc-600 transition-colors">
+                            <svg className="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 8l-4 4 4 4" />
+                            </svg>
+                            <span className="text-[11px] font-mono text-zinc-400 dark:text-zinc-600">No preview yet</span>
+                        </div>
+                    )}
                 </div>
-            )}
 
-            <div className="space-y-3 flex-1 p-5 sm:p-6">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1">
-                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors line-clamp-2">
+                <div className="flex-1 p-5 sm:p-6 space-y-3">
+                    <div className="space-y-1.5">
+                        <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors line-clamp-1">
                             {project.title}
                         </h3>
-                        {project.status && (
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
-                                {project.status}
-                            </span>
-                        )}
-                        {formatProjectDate(project) && (
-                            <p className="text-sm font-mono font-medium text-zinc-700 dark:text-zinc-300">
-                                {formatProjectDate(project)}
+                        {project.subtitle && (
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                                {project.subtitle}
                             </p>
                         )}
-                    </div>
-                </div>
-
-                {project.subtitle || project.description ? (
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-3">
-                        {project.subtitle || project.description}
-                    </p>
-                ) : (
-                    <p className="text-sm text-zinc-400 dark:text-zinc-600 italic leading-relaxed">
-                        Details coming soon.
-                    </p>
-                )}
-
-                {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                        {project.tech_stack.map((tech, idx) => {
-                            const Icon = getProjectTechIcon(tech, skills);
-                            const color = getProjectTechColor(tech, skills);
-                            return (
-                                <span
-                                    key={idx}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-sm"
-                                >
-                                    {Icon && <Icon className="w-3.5 h-3.5 shrink-0" style={color ? { color } : undefined} />}
-                                    {tech}
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {project.status && (
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
+                                    {project.status}
                                 </span>
-                            );
-                        })}
+                            )}
+                            {formatProjectDate(project) && (
+                                <span className="text-xs font-mono font-medium text-zinc-500 dark:text-zinc-400">
+                                    {formatProjectDate(project)}
+                                </span>
+                            )}
+                        </div>
                     </div>
-                )}
-            </div>
 
-            <div className="flex items-center flex-wrap justify-between gap-y-1 pt-3 mt-3 mx-5 sm:mx-6 mb-5 sm:mb-6 border-t border-zinc-200/60 dark:border-zinc-800/60">
-                <div
-                    className="flex items-center gap-4"
-                    onMouseEnter={() => setLinksHovered(true)}
-                    onMouseLeave={() => setLinksHovered(false)}
-                >
-                    {project.github_url && (
-                        <a
-                            href={project.github_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 whitespace-nowrap"
-                        >
-                            View Code
-                        </a>
-                    )}
-                    {project.demo_url && (
-                        <a
-                            href={project.demo_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 whitespace-nowrap"
-                        >
-                            Live Preview
-                        </a>
+                    {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                            {project.tech_stack.slice(0, 3).map((tech, idx) => (
+                                <TechTag key={idx} tech={tech} skills={skills} />
+                            ))}
+                            {project.tech_stack.length > 3 && (
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-600 text-zinc-500 dark:text-zinc-400 font-mono text-xs">
+                                    +{project.tech_stack.length - 3}
+                                </span>
+                            )}
+                        </div>
                     )}
                 </div>
-                <span className={`text-[11px] font-mono text-zinc-400 dark:text-zinc-600 whitespace-nowrap shrink-0 ml-3 transition-opacity ${linksHovered ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}`}>
-                    View details →
-                </span>
+
+                <div className="flex items-center justify-between gap-3 px-5 sm:px-6 py-3 border-t border-zinc-200/60 dark:border-zinc-800/60">
+                    <div className="flex items-center gap-4">
+                        {project.github_url && (
+                            <a
+                                href={project.github_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 no-underline whitespace-nowrap"
+                            >
+                                Code
+                            </a>
+                        )}
+                        {project.demo_url && (
+                            <a
+                                href={project.demo_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 no-underline whitespace-nowrap"
+                            >
+                                Preview
+                            </a>
+                        )}
+                    </div>
+                    <span className="flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors shrink-0">
+                        <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </span>
+                </div>
             </div>
         </button>
     );
@@ -136,27 +143,28 @@ export default function Projects({ projects = [], skills = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
     const [sectionRef, isInView] = useInView();
-    const displayProjects = projects.slice(0, 3);
 
-    const gridColsClass = (count) => {
-        if (count <= 1) return 'grid-cols-1';
-        if (count === 2) return 'grid-cols-1 sm:grid-cols-2';
-        if (count === 3) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
-        return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+    // Latest first, start_date preferred, falls back to created_at.
+    const getProjectDate = (project) => {
+        const value = project.start_date || project.created_at;
+        const time = value ? new Date(value).getTime() : 0;
+        return isNaN(time) ? 0 : time;
     };
 
-    useEffect(() => {
-        if (!showModal) return;
-        const handleEsc = (e) => {
-            if (e.key === 'Escape') setShowModal(false);
-        };
-        document.addEventListener('keydown', handleEsc);
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.removeEventListener('keydown', handleEsc);
-            document.body.style.overflow = '';
-        };
-    }, [showModal]);
+    // Featured projects first, latest non-featured fills remaining slots
+    // up to exactly 4, no bento, uniform grid regardless of composition.
+    const featuredProjects = [...projects]
+        .filter((project) => project.is_featured)
+        .sort((a, b) => getProjectDate(b) - getProjectDate(a));
+
+    const nonFeaturedProjects = [...projects]
+        .filter((project) => !project.is_featured)
+        .sort((a, b) => getProjectDate(b) - getProjectDate(a));
+
+    const displayProjects = [...featuredProjects, ...nonFeaturedProjects].slice(0, 4);
+
+    const gridColsClass = 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4';
+    const modalGridClass = 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
 
     if (projects.length === 0) return null;
 
@@ -164,7 +172,7 @@ export default function Projects({ projects = [], skills = [] }) {
         <section
             id="projects"
             ref={sectionRef}
-            className={`space-y-4 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+            className={`space-y-4 transition-all duration-700 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
         >
             <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase font-mono">
@@ -173,16 +181,21 @@ export default function Projects({ projects = [], skills = [] }) {
                 <span className="text-sm text-zinc-500 dark:text-zinc-600 font-mono">{projects.length} project{projects.length > 1 ? 's' : ''}</span>
             </div>
 
-            <div className={`grid ${gridColsClass(displayProjects.length)} gap-4`}>
+            <div className={`grid ${gridColsClass} gap-5`}>
                 {displayProjects.map((project, idx) => (
-                    <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} skills={skills} onSelect={setSelectedProject} />
+                    <ProjectCard
+                        key={`${project.id ?? project.title ?? 'project'}-${idx}`}
+                        project={project}
+                        skills={skills}
+                        onSelect={setSelectedProject}
+                    />
                 ))}
             </div>
 
             {projects.length > displayProjects.length && (
                 <button
                     onClick={() => setShowModal(true)}
-                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-sm font-medium transition-all"
+                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-sm font-medium active:scale-95 transition-all"
                 >
                     <span>View All Projects</span>
                     <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,36 +204,25 @@ export default function Projects({ projects = [], skills = [] }) {
                 </button>
             )}
 
-            {showModal && createPortal(
-                <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-10 bg-black/60 backdrop-blur-sm"
-                    onClick={() => setShowModal(false)}
-                >
-                    <div
-                        className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-5xl max-h-[85vh] overflow-y-auto styled-scrollbar"
-                        onClick={(e) => e.stopPropagation()}
+            <Modal isOpen={showModal} onClose={() => setShowModal(false)} maxWidth="max-w-5xl" ariaLabel="All Projects">
+                <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white">All Projects</h2>
+                    <button
+                        onClick={() => setShowModal(false)}
+                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-90 transition-all"
                     >
-                        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
-                            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">All Projects</h2>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
 
-                        <div className={`p-6 grid ${gridColsClass(Math.min(projects.length, 2))} gap-5`}>
-                            {projects.map((project, idx) => (
-                                <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} skills={skills} onSelect={setSelectedProject} />
-                            ))}
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+                <div className={`p-6 grid ${modalGridClass} gap-5`}>
+                    {projects.map((project, idx) => (
+                        <ProjectCard key={`${project.id ?? project.title ?? 'project'}-${idx}`} project={project} skills={skills} onSelect={setSelectedProject} />
+                    ))}
+                </div>
+            </Modal>
 
             {selectedProject && (
                 <ViewProjectModal

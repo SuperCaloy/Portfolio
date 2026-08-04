@@ -1,13 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+    /* Shadows tinted toward the zinc palette instead of generic pure black */
+    --shadow-soft: 0 4px 16px -4px rgb(24 24 27 / 0.12), 0 2px 6px -2px rgb(24 24 27 / 0.08);
+    --shadow-soft-lg: 0 24px 48px -12px rgb(24 24 27 / 0.28), 0 8px 20px -8px rgb(24 24 27 / 0.16);
+
+    /* Diffused, wider shadow for the Double-Bezel outer shell, softer than shadow-soft-lg */
+    --shadow-ambient: 0 40px 80px -24px rgb(24 24 27 / 0.18), 0 12px 32px -12px rgb(24 24 27 / 0.1);
 }
+
+/* Weighted, spring-like easing curve for premium interactive motion.
+   Use as transition-timing-function via the .ease-fluid utility below,
+   instead of the default ease/ease-in-out on hover and entry transitions. */
+.ease-fluid {
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Fixed, pointer-events-none grain layer to break flat digital surfaces.
+   Applied once at the root of Home.jsx, never on scrolling containers,
+   per the performance guardrail against repaint cost. */
+.grain-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.025;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+section[id] {
+    scroll-margin-top: 4rem;
+}
+
+.dark .grain-overlay {
+    opacity: 0.05;
+}
+
 .styled-scrollbar::-webkit-scrollbar {
     width: 8px;
 }
@@ -40,4 +77,49 @@
 
 .dark .styled-scrollbar {
     scrollbar-color: rgb(63 63 70) transparent;
+}
+
+/* Consistent keyboard focus ring across all interactive elements,
+   tinted toward the emerald accent instead of the browser default. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid rgb(16 185 129 / 0.6);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Prevents a single word getting orphaned alone on the last line
+   of a headline or paragraph. */
+h1, h2, h3 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+/* Fallback smooth scrolling for any anchor jump not already handled
+   by the JS scrollIntoView calls in Header. */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Numbers in the mono font (dates, stats, counts) line up on a fixed
+   width instead of shifting as digits change. */
+.font-mono {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Respect the visitor's OS-level motion preference instead of forcing
+   animation on everyone. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

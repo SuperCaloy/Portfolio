@@ -1,10 +1,21 @@
 import React, { useState } from 'react';
 import useInView from '../../hooks/useInView';
-import { getSkillIcon, getSkillColor } from '../../utils/skillIcon';
-
+import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
 // Fixed display order, matches the category enum in the database.
 const CATEGORY_ORDER = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
 const MAX_VISIBLE = 6;
+
+function SkillTag({ skill }) {
+    return (
+        <span className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-mono text-sm hover:border-zinc-300 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-white transition-all">
+            <BrandIcon
+                name={skill.icon_name || skill.name}
+                className="w-3.5 h-3.5 shrink-0 group-hover:scale-110 transition-transform"
+            />
+            {skill.name}
+        </span>
+    );
+}
 
 function SkillCard({ category, items, spanFull }) {
     const [expanded, setExpanded] = useState(false);
@@ -12,30 +23,20 @@ function SkillCard({ category, items, spanFull }) {
     const remaining = items.length - MAX_VISIBLE;
 
     return (
-        <div className={`p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 space-y-3 ${spanFull ? 'sm:col-span-2' : ''}`}>
+        <div className={`p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-soft transition-all space-y-3 ${spanFull ? 'sm:col-span-2' : ''}`}>
             <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                 {category}
             </h3>
 
             <div className="flex flex-wrap gap-2">
-                {visibleItems.map((skill) => {
-                    const Icon = getSkillIcon(skill);
-                    const color = getSkillColor(skill);
-                    return (
-                        <span
-                            key={skill.id ?? skill.name}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-mono text-sm hover:border-zinc-300 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-white transition-all"
-                        >
-                            {Icon && <Icon aria-hidden="true" className="w-3.5 h-3.5 shrink-0" style={color ? { color } : undefined} />}
-                            {skill.name}
-                        </span>
-                    );
-                })}
+                {visibleItems.map((skill) => (
+                    <SkillTag key={skill.id ?? skill.name} skill={skill} />
+                ))}
 
                 {!expanded && remaining > 0 && (
                     <button
                         onClick={() => setExpanded(true)}
-                        className="inline-flex items-center px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-600 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-500 font-mono text-sm transition-all"
+                        className="inline-flex items-center px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-600 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-500 active:scale-95 font-mono text-sm transition-all"
                     >
                         +{remaining} more
                     </button>
