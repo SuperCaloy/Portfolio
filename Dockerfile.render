@@ -49,9 +49,9 @@ COPY --from=assets /app/public/build ./public/build
 
 RUN composer dump-autoload --optimize --no-dev
 
-# Nginx config template, PORT gets substituted at container start since
-# Render assigns it dynamically, Nginx config files cannot read env vars directly
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf.template
+# Nginx config template, PORT and FASTCGI_PASS get substituted at container start
+# since Render assigns PORT dynamically and nginx config files cannot read env vars directly
+COPY docker/nginx/default.conf.template /etc/nginx/conf.d/default.conf.template
 RUN rm -f /etc/nginx/sites-enabled/default
 
 # Supervisord manages php-fpm and nginx as sibling processes in one container
@@ -59,7 +59,10 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 RUN chmod +x docker/start.sh
 
-# Render sets $PORT at runtime — the app must listen on it
+# Ownership for Laravel writable paths, php-fpm workers run as www-data by default
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Render sets PORT at runtime, the app must listen on it
 EXPOSE 10000
 
 CMD ["docker/start.sh"]
