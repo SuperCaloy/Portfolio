@@ -8,7 +8,7 @@ export default function ConfirmModal({ title, message, onConfirm, onCancel, dang
             onClick={onCancel}
         >
             <div
-                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-sm shadow-2xl p-6 space-y-4"
+                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-sm shadow-soft-lg p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="space-y-1.5">

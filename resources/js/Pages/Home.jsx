@@ -70,7 +70,12 @@ export default function Home({
     useEffect(() => {
         const path = window.location.pathname;
         const sectionId = path === '/' ? 'about' : path.replace('/', '');
-        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'instant' });
+        const el = document.getElementById(sectionId);
+        if (el) {
+            requestAnimationFrame(() => {
+                el.scrollIntoView({ behavior: 'auto', block: 'start' });
+            });
+        }
     }, []);
 
     return (
@@ -90,7 +95,7 @@ export default function Home({
                     }}
                 />
             </div>
-
+            <div className="grain-overlay" />           
             <Header
                 name={name}
                 hasCertificates={certificates.length > 0}

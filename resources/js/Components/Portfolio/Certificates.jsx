@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import Modal from '../Shared/Modal';
 import ViewCertificateModal from '../Shared/ViewCertificateModal';
 import useInView from '../../hooks/useInView';
 
-// Month and year only, matches the format used for project dates.
 const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -11,11 +10,22 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 };
 
+// Picks a column count that divides evenly into the item count so no
+// row is ever left with a lone card and empty gaps beside it. Falls
+// back to 3 columns for counts that do not divide cleanly, e.g. 5 or 7.
+function certGridCols(count) {
+    if (count <= 1) return 'grid-cols-1';
+    if (count === 2) return 'grid-cols-1 sm:grid-cols-2';
+    if (count % 3 === 0) return 'grid-cols-1 sm:grid-cols-3';
+    if (count % 2 === 0) return 'grid-cols-1 sm:grid-cols-2';
+    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+}
+
 function CertificateCard({ cert, onSelect }) {
     return (
         <button
             onClick={() => onSelect(cert)}
-            className="group p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-md hover:-translate-y-0.5 transition-all text-left w-full space-y-1"
+            className="group p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-soft hover:-translate-y-0.5 transition-all text-left w-full space-y-1"
         >
             <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
                 {cert.title}
@@ -25,7 +35,7 @@ function CertificateCard({ cert, onSelect }) {
                 <span className="text-zinc-300 dark:text-zinc-700">·</span>
                 <span className="font-mono font-medium text-zinc-600 dark:text-zinc-300">{formatDate(cert.issue_date)}</span>
             </div>
-            <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-60 group-hover:opacity-100 transition-opacity">
                 View details →
             </span>
         </button>
@@ -43,19 +53,6 @@ export default function Certificates({ certificates = [] }) {
     });
     const displayCertificates = sortedCertificates.slice(0, 6);
 
-    useEffect(() => {
-        if (!showModal) return;
-        const handleEsc = (e) => {
-            if (e.key === 'Escape') setShowModal(false);
-        };
-        document.addEventListener('keydown', handleEsc);
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.removeEventListener('keydown', handleEsc);
-            document.body.style.overflow = '';
-        };
-    }, [showModal]);
-
     if (certificates.length === 0) return null;
 
     return (
@@ -71,7 +68,7 @@ export default function Certificates({ certificates = [] }) {
                 <span className="text-sm text-zinc-500 dark:text-zinc-600 font-mono">{displayCertificates.length} shown</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+           <div className={`grid ${certGridCols(displayCertificates.length)} gap-3`}>
                 {displayCertificates.map((cert, idx) => (
                     <CertificateCard key={`cert-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
                 ))}
@@ -89,36 +86,25 @@ export default function Certificates({ certificates = [] }) {
                 </button>
             )}
 
-            {showModal && createPortal(
-                <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md overflow-y-auto"
-                    onClick={() => setShowModal(false)}
-                >
-                    <div
-                        className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-y-auto styled-scrollbar shadow-2xl"
-                        onClick={(e) => e.stopPropagation()}
+            <Modal isOpen={showModal} onClose={() => setShowModal(false)} maxWidth="max-w-4xl" ariaLabel="All Certificates">
+                <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white">All Certificates</h2>
+                    <button
+                        onClick={() => setShowModal(false)}
+                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                     >
-                        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
-                            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">All Certificates</h2>
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
 
-                        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {sortedCertificates.map((cert, idx) => (
-                                <CertificateCard key={`cert-all-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
-                            ))}
-                        </div>
-                    </div>
-                </div>,
-                document.body
-            )}
+                <div className={`p-6 grid ${certGridCols(sortedCertificates.length)} gap-3`}>
+                    {sortedCertificates.map((cert, idx) => (
+                        <CertificateCard key={`cert-all-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
+                    ))}
+                </div>
+            </Modal>
 
             {selectedCertificate && (
                 <ViewCertificateModal

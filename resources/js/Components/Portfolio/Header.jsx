@@ -35,6 +35,32 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
     ];
 
     const [activeSection, setActiveSection] = useState('about');
+    
+    const [scrollProgress, setScrollProgress] = useState(0);
+    
+    useEffect(() => {
+        let ticking = false;
+
+        const updateProgress = () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            setScrollProgress(progress);
+            ticking = false;
+        };
+
+        const handleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(updateProgress);
+                ticking = true;
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        updateProgress();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
 
     // First and last word only, used on narrow screens so the full name
     // doesn't get cut off or crowd the nav.
@@ -73,24 +99,24 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
     };
 
     return (
-        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60 transition-colors duration-200">
+        <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200/60 dark:border-zinc-800/60 transition-colors duration-200 [transform:translateZ(0)] [will-change:backdrop-filter]">
             <div className="max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <a href="/" onClick={handleNameTap} className="flex items-center gap-2.5 font-medium text-zinc-800 dark:text-zinc-200 hover:text-zinc-950 dark:hover:text-white transition-colors select-none">
+                <a href="/" onClick={handleNameTap} className="flex items-center gap-2.5 font-medium text-zinc-800 dark:text-zinc-200 hover:text-zinc-950 dark:hover:text-white active:opacity-60 transition-colors select-none min-w-0">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
                     <span className="sm:hidden font-semibold tracking-tight text-base truncate max-w-[180px]">{shortName}</span>
-                    <span className="hidden sm:inline font-semibold tracking-tight text-base">{name}</span>
+                    <span className="hidden sm:inline font-semibold tracking-tight text-base truncate">{name}</span>
                 </a>
 
-                <nav className="hidden sm:flex items-center gap-5 text-zinc-500 dark:text-zinc-400 font-medium text-[15px]">
+                <nav className="hidden sm:flex items-center gap-5 text-zinc-500 dark:text-zinc-400 font-medium text-[15px] shrink-0">
                     {navLinks.map((link) => (
                         <a
                             key={link.id}
                             href={link.path}
                             onClick={(e) => scrollToSection(e, link.id, link.path)}
-                            className={`transition-colors ${
+                            className={`transition-colors active:opacity-60 ${
                                 activeSection === link.id
-                                    ? 'text-zinc-900 dark:text-zinc-100'
-                                    : 'hover:text-zinc-900 dark:hover:text-zinc-100'
+                                    ? 'text-emerald-600 dark:text-emerald-400'
+                                    : 'hover:text-emerald-600 dark:hover:text-emerald-400'
                             }`}
                         >
                             {link.label}
@@ -98,13 +124,13 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                     ))}
                     <button
                         onClick={openContact}
-                        className="transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+                        className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 active:opacity-60"
                     >
                         Contact
                     </button>
                     <button
                         onClick={toggleTheme}
-                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-90 transition-all"
                         title="Toggle theme"
                     >
                         {theme === 'dark' ? (
@@ -119,11 +145,13 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                     </button>
                 </nav>
 
-                <div className="flex sm:hidden items-center gap-1">
+                {/* Mobile controls use larger 44px+ touch targets, desktop uses mouse-sized ones */}
+                <div className="flex sm:hidden items-center gap-1 shrink-0">
                     <button
                         onClick={toggleTheme}
-                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                        className="p-2.5 -m-1 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-90 active:bg-zinc-100 dark:active:bg-zinc-900 transition-all"
                         title="Toggle theme"
+                        aria-label="Toggle theme"
                     >
                         {theme === 'dark' ? (
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,8 +165,9 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                     </button>
                     <button
                         onClick={() => setMenuOpen((prev) => !prev)}
-                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                        className="p-2.5 -m-1 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-90 active:bg-zinc-100 dark:active:bg-zinc-900 transition-all"
                         aria-label="Toggle menu"
+                        aria-expanded={menuOpen}
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             {menuOpen ? (
@@ -150,30 +179,45 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                     </button>
                 </div>
             </div>
-
+            <div className="h-0.5 bg-zinc-200/60 dark:bg-zinc-800/60">
+                <div
+                    className="h-full bg-emerald-500 transition-[width] duration-150 ease-fluid"
+                    style={{ width: `${scrollProgress}%` }}
+                />
+            </div>
             {menuOpen && (
-                <nav className="sm:hidden border-t border-zinc-200/60 dark:border-zinc-800/60 px-4 py-3 flex flex-col gap-3 text-sm font-medium text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-950">
-                    {navLinks.map((link) => (
-                        <a
-                            key={link.id}
-                            href={link.path}
-                            onClick={(e) => scrollToSection(e, link.id, link.path)}
-                            className={`transition-colors ${
-                                activeSection === link.id
-                                    ? 'text-zinc-900 dark:text-zinc-100'
-                                    : 'hover:text-zinc-900 dark:hover:text-zinc-100'
-                            }`}
-                        >
-                            {link.label}
-                        </a>
-                    ))}
-                    <button
-                        onClick={openContact}
-                        className="text-left transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+                <>
+                    <style>{`
+                        @keyframes headerMenuIn {
+                            from { opacity: 0; transform: translateY(-6px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                    `}</style>
+                    <nav
+                        className="sm:hidden border-t border-zinc-200/60 dark:border-zinc-800/60 px-2 py-2 flex flex-col text-sm font-medium text-zinc-600 dark:text-zinc-400 bg-white dark:bg-zinc-950 shadow-soft animate-[headerMenuIn_0.15s_ease-out]"
                     >
-                        Contact
-                    </button>
-                </nav>
+                        {navLinks.map((link) => (
+                            <a
+                                key={link.id}
+                                href={link.path}
+                                onClick={(e) => scrollToSection(e, link.id, link.path)}
+                                className={`px-3 py-3 rounded-lg transition-colors active:bg-zinc-100 dark:active:bg-zinc-900 ${
+                                    activeSection === link.id
+                                        ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10'
+                                        : 'hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10'
+                                }`}
+                            >
+                                {link.label}
+                            </a>
+                        ))}
+                        <button
+                            onClick={openContact}
+                            className="text-left px-3 py-3 rounded-lg transition-colors hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 active:bg-zinc-100 dark:active:bg-zinc-900"
+                        >
+                            Contact
+                        </button>
+                    </nav>
+                </>
             )}
 
             <ContactModal

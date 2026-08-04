@@ -1,6 +1,6 @@
-import { createPortal } from 'react-dom';
 import axios from 'axios';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
+import Modal from '../Shared/Modal';
 
 export default function ContactModal({ isOpen, onClose }) {
     const MESSAGE_MAX_LENGTH = 1000;
@@ -12,43 +12,6 @@ export default function ContactModal({ isOpen, onClose }) {
         website: '', // honeypot, must stay empty, hidden from real users
     });
     const [status, setStatus] = useState({ loading: false, success: false, error: null });
-    const modalRef = useRef(null);
-    const nameInputRef = useRef(null);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        // Autofocus the first field when the modal opens
-        nameInputRef.current?.focus();
-
-        const handleKeyDown = (e) => {
-            if (e.key === 'Escape') {
-                onClose();
-                return;
-            }
-            // Focus trap, keeps Tab navigation inside the modal
-            if (e.key === 'Tab' && modalRef.current) {
-                const focusable = modalRef.current.querySelectorAll(
-                    'input, textarea, button, a[href]'
-                );
-                if (focusable.length === 0) return;
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
-            }
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
-
-    if (!isOpen) return null;
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -75,22 +38,9 @@ export default function ContactModal({ isOpen, onClose }) {
         }
     };
 
-    return createPortal(
-        <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md overflow-y-auto"
-            onClick={onClose}
-        >
-            <style>{`
-                @keyframes modalIn {
-                    from { opacity: 0; transform: scale(0.97) translateY(4px); }
-                    to { opacity: 1; transform: scale(1) translateY(0); }
-                }
-            `}</style>
-            <div
-                ref={modalRef}
-                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto styled-scrollbar shadow-2xl space-y-4 p-6 animate-[modalIn_0.18s_ease-out]"
-                onClick={(e) => e.stopPropagation()}
-            >
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-xl" ariaLabel="Send a Message">
+            <div className="space-y-4 p-6">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                     <h2 className="text-base font-bold text-zinc-900 dark:text-white">Send a Message</h2>
                     <button
@@ -141,7 +91,6 @@ export default function ContactModal({ isOpen, onClose }) {
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
                                 <input
-                                    ref={nameInputRef}
                                     type="text"
                                     name="name"
                                     id="name"
@@ -185,12 +134,18 @@ export default function ContactModal({ isOpen, onClose }) {
                         </div>
 
                         <div className="space-y-1">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Message</label>
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Message</label>
+                                <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">
+                                    {formData.message.length}/{MESSAGE_MAX_LENGTH}
+                                </span>
+                            </div>
                             <textarea
                                 name="message"
                                 id="message"
                                 required
                                 rows="6"
+                                maxLength={MESSAGE_MAX_LENGTH}
                                 value={formData.message}
                                 onChange={handleChange}
                                 placeholder="Write your message here..."
@@ -201,14 +156,13 @@ export default function ContactModal({ isOpen, onClose }) {
                         <button
                             type="submit"
                             disabled={status.loading}
-                            className="w-full py-2.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 font-medium text-sm transition-all disabled:opacity-50"
+                            className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm transition-all disabled:opacity-50"
                         >
                             {status.loading ? 'Sending...' : 'Send Message'}
                         </button>
                     </form>
                 )}
             </div>
-        </div>,
-        document.body
+        </Modal>
     );
 }

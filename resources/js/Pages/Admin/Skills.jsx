@@ -4,26 +4,47 @@ import { useForm, router, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import ConfirmModal from '../../Components/Shared/ConfirmModal';
 import Pagination from '../../Components/Shared/Pagination';
-import { getSkillIcon, getSkillColor } from '../../utils/skillIcon';
+import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
 
 const CATEGORIES = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
 
 // Shows a live preview of the icon that will be used, based on the
 // override field if filled, otherwise guessed from the name typed.
 function IconPreview({ name, iconOverride }) {
-    const Icon = getSkillIcon({ name, icon_name: iconOverride });
-    const color = getSkillColor({ name, icon_name: iconOverride });
+    const [debouncedName, setDebouncedName] = useState(name);
+    const [debouncedOverride, setDebouncedOverride] = useState(iconOverride);
+    const [status, setStatus] = useState('loading');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedName(name);
+            setDebouncedOverride(iconOverride);
+        }, 400);
+        return () => clearTimeout(timer);
+    }, [name, iconOverride]);
 
     return (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-            {Icon ? (
-                <Icon className="w-4 h-4 shrink-0" style={color ? { color } : undefined} />
-            ) : (
-                <span className="w-4 h-4 shrink-0 rounded-full border border-dashed border-zinc-400 dark:border-zinc-600" />
-            )}
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                {Icon ? 'Icon matched' : 'No icon match, will show as text only'}
-            </span>
+        <div className="space-y-1.5">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                {status === 'matched' ? (
+                    <BrandIcon name={debouncedOverride || debouncedName} className="w-4 h-4 shrink-0" onStatusChange={setStatus} />
+                ) : (
+                    <>
+                        <span className="w-4 h-4 shrink-0 rounded-full border border-dashed border-zinc-400 dark:border-zinc-600" />
+                        <BrandIcon name={debouncedOverride || debouncedName} className="hidden" onStatusChange={setStatus} />
+                    </>
+                )}
+                <span className="text-sm text-zinc-500 dark:text-zinc-400">
+                    {status === 'matched' ? 'Icon matched' : status === 'none' ? 'No icon match, will show as text only' : 'Checking...'}
+                </span>
+            </div>
+            <p className="text-xs text-zinc-400 dark:text-zinc-600">
+                Override must match the exact slug from{' '}
+                <a href="https://simpleicons.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-zinc-600 dark:hover:text-zinc-400">
+                    simpleicons.org
+                </a>
+                , for example javascript, not js.
+            </p>
         </div>
     );
 }
