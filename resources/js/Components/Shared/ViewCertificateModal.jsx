@@ -19,23 +19,11 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
             onEscape={() => (showLightbox ? setShowLightbox(false) : onClose())}
             maxWidth="max-w-2xl"
             ariaLabel={certificate?.title || 'Certificate details'}
+            title={certificate?.title}
         >
             {certificate && (
                 <div className="p-6 space-y-4">
-                    <div className="flex items-start justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-                        <div className="space-y-1">
-                            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">{certificate.title}</h2>
-                            <p className="text-base text-zinc-500 dark:text-zinc-400">{certificate.issuer}</p>
-                        </div>
-                        <button
-                            onClick={onClose}
-                            className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 shrink-0"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
+                    <p className="text-base font-medium text-zinc-500 dark:text-zinc-400">{certificate.issuer}</p>
 
                     {certificate.image_path && (
                         <img
@@ -43,7 +31,7 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
                             alt={certificate.title}
                             loading="lazy"
                             decoding="async"
-                            className="w-full max-h-[50vh] object-contain rounded-lg border border-zinc-200 dark:border-zinc-800 cursor-zoom-in bg-zinc-50 dark:bg-zinc-900"
+                            className="w-full max-h-[50vh] object-contain rounded-xl shadow-2xl shadow-black/10 dark:shadow-black/40 ring-1 ring-black/5 dark:ring-white/10 cursor-zoom-in bg-white dark:bg-[#0a0a0a]"
                             onClick={() => setShowLightbox(true)}
                             onError={(e) => { e.target.style.display = 'none'; }}
                         />

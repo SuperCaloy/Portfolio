@@ -44,31 +44,21 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
             onEscape={() => (showLightbox ? setShowLightbox(false) : onClose())}
             maxWidth="max-w-2xl"
             ariaLabel={project?.title || 'Project details'}
+            title={project?.title}
         >
             {project && (
                 <div className="p-6 space-y-4">
-                    <div className="flex items-start justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-                        <div className="space-y-1">
-                            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">{project.title}</h2>
-                            {project.status && (
-                                <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
-                                    {project.status}
-                                </span>
-                            )}
-                            {formatProjectDate(project) && (
-                                <p className="text-sm font-mono font-medium text-zinc-700 dark:text-zinc-300">
-                                    {formatProjectDate(project)}
-                                </p>
-                            )}
-                        </div>
-                        <button
-                            onClick={onClose}
-                            className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 shrink-0"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                    <div className="flex items-center gap-3">
+                        {project.status && (
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
+                                {project.status}
+                            </span>
+                        )}
+                        {formatProjectDate(project) && (
+                            <span className="text-sm font-mono font-medium text-zinc-500 dark:text-zinc-400">
+                                {formatProjectDate(project)}
+                            </span>
+                        )}
                     </div>
 
                     {project.image_path && (

@@ -121,19 +121,17 @@ class AdminAuthController extends Controller
     private function lookupLocation(string $ip): array
     {
         try {
-            $response = Http::timeout(3)->get("http://ip-api.com/json/{$ip}", [
-                'fields' => 'status,country,regionName,city,isp',
-            ]);
+            $response = Http::timeout(3)->get("https://ipapi.co/{$ip}/json/");
 
-            if (! $response->successful() || $response->json('status') !== 'success') {
+            if (! $response->successful() || $response->json('error')) {
                 return [];
             }
 
             return [
-                'country' => $response->json('country'),
-                'region' => $response->json('regionName'),
+                'country' => $response->json('country_name'),
+                'region' => $response->json('region'),
                 'city' => $response->json('city'),
-                'isp' => $response->json('isp'),
+                'isp' => $response->json('org'),
             ];
         } catch (\Throwable $e) {
             Log::warning('IP location lookup failed', ['ip' => $ip, 'error' => $e->getMessage()]);

@@ -77,12 +77,12 @@ export default function AdminLoginModal({ onClose }) {
             onClick={handleOverlayClick}
         >
             <div
-                className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 p-8 sm:p-10"
+                className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-[1.5rem] shadow-2xl border border-zinc-200 dark:border-white/5 p-8 sm:p-10"
                 onClick={(e) => e.stopPropagation()}
             >
                 {step !== 'redirecting' && (
                     <div className="flex items-center justify-center mb-6">
-                        <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.15)] flex items-center justify-center">
                             <svg className="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 10-8 0v4h8z" />
                             </svg>
@@ -128,7 +128,7 @@ export default function AdminLoginModal({ onClose }) {
                                         placeholder="you@example.com"
                                         required
                                         autoComplete="off"
-                                        className="w-full text-sm px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow"
+                                        className="w-full text-sm px-4 py-3 rounded-xl border border-zinc-300 dark:border-white/10 bg-white dark:bg-black/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
                                     />
                                 </div>
 
@@ -142,7 +142,7 @@ export default function AdminLoginModal({ onClose }) {
                                             placeholder="Enter your password"
                                             required
                                             autoComplete="off"
-                                            className="w-full text-sm px-4 py-3 pr-16 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow"
+                                            className="w-full text-sm px-4 py-3 pr-16 rounded-xl border border-zinc-300 dark:border-white/10 bg-white dark:bg-black/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
                                         />
                                         <button
                                             type="button"
@@ -157,7 +157,7 @@ export default function AdminLoginModal({ onClose }) {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full text-sm font-medium bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg py-3 mt-2 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
+                                    className="w-full text-sm font-semibold bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl py-3 mt-2 hover:bg-zinc-800 dark:hover:bg-zinc-200 active:scale-[0.98] transition-all disabled:opacity-50"
                                 >
                                     {loading ? 'Verifying...' : 'Continue'}
                                 </button>

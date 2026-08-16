@@ -20,6 +20,7 @@ Route::get('/projects', [HomeController::class, 'index']);
 Route::get('/tech', [HomeController::class, 'index']);
 Route::get('/experience', [HomeController::class, 'index']);
 Route::get('/certificates', [HomeController::class, 'index']);
+Route::get('/contact', [HomeController::class, 'index']);
 Route::get('/resume', [ResumeController::class, 'download'])->name('resume.download');
 
 Route::post('/api/contact', [ContactController::class, 'send'])
@@ -33,7 +34,7 @@ Route::get('/system/keep-alive', function (Illuminate\Http\Request $request) {
     DB::select('select 1');
 
     return response('OK', 200);
-})->middleware('throttle:10,1');
+})->middleware('throttle:2,1');
 
 
 
