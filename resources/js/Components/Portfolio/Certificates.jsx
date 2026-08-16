@@ -42,6 +42,20 @@ function CertificateCard({ cert, onSelect }) {
     );
 }
 
+function AnimatedItem({ children, index = 0 }) {
+    const [ref, isInView] = useInView();
+    // UI/UX Pro Max: 50ms stagger per item, faster duration, subtle distance
+    return (
+        <div 
+            ref={ref} 
+            className={`transition-all duration-700 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: `${index * 50}ms` }}
+        >
+            {children}
+        </div>
+    );
+}
+
 export default function Certificates({ certificates = [] }) {
     const [selectedCertificate, setSelectedCertificate] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -70,7 +84,9 @@ export default function Certificates({ certificates = [] }) {
 
            <div className={`grid ${certGridCols(displayCertificates.length)} gap-3`}>
                 {displayCertificates.map((cert, idx) => (
-                    <CertificateCard key={`cert-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
+                    <AnimatedItem key={`cert-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} index={idx}>
+                        <CertificateCard cert={cert} onSelect={setSelectedCertificate} />
+                    </AnimatedItem>
                 ))}
             </div>
 
@@ -86,18 +102,7 @@ export default function Certificates({ certificates = [] }) {
                 </button>
             )}
 
-            <Modal isOpen={showModal} onClose={() => setShowModal(false)} maxWidth="max-w-4xl" ariaLabel="All Certificates">
-                <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white">All Certificates</h2>
-                    <button
-                        onClick={() => setShowModal(false)}
-                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+            <Modal isOpen={showModal} onClose={() => setShowModal(false)} maxWidth="max-w-4xl" ariaLabel="All Certificates" title="All Certificates">
 
                 <div className={`p-6 grid ${certGridCols(sortedCertificates.length)} gap-3`}>
                     {sortedCertificates.map((cert, idx) => (

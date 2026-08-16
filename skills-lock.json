@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "laravel-inertia-react": {
+      "source": "asyrafhussin/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/laravel-inertia-react/SKILL.md",
+      "computedHash": "48153a3ab923ee477416dad35ee8cf814b2cb324829d140098a092f4e33dd2c6"
+    },
+    "laravel-specialist": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/laravel-specialist/SKILL.md",
+      "computedHash": "805be17bd59f759e2f2f2dcbd6bd205ca6678420a87b21da1c16e0793093615c"
+    },
+    "security-review": {
+      "source": "getsentry/skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-review/SKILL.md",
+      "computedHash": "1eee1e41aa0a0e75dbbe0cac387e3d61bedf51af1888f184301a173731e6973e"
+    }
+  }
+}

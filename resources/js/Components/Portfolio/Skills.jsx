@@ -23,25 +23,41 @@ function SkillCard({ category, items, spanFull }) {
     const remaining = items.length - MAX_VISIBLE;
 
     return (
-        <div className={`p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-soft transition-all space-y-3 ${spanFull ? 'sm:col-span-2' : ''}`}>
-            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                {category}
-            </h3>
+        <div className={`p-1.5 rounded-[1.75rem] bg-white/60 dark:bg-zinc-900/40 ring-1 ring-zinc-200/70 dark:ring-zinc-800/70 hover:ring-zinc-300 dark:hover:ring-zinc-700 hover:shadow-ambient transition-all duration-500 ease-fluid ${spanFull ? 'sm:col-span-2' : ''}`}>
+            <div className="h-full p-4 sm:p-5 rounded-[1.375rem] bg-white dark:bg-[#0a0a0a] shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] space-y-3">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    {category}
+                </h3>
 
-            <div className="flex flex-wrap gap-2">
-                {visibleItems.map((skill) => (
-                    <SkillTag key={skill.id ?? skill.name} skill={skill} />
-                ))}
+                <div className="flex flex-wrap gap-2">
+                    {visibleItems.map((skill) => (
+                        <SkillTag key={skill.id ?? skill.name} skill={skill} />
+                    ))}
 
-                {!expanded && remaining > 0 && (
-                    <button
-                        onClick={() => setExpanded(true)}
-                        className="inline-flex items-center px-2.5 py-1 rounded-md bg-white dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-600 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-500 active:scale-95 font-mono text-sm transition-all"
-                    >
-                        +{remaining} more
-                    </button>
-                )}
+                    {!expanded && remaining > 0 && (
+                        <button
+                            onClick={() => setExpanded(true)}
+                            className="inline-flex items-center px-2.5 py-1 rounded-md bg-zinc-50 dark:bg-zinc-800/60 border border-dashed border-zinc-300 dark:border-zinc-600 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:border-zinc-400 dark:hover:border-zinc-500 active:scale-95 font-mono text-sm transition-all duration-300 ease-fluid"
+                        >
+                            +{remaining} more
+                        </button>
+                    )}
+                </div>
             </div>
+        </div>
+    );
+}
+
+function AnimatedItem({ children, index = 0 }) {
+    const [ref, isInView] = useInView();
+    // UI/UX Pro Max: 50ms stagger per item, faster duration, subtle distance
+    return (
+        <div 
+            ref={ref} 
+            className={`transition-all duration-700 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            style={{ transitionDelay: `${index * 50}ms` }}
+        >
+            {children}
         </div>
     );
 }
@@ -72,12 +88,13 @@ export default function Skills({ skills = [] }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {grouped.map((group, idx) => (
-                    <SkillCard
-                        key={group.category}
-                        category={group.category}
-                        items={group.items}
-                        spanFull={isOdd && idx === grouped.length - 1}
-                    />
+                    <AnimatedItem key={group.category} index={idx}>
+                        <SkillCard
+                            category={group.category}
+                            items={group.items}
+                            spanFull={isOdd && idx === grouped.length - 1}
+                        />
+                    </AnimatedItem>
                 ))}
             </div>
         </section>

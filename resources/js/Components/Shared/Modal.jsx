@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 
 // Shared modal shell. Handles backdrop, scroll lock, escape key, focus trap,
 // and entry animation so every modal in the app behaves identically.
-export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 'max-w-2xl', ariaLabel }) {
+export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 'max-w-2xl', ariaLabel, title }) {
     const modalRef = useRef(null);
     const previouslyFocused = useRef(null);
 
@@ -49,7 +49,7 @@ export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md overflow-y-auto [transform:translateZ(0)] [will-change:backdrop-filter]"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/40 backdrop-blur-sm overflow-y-auto [transform:translateZ(0)] [will-change:backdrop-filter]"
             onClick={onClose}
         >
             <style>{`
@@ -62,11 +62,27 @@ export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 
                 ref={modalRef}
                 role="dialog"
                 aria-modal="true"
-                aria-label={ariaLabel}
-                className={`bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto styled-scrollbar shadow-soft-lg animate-[modalIn_0.18s_ease-out]`}
+                aria-label={ariaLabel || title}
+                className={`bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto styled-scrollbar shadow-2xl shadow-black/10 dark:shadow-black/40 ring-1 ring-black/5 dark:ring-white/5 animate-[modalIn_0.18s_ease-out] flex flex-col`}
                 onClick={(e) => e.stopPropagation()}
             >
-                {children}
+                {title && (
+                    <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80">
+                        <h2 className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">{title}</h2>
+                        <button
+                            onClick={onClose}
+                            className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                            aria-label="Close modal"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                )}
+                <div className="relative z-10 flex-1">
+                    {children}
+                </div>
             </div>
         </div>,
         document.body

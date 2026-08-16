@@ -34,3 +34,7 @@ pnpm-debug.log*
 
 // Local development build outputs
 .vite/
+
+.agents
+claude.md
+.memory

@@ -21,7 +21,7 @@ class AdminAuthService
         $otp = random_int(100000, 999999);
 
         $user->update([
-            'otp_code' => $otp,
+            'otp_code' => Hash::make((string) $otp),
             'otp_expires_at' => now()->addMinutes(5),
         ]);
 
@@ -34,11 +34,10 @@ class AdminAuthService
     public function verifyOtp(string $email, string $otpCode): ?User
     {
         $user = User::where('email', $email)
-            ->where('otp_code', $otpCode)
             ->where('otp_expires_at', '>', now())
             ->first();
 
-        if (! $user) {
+        if (! $user || ! Hash::check($otpCode, $user->otp_code)) {
             return null;
         }
 

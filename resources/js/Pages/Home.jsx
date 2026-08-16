@@ -7,6 +7,7 @@ import Projects from '../Components/Portfolio/Projects';
 import Skills from '../Components/Portfolio/Skills';
 import Experience from '../Components/Portfolio/Experience';
 import Certificates from '../Components/Portfolio/Certificates';
+import Contact from '../Components/Portfolio/Contact';
 import Footer from '../Components/Portfolio/Footer';
 
 // Lazy loaded so this never ships in the public bundle until triggered
@@ -79,7 +80,7 @@ export default function Home({
     }, []);
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-zinc-200 dark:selection:bg-zinc-800 selection:text-zinc-900 dark:selection:text-white transition-colors duration-200">
+        <div className="min-h-screen bg-zinc-50 dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-emerald-500/20 dark:selection:bg-emerald-500/30 selection:text-emerald-900 dark:selection:text-emerald-100 transition-colors duration-700 ease-fluid">
             <Head title={name}>
                 <meta name="description" content={`${name}, ${personal?.professional_title || 'Software Engineer'}. ${personal?.bio || personal?.about_me || 'Portfolio showcasing projects, skills, and experience.'}`} />
             </Head>
@@ -104,14 +105,18 @@ export default function Home({
                 onSecretTrigger={() => setShowAdminLogin(true)}
             />
 
-            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12 sm:space-y-16 lg:space-y-20">
+            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24 space-y-24 sm:space-y-32 lg:space-y-40">
                 <Hero personal={personal} stats={stats} />
                 <Projects projects={projects} skills={skills} />
                 <Skills skills={skills} />
                 <Experience experiences={experiences} />
                 <Certificates certificates={certificates} />
-                <Footer name={name} githubUrl={personal?.github_url} linkedinUrl={personal?.linkedin_url} />
             </main>
+
+            <div className="relative z-10">
+                <Contact />
+                <Footer name={name} githubUrl={personal?.github_url} linkedinUrl={personal?.linkedin_url} />
+            </div>
 
             {showAdminLogin && (
                 <Suspense fallback={null}>
