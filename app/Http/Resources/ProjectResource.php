@@ -21,8 +21,8 @@ class ProjectResource extends JsonResource
             'demo_url' => $this->demo_url,
             'image_path' => $this->image_path,
             'status' => $this->status,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
+            'start_date' => $this->start_date?->format('Y-m-d'),
+            'end_date' => $this->end_date?->format('Y-m-d'),
             'is_featured' => $this->is_featured,
         ];
     }
