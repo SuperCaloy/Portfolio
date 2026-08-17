@@ -24,5 +24,9 @@ class Skill extends Model
         'sort_order' => 'integer',
     ];
 
-
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('skills'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('skills'));
+    }
 }

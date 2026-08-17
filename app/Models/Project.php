@@ -48,4 +48,10 @@ protected static function boot()
     });
 }
 
+protected static function booted(): void
+{
+    static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('projects'));
+    static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('projects'));
+}
+
 }

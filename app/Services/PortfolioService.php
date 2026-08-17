@@ -12,45 +12,51 @@ use App\Models\Experience;
 use App\Models\PersonalInformation;
 use App\Models\Project;
 use App\Models\Skill;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Cache;
 
 class PortfolioService
 {
-    public function getPersonalInformation()
+    public function getPersonalInformation(): ?array
     {
-        $info = PersonalInformation::first([
-            'id',
-            'full_name',
-            'professional_title',
-            'bio',
-            'about_me',
-            'email',
-            'phone',
-            'github_url',
-            'linkedin_url',
-            'avatar_path',
-            'resume_path',
-        ]);
-        
-        return $info ? new PersonalInformationResource($info) : null;
+        return Cache::rememberForever('personal_information', function () {
+            $info = PersonalInformation::first([
+                'id',
+                'full_name',
+                'professional_title',
+                'bio',
+                'about_me',
+                'email',
+                'phone',
+                'github_url',
+                'linkedin_url',
+                'avatar_path',
+                'resume_path',
+            ]);
+            
+            return $info ? (new PersonalInformationResource($info))->resolve() : null;
+        });
     }
 
-    public function getSkills()
+    public function getSkills(): array
     {
-        return SkillResource::collection(
-            Skill::orderBy('sort_order')->get([
+        return Cache::rememberForever('skills', function () {
+            $skills = Skill::orderBy('sort_order')->get([
                 'id',
                 'name',
                 'category',
                 'icon_name',
                 'is_featured',
-            ])
-        );
+            ]);
+            
+            return SkillResource::collection($skills)->resolve();
+        });
     }
 
-    public function getProjects()
+    public function getProjects(): array
     {
-        return ProjectResource::collection(
-            Project::orderBy('is_featured', 'desc')
+        return Cache::rememberForever('projects', function () {
+            $projects = Project::orderBy('is_featured', 'desc')
                 ->orderBy('sort_order')
                 ->get([
                     'public_id',
@@ -65,14 +71,16 @@ class PortfolioService
                     'start_date',
                     'end_date',
                     'is_featured',
-                ])
-        );
+                ]);
+                
+            return ProjectResource::collection($projects)->resolve();
+        });
     }
 
-    public function getExperiences()
+    public function getExperiences(): array
     {
-        return ExperienceResource::collection(
-            Experience::orderBy('start_date', 'desc')
+        return Cache::rememberForever('experiences', function () {
+            $experiences = Experience::orderBy('start_date', 'desc')
                 ->get([
                     'public_id',
                     'company',
@@ -83,14 +91,16 @@ class PortfolioService
                     'is_current',
                     'description',
                     'achievements',
-                ])
-        );
+                ]);
+                
+            return ExperienceResource::collection($experiences)->resolve();
+        });
     }
 
-    public function getCertificates()
+    public function getCertificates(): array
     {
-        return CertificateResource::collection(
-            Certificate::orderBy('issue_date', 'desc')
+        return Cache::rememberForever('certificates', function () {
+            $certificates = Certificate::orderBy('issue_date', 'desc')
                 ->get([
                     'public_id',
                     'title',
@@ -100,7 +110,9 @@ class PortfolioService
                     'credential_id',
                     'credential_url',
                     'image_path',
-                ])
-        );
+                ]);
+                
+            return CertificateResource::collection($certificates)->resolve();
+        });
     }
 }
