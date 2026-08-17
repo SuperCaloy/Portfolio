@@ -5,6 +5,7 @@ use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Public\ResumeController;
+use App\Http\Controllers\Public\SitemapController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\ProjectController;
@@ -22,6 +23,7 @@ Route::get('/experience', [HomeController::class, 'index']);
 Route::get('/certificates', [HomeController::class, 'index']);
 Route::get('/contact', [HomeController::class, 'index']);
 Route::get('/resume', [ResumeController::class, 'download'])->name('resume.download');
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
 Route::post('/api/contact', [ContactController::class, 'send'])
     ->middleware(['throttle:3,1', 'throttle:10,1440']);

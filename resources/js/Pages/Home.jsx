@@ -79,10 +79,41 @@ export default function Home({
         }
     }, []);
 
+    const description = `${name}, ${personal?.professional_title || 'Software Engineer'}. ${personal?.bio || personal?.about_me || 'Portfolio showcasing projects, skills, and experience.'}`;
+    
+    const structuredData = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": name,
+        "jobTitle": personal?.professional_title || 'Software Engineer',
+        "url": "https://ramonpacilona.site",
+        "sameAs": [
+            personal?.github_url,
+            personal?.linkedin_url
+        ].filter(Boolean),
+        "description": description
+    };
+
+    if (personal?.avatar_path) {
+        structuredData.image = "https://ramonpacilona.site" + personal.avatar_path;
+    }
+
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-emerald-500/20 dark:selection:bg-emerald-500/30 selection:text-emerald-900 dark:selection:text-emerald-100 transition-colors duration-700 ease-fluid">
             <Head title={name}>
-                <meta name="description" content={`${name}, ${personal?.professional_title || 'Software Engineer'}. ${personal?.bio || personal?.about_me || 'Portfolio showcasing projects, skills, and experience.'}`} />
+                <meta name="description" content={description} />
+                <meta property="og:title" content={name} />
+                <meta property="og:description" content={description} />
+                <meta property="og:url" content="https://ramonpacilona.site" />
+                <meta property="og:type" content="website" />
+                {personal?.avatar_path && <meta property="og:image" content={`https://ramonpacilona.site${personal.avatar_path}`} />}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={name} />
+                <meta name="twitter:description" content={description} />
+                {personal?.avatar_path && <meta name="twitter:image" content={`https://ramonpacilona.site${personal.avatar_path}`} />}
+                <script type="application/ld+json">
+                    {JSON.stringify(structuredData)}
+                </script>
             </Head>
 
             <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
