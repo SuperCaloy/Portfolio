@@ -48,6 +48,7 @@ COPY . .
 
 # Bring in the built frontend assets from stage 1
 COPY --from=assets /app/public/build ./public/build
+COPY --from=assets /app/bootstrap/ssr ./bootstrap/ssr
 
 RUN composer dump-autoload --optimize --no-dev
 
