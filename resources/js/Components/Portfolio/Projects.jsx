@@ -49,6 +49,8 @@ function ProjectListItem({ project, skills, onSelect }) {
                     <img
                         src={project.image_path}
                         alt={project.title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover transition-transform duration-700 ease-fluid group-hover:scale-105"
                         onError={() => setImageError(true)}
                     />
@@ -115,6 +117,8 @@ function ProjectCard({ project, skills, onSelect, index = 0 }) {
                         <img
                             src={project.image_path}
                             alt={project.title}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover transition-transform duration-700 ease-fluid group-hover:scale-105"
                             onError={() => setImageError(true)}
                         />

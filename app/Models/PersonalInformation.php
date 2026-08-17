@@ -27,4 +27,10 @@ class PersonalInformation extends Model
     'avatar_path',
     'avatar_public_id',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('personal_information'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('personal_information'));
+    }
 }

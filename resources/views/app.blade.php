@@ -17,6 +17,10 @@
     <meta name="twitter:title" content="Ramon Carlos E. Pacilona | Computer Science Student">
     <meta name="twitter:description" content="Portfolio of Ramon Carlos E. Pacilona, a Computer Science student building full stack web applications with Laravel, React, and Inertia.js.">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     {{-- Applies the saved theme before first paint, prevents a flash of the wrong theme on load --}}
     <script>
         (function () {

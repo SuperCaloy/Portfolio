@@ -111,9 +111,7 @@ export default function Home({
                 <meta name="twitter:title" content={name} />
                 <meta name="twitter:description" content={description} />
                 {personal?.avatar_path && <meta name="twitter:image" content={`https://ramonpacilona.site${personal.avatar_path}`} />}
-                <script type="application/ld+json">
-                    {JSON.stringify(structuredData)}
-                </script>
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
             </Head>
 
             <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">

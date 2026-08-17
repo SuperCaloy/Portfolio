@@ -42,4 +42,10 @@ class Experience extends Model
             }
         });
     }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('experiences'));
+        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('experiences'));
+    }
 }
