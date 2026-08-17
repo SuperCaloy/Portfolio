@@ -22,6 +22,7 @@ class PersonalInformationResource extends JsonResource
             'github_url' => $this->github_url,
             'linkedin_url' => $this->linkedin_url,
             'avatar_path' => $this->avatar_path,
+            'resume_path' => $this->resume_path,
         ];
     }
 }

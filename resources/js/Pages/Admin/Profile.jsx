@@ -44,6 +44,8 @@ export default function Profile({ profile }) {
     useEffect(() => {
         const removeListener = router.on('before', (event) => {
             if (!isDirty || pendingUrl) return;
+            if (event.detail.visit.method !== 'get') return;
+            
             event.preventDefault();
             setPendingUrl(event.detail.visit.url.href);
         });

@@ -24,9 +24,15 @@ class ResumeController extends Controller
             abort(404, 'Resume not available.');
         }
 
+        $disposition = request()->has('download') ? 'attachment' : 'inline';
+        
+        $fileName = $profile->full_name 
+            ? str_replace(' ', '', $profile->full_name) . '-resume.pdf' 
+            : 'RamonCarlosE.Pacilona-resume.pdf';
+
         return new Response($response->body(), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="resume.pdf"',
+            'Content-Disposition' => $disposition . '; filename="' . $fileName . '"',
         ]);
     }
 }
