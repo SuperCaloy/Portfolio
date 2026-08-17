@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 
 export default function useTheme() {
     const [theme, setTheme] = useState(() => {
-        return localStorage.getItem('theme') || 'light';
+        if (typeof window !== 'undefined' && window.localStorage) {
+            return localStorage.getItem('theme') || 'light';
+        }
+        return 'light';
     });
 
     useEffect(() => {
