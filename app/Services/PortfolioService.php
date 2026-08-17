@@ -28,6 +28,7 @@ class PortfolioService
             'github_url',
             'linkedin_url',
             'avatar_path',
+            'resume_path',
         ]);
         
         return $info ? new PersonalInformationResource($info) : null;
