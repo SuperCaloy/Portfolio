@@ -16,7 +16,7 @@ export default function Hero({ personal, stats }) {
         <section
             id="about"
             ref={sectionRef}
-            className={`pt-24 sm:pt-32 pb-16 transition-all duration-1000 ease-fluid ${isInView ? 'opacity-100 translate-y-0 blur-0' : 'opacity-0 translate-y-12 blur-sm'}`}
+            className={`pt-24 sm:pt-32 pb-16 transition-all duration-1000 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
         >
             <div className="flex flex-col-reverse md:flex-row items-center md:items-start justify-between gap-12 lg:gap-20">
                 <div className="w-full md:w-auto space-y-8 min-w-0 flex-1">
@@ -63,7 +63,7 @@ export default function Hero({ personal, stats }) {
                                 document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                                 window.history.pushState({}, '', '/contact');
                             }}
-                            className="group inline-flex items-center gap-4 pl-6 pr-2 py-2 rounded-full bg-emerald-500 text-white font-semibold text-base transition-all duration-700 ease-fluid shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_-15px_rgba(16,185,129,0.6)] hover:bg-emerald-400 hover:-translate-y-1 active:scale-[0.98] no-underline ring-1 ring-white/20"
+                            className="group inline-flex items-center gap-4 pl-6 pr-2 py-3 md:py-2 rounded-full bg-emerald-500 text-white font-semibold text-base transition-all duration-700 ease-fluid shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_-15px_rgba(16,185,129,0.6)] hover:bg-emerald-400 hover:-translate-y-1 active:scale-[0.98] no-underline ring-1 ring-white/20"
                         >
                             <span>Contact Me</span>
                             <span className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 group-hover:-translate-y-[1px] group-hover:scale-105 transition-all duration-700 ease-fluid">
@@ -128,6 +128,7 @@ export default function Hero({ personal, stats }) {
                                     href="/resume?download=1"
                                     className="inline-flex items-center justify-center px-3 py-2.5 rounded-r-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-sm font-medium active:scale-95 transition-all"
                                     title="Download Resume"
+                                    aria-label="Download Resume"
                                 >
                                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
