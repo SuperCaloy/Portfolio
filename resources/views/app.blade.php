@@ -6,16 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title inertia>Ramon Carlos E. Pacilona | Computer Science Student</title>
-    <meta name="description" content="Portfolio of Ramon Carlos E. Pacilona, a Computer Science student building full stack web applications with Laravel, React, and Inertia.js.">
-
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Ramon Carlos E. Pacilona | Computer Science Student">
-    <meta property="og:description" content="Portfolio of Ramon Carlos E. Pacilona, a Computer Science student building full stack web applications with Laravel, React, and Inertia.js.">
-    <meta property="og:url" content="{{ url('/') }}">
-
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Ramon Carlos E. Pacilona | Computer Science Student">
-    <meta name="twitter:description" content="Portfolio of Ramon Carlos E. Pacilona, a Computer Science student building full stack web applications with Laravel, React, and Inertia.js.">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">

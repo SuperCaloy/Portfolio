@@ -133,7 +133,7 @@ export default function Contact() {
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <label className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Message</label>
-                                    <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">
+                                    <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
                                         {formData.message.length}/{MESSAGE_MAX_LENGTH}
                                     </span>
                                 </div>
@@ -152,7 +152,7 @@ export default function Contact() {
                                         <button
                                             type="submit"
                                             disabled={status.loading}
-                                            className="group flex items-center justify-between w-full pl-6 pr-2 py-2 rounded-full bg-emerald-500 text-white font-semibold text-base transition-all duration-700 ease-fluid shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_-15px_rgba(16,185,129,0.6)] hover:bg-emerald-400 active:scale-[0.98] disabled:opacity-50 ring-1 ring-white/20"
+                                            className="group flex items-center justify-between w-full pl-6 pr-2 py-2 rounded-full bg-emerald-600 text-white font-semibold text-base transition-all duration-700 ease-fluid shadow-[0_0_40px_-10px_rgba(5,150,105,0.4)] hover:shadow-[0_0_60px_-15px_rgba(5,150,105,0.6)] hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-50 ring-1 ring-white/20"
                                         >
                                             <span>{status.loading ? 'Sending...' : 'Send Message'}</span>
                                             <span className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 group-hover:scale-105 transition-all duration-700 ease-fluid">

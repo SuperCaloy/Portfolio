@@ -26,7 +26,17 @@ class Skill extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('skills'));
-        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('skills'));
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('skills');
+            if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+                \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            }
+        });
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('skills');
+            if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+                \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            }
+        });
     }
 }
