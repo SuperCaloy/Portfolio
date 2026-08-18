@@ -44,15 +44,6 @@
     @inertiaHead
 </head>
 <body class="antialiased">
-    <div id="initial-loader" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;">
-        <div style="width:32px;height:32px;border-radius:9999px;border:2px solid #d4d4d8;border-top-color:#10b981;animation:spin 0.7s linear infinite;"></div>
-    </div>
-    <style>
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #initial-loader { background: #ffffff; }
-        html.dark #initial-loader { background: #09090b; }
-        html.dark #initial-loader div { border-color: #3f3f46; border-top-color: #10b981; }
-    </style>
     @inertia
 </body>
 </html>
