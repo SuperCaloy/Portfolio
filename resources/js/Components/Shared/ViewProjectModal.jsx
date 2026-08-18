@@ -74,13 +74,13 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
                     )}
 
                     {project.subtitle && (
-                        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap [text-wrap:pretty]">
                             {project.subtitle}
                         </p>
                     )}
 
                     {project.description && (
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap [text-wrap:pretty]">
                             {project.description}
                         </p>
                     )}
