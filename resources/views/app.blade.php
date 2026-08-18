@@ -24,6 +24,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @if(isset($avatar_path))
+    <link rel="preload" as="image" href="{{ url($avatar_path) }}">
+    @endif
 
     {{-- Applies the saved theme before first paint, prevents a flash of the wrong theme on load --}}
     <script>
