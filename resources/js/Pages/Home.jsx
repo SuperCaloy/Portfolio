@@ -48,12 +48,14 @@ export default function Home({
     // Scroll to matching section if landing directly on /projects, /tech, etc
     useEffect(() => {
         const path = window.location.pathname;
-        const sectionId = path === '/' ? 'about' : path.replace('/', '');
-        const el = document.getElementById(sectionId);
-        if (el) {
-            requestAnimationFrame(() => {
-                el.scrollIntoView({ behavior: 'auto', block: 'start' });
-            });
+        if (path !== '/') {
+            const sectionId = path.replace('/', '');
+            const el = document.getElementById(sectionId);
+            if (el) {
+                requestAnimationFrame(() => {
+                    el.scrollIntoView({ behavior: 'auto', block: 'start' });
+                });
+            }
         }
     }, []);
 
