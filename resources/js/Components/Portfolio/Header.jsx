@@ -20,7 +20,14 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
 
     const scrollToSection = (e, sectionId, path) => {
         e.preventDefault();
-        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+        const target = document.getElementById(sectionId);
+        if (target) {
+            if (window.lenis) {
+                window.lenis.scrollTo(target, { offset: -60 });
+            } else {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
         window.history.pushState({}, '', path);
         setMenuOpen(false);
     };
