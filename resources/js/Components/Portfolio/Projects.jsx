@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import Modal from '../Shared/Modal';
-import ViewProjectModal from '../Shared/ViewProjectModal';
+const ViewProjectModal = React.lazy(() => import('../Shared/ViewProjectModal'));
 import useInView from '../../hooks/useInView';
 import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
+import { optimizeCloudinaryUrl } from '../../utils/image';
 const STATUS_STYLES = {
     'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
     'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
@@ -47,7 +48,7 @@ function ProjectListItem({ project, skills, onSelect }) {
             <div className="shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-zinc-100 dark:bg-zinc-900 overflow-hidden ring-1 ring-zinc-200/50 dark:ring-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
                 {project.image_path && !imageError ? (
                     <img
-                        src={project.image_path}
+                        src={optimizeCloudinaryUrl(project.image_path, 200)}
                         alt={project.title}
                         loading="lazy"
                         decoding="async"
@@ -123,7 +124,7 @@ function ProjectCard({ project, skills, onSelect, index = 0 }) {
                 <div className={`w-full md:w-1/2 aspect-video md:aspect-auto md:min-h-[340px] overflow-hidden bg-zinc-100 dark:bg-zinc-900 relative`}>
                     {project.image_path && !imageError ? (
                         <img
-                            src={project.image_path}
+                            src={optimizeCloudinaryUrl(project.image_path, 800)}
                             alt={project.title}
                             loading="lazy"
                             decoding="async"
@@ -340,11 +341,13 @@ export default function Projects({ projects = [], skills = [] }) {
             </Modal>
 
             {selectedProject && (
-                <ViewProjectModal
-                    project={selectedProject}
-                    skills={skills}
-                    onClose={() => setSelectedProject(null)}
-                />
+                <Suspense fallback={null}>
+                    <ViewProjectModal
+                        project={selectedProject}
+                        skills={skills}
+                        onClose={() => setSelectedProject(null)}
+                    />
+                </Suspense>
             )}
         </section>
     );

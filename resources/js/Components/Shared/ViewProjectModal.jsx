@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Modal from '../Shared/Modal';
 import Lightbox from '../Shared/Lightbox';
 import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
+import { optimizeCloudinaryUrl } from '../../utils/image';
 const STATUS_STYLES = {
     'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
     'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
@@ -63,7 +64,7 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
 
                     {project.image_path && (
                         <img
-                            src={project.image_path}
+                            src={optimizeCloudinaryUrl(project.image_path, 1200)}
                             alt={project.title}
                             loading="lazy"
                             decoding="async"
@@ -140,7 +141,7 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
                 <Lightbox
                     isOpen={showLightbox}
                     onClose={() => setShowLightbox(false)}
-                    src={project.image_path}
+                    src={optimizeCloudinaryUrl(project.image_path, 1920)}
                     alt={project.title}
                 />
             )}
