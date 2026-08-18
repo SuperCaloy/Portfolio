@@ -14,8 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
 
+        $middleware->web(prepend: [
+            \Spatie\ResponseCache\Middlewares\CacheResponse::class,
+        ]);
+        
         // Appends Inertia middleware to handle page state across web requests
         $middleware->web(append: [
+            \App\Http\Middleware\RemoveXPoweredByHeader::class,
             HandleInertiaRequests::class,
         ]);
     })

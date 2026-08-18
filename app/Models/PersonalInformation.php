@@ -30,7 +30,17 @@ class PersonalInformation extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget('personal_information'));
-        static::deleted(fn () => \Illuminate\Support\Facades\Cache::forget('personal_information'));
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('personal_information');
+            if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+                \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            }
+        });
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('personal_information');
+            if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
+                \Spatie\ResponseCache\Facades\ResponseCache::clear();
+            }
+        });
     }
 }
