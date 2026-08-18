@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import useInView from '../../hooks/useInView';
 import Modal from '../Shared/Modal';
 import { optimizeCloudinaryUrl } from '../../utils/image';
 
 export default function Hero({ personal, stats }) {
-    const [sectionRef, isInView] = useInView();
     const [showAboutModal, setShowAboutModal] = useState(false);
 
     const name = personal?.full_name || 'Your Name';
@@ -16,8 +14,7 @@ export default function Hero({ personal, stats }) {
     return (
         <section
             id="about"
-            ref={sectionRef}
-            className={`pt-24 sm:pt-32 pb-16 transition-all duration-1000 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+            className="pt-24 sm:pt-32 pb-16"
         >
             <div className="flex flex-col-reverse md:flex-row items-center md:items-start justify-between gap-12 lg:gap-20">
                 <div className="w-full md:w-auto space-y-8 min-w-0 flex-1">
