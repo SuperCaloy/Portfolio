@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import Lenis from 'lenis';
 
 // Shared modal shell. Handles backdrop, scroll lock, escape key, focus trap,
 // and entry animation so every modal in the app behaves identically.
@@ -37,11 +38,35 @@ export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 
 
         document.addEventListener('keydown', handleKeyDown);
         document.body.style.overflow = 'hidden';
+        window.lenis?.stop();
+
+        let modalLenis;
+        let rafId;
+
+        if (modalRef.current) {
+            modalLenis = new Lenis({
+                wrapper: modalRef.current,
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            });
+
+            function raf(time) {
+                modalLenis.raf(time);
+                rafId = requestAnimationFrame(raf);
+            }
+            rafId = requestAnimationFrame(raf);
+        }
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.body.style.overflow = '';
             previouslyFocused.current?.focus?.();
+            window.lenis?.start();
+            
+            if (modalLenis) {
+                cancelAnimationFrame(rafId);
+                modalLenis.destroy();
+            }
         };
     }, [isOpen, onClose, onEscape]);
 
@@ -71,7 +96,7 @@ export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 
                         <h2 className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">{title}</h2>
                         <button
                             onClick={onClose}
-                            className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                            className="w-11 h-11 flex items-center justify-center -mr-2 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                             aria-label="Close modal"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

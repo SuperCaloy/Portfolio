@@ -19,7 +19,11 @@ export default function useTheme() {
     }, [theme]);
 
     const toggleTheme = () => {
+        document.documentElement.classList.add('theme-transitioning');
         setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+        setTimeout(() => {
+            document.documentElement.classList.remove('theme-transitioning');
+        }, 300);
     };
 
     return { theme, toggleTheme };
