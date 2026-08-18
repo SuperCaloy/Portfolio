@@ -28,6 +28,24 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::post('/api/contact', [ContactController::class, 'send'])
     ->middleware(['throttle:3,1', 'throttle:10,1440']);
 
+Route::get('/api/icons/simple/{slug}', function ($slug) {
+    // Basic slug validation
+    if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
+        abort(404);
+    }
+    
+    $path = base_path('node_modules/simple-icons/icons/' . $slug . '.svg');
+    
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    
+    return response()->file($path, [
+        'Content-Type' => 'image/svg+xml',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+});
+
 Route::get('/system/keep-alive', function (Illuminate\Http\Request $request) {
     if ($request->query('token') !== config('app.keep_alive_token')) {
         abort(403);

@@ -62,7 +62,7 @@ async function resolveIconUrl(raw) {
 
     const siSlug = findSimpleIconsSlug(simpleIndex, raw);
     if (siSlug) {
-        const url = `https://cdn.simpleicons.org/${siSlug}`;
+        const url = `/api/icons/simple/${siSlug}`;
         resolvedCache.set(key, url);
         return url;
     }
