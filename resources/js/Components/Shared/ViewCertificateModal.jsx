@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../Shared/Modal';
 import Lightbox from '../Shared/Lightbox';
+import { optimizeCloudinaryUrl } from '../../utils/image';
 
 const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -27,7 +28,7 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
 
                     {certificate.image_path && (
                         <img
-                            src={certificate.image_path}
+                            src={optimizeCloudinaryUrl(certificate.image_path, 1200)}
                             alt={certificate.title}
                             loading="lazy"
                             decoding="async"
@@ -88,7 +89,7 @@ export default function ViewCertificateModal({ certificate, onClose, onEdit }) {
                 <Lightbox
                     isOpen={showLightbox}
                     onClose={() => setShowLightbox(false)}
-                    src={certificate.image_path}
+                    src={optimizeCloudinaryUrl(certificate.image_path, 1920)}
                     alt={certificate.title}
                 />
             )}

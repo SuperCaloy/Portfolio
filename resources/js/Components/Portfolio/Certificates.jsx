@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Modal from '../Shared/Modal';
-import ViewCertificateModal from '../Shared/ViewCertificateModal';
+const ViewCertificateModal = React.lazy(() => import('../Shared/ViewCertificateModal'));
 import useInView from '../../hooks/useInView';
 
 const formatDate = (dateString) => {
@@ -112,10 +112,12 @@ export default function Certificates({ certificates = [] }) {
             </Modal>
 
             {selectedCertificate && (
-                <ViewCertificateModal
-                    certificate={selectedCertificate}
-                    onClose={() => setSelectedCertificate(null)}
-                />
+                <Suspense fallback={null}>
+                    <ViewCertificateModal
+                        certificate={selectedCertificate}
+                        onClose={() => setSelectedCertificate(null)}
+                    />
+                </Suspense>
             )}
         </section>
     );
