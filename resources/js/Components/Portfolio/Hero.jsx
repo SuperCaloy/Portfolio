@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useInView from '../../hooks/useInView';
 import Modal from '../Shared/Modal';
+import { optimizeCloudinaryUrl } from '../../utils/image';
 
 export default function Hero({ personal, stats }) {
     const [sectionRef, isInView] = useInView();
@@ -142,7 +143,7 @@ export default function Hero({ personal, stats }) {
                 {hasPhoto && (
                     <div className="shrink-0 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 lg:w-[20rem] lg:h-[20rem] p-2 rounded-[2rem] bg-zinc-100/50 dark:bg-white/5 ring-1 ring-zinc-200/50 dark:ring-white/10 shadow-ambient transition-transform duration-500 hover:scale-[1.02]">
                         <div className="w-full h-full rounded-[1.625rem] overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] bg-white dark:bg-[#0a0a0a] flex items-center justify-center">
-                            <img src={personal.avatar_path} alt={`${name}, profile photo`} fetchPriority="high" loading="eager" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-fluid" />
+                            <img src={optimizeCloudinaryUrl(personal.avatar_path, 800)} alt={`${name}, profile photo`} fetchPriority="high" loading="eager" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-fluid" />
                         </div>
                     </div>
                 )}
