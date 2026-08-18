@@ -4,7 +4,6 @@ const ADMIN_SLUG = import.meta.env.VITE_ADMIN_SLUG;
 
 export default function AdminLoginModal({ onClose }) {
     const [step, setStep] = useState('credentials');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [otp, setOtp] = useState('');
@@ -32,10 +31,10 @@ export default function AdminLoginModal({ onClose }) {
         setLoading(true);
 
         try {
-            await window.axios.post(`/${ADMIN_SLUG}/login`, { email, password });
+            await window.axios.post(`/${ADMIN_SLUG}/login`, { password });
             setStep('otp');
         } catch (err) {
-            const message = err.response?.data?.errors?.email?.[0] || 'Invalid credentials.';
+            const message = err.response?.data?.errors?.password?.[0] || 'Invalid credentials.';
             setError(message);
         } finally {
             setLoading(false);
@@ -48,7 +47,7 @@ export default function AdminLoginModal({ onClose }) {
         setLoading(true);
 
         try {
-            const response = await window.axios.post(`/${ADMIN_SLUG}/verify`, { email, otp_code: otp });
+            const response = await window.axios.post(`/${ADMIN_SLUG}/verify`, { otp_code: otp });
             setStep('redirecting');
             window.location.href = response.data.redirect;
         } catch (err) {
@@ -59,7 +58,6 @@ export default function AdminLoginModal({ onClose }) {
     };
 
     const handleBackToCredentials = () => {
-        setEmail('');
         setPassword('');
         setOtp('');
         setError('');
@@ -106,8 +104,8 @@ export default function AdminLoginModal({ onClose }) {
                             </h2>
                             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5">
                                 {step === 'credentials'
-                                    ? 'Enter your admin credentials to continue.'
-                                    : `A 6 digit code was sent to ${email}.`}
+                                    ? 'Enter your admin password to continue.'
+                                    : 'A 6 digit code was sent to your email.'}
                             </p>
                         </div>
 
@@ -119,19 +117,6 @@ export default function AdminLoginModal({ onClose }) {
 
                         {step === 'credentials' ? (
                             <form onSubmit={handleSendOtp} className="space-y-4">
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Email</label>
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="you@example.com"
-                                        required
-                                        autoComplete="off"
-                                        className="w-full text-sm px-4 py-3 rounded-xl border border-zinc-300 dark:border-white/10 bg-white dark:bg-black/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
-                                    />
-                                </div>
-
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Password</label>
                                     <div className="relative">

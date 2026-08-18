@@ -105,8 +105,16 @@ function ProjectCard({ project, skills, onSelect, index = 0 }) {
     const isReversed = index % 2 !== 0;
 
     return (
-        <button
+        <div
+            role="button"
+            tabIndex={0}
             onClick={() => onSelect(project)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelect(project);
+                }
+            }}
             className={`group relative w-full text-left p-1.5 md:p-2 rounded-[2rem] bg-zinc-100/50 dark:bg-white/5 ring-1 ring-zinc-200/50 dark:ring-white/10 hover:ring-zinc-300 dark:hover:ring-zinc-700 hover:shadow-ambient hover:-translate-y-1 active:translate-y-0 active:scale-[0.99] transition-all duration-700 ease-fluid`}
         >
             <div className={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} overflow-hidden rounded-[1.625rem] bg-white dark:bg-[#0a0a0a] shadow-[inset_0_1px_1px_rgba(255,255,255,1)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]`}>
@@ -204,7 +212,7 @@ function ProjectCard({ project, skills, onSelect, index = 0 }) {
                     </div>
                 </div>
             </div>
-        </button>
+        </div>
     );
 }
 

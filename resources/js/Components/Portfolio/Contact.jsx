@@ -39,7 +39,7 @@ export default function Contact() {
     return (
         <section id="contact" className="py-24 sm:py-32 relative">
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-emerald-400/5 dark:bg-emerald-500/5 blur-[120px] rounded-full" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-emerald-400/5 dark:bg-emerald-500/5 blur-[120px] rounded-full will-change-transform translate-z-0" />
             </div>
 
             <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
