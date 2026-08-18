@@ -30,11 +30,12 @@ function normalize(str) {
 
 // Exact title or slug match first, then a loose containment match as a
 // second pass, e.g. typing "Tailwind" finds "Tailwind CSS" this way.
-function findSimpleIconsSlug(index, raw) {
+function findSimpleIconMatch(index, raw) {
     const target = normalize(raw);
     if (!target) return null;
-    const match = index.find((e) => normalize(e.title) === target || e.slug === target);
-    return match ? match.slug : null;
+    const icons = index.icons || index;
+    const match = icons.find((e) => normalize(e.title) === target || e.slug === target);
+    return match ? match : null;
 }
 
 // Devicon entries carry a name plus alternate names, both are checked,
@@ -60,16 +61,16 @@ async function resolveIconUrl(raw) {
 
     const [simpleIndex, deviconIndex] = await Promise.all([loadSimpleIconsIndex(), loadDeviconIndex()]);
 
-    const siSlug = findSimpleIconsSlug(simpleIndex, raw);
-    if (siSlug) {
-        const url = `/api/icons/simple/${siSlug}`;
+    const siMatch = findSimpleIconMatch(simpleIndex, raw);
+    if (siMatch) {
+        const url = `/api/icons/simple/${siMatch.slug}?color=${siMatch.hex}`;
         resolvedCache.set(key, url);
         return url;
     }
 
     const diName = findDeviconName(deviconIndex, raw);
     if (diName) {
-        const url = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${diName}/${diName}-original.svg`;
+        const url = `/api/icons/devicon/${diName}`;
         resolvedCache.set(key, url);
         return url;
     }

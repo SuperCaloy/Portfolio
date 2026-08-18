@@ -28,7 +28,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::post('/api/contact', [ContactController::class, 'send'])
     ->middleware(['throttle:3,1', 'throttle:10,1440']);
 
-Route::get('/api/icons/simple/{slug}', function ($slug) {
+Route::get('/api/icons/simple/{slug}', function (Illuminate\Http\Request $request, $slug) {
     // Basic slug validation
     if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
         abort(404);
@@ -40,7 +40,40 @@ Route::get('/api/icons/simple/{slug}', function ($slug) {
         abort(404);
     }
     
-    return response()->file($path, [
+    $svg = file_get_contents($path);
+    
+    // Inject brand color if provided
+    if ($request->has('color')) {
+        $color = $request->query('color');
+        if (preg_match('/^[a-fA-F0-9]{3,6}$/', $color)) {
+            $svg = str_replace('<svg ', '<svg fill="#' . $color . '" ', $svg);
+        }
+    }
+    
+    return response($svg, 200, [
+        'Content-Type' => 'image/svg+xml',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+});
+
+Route::get('/api/icons/devicon/{name}', function ($name) {
+    if (!preg_match('/^[a-z0-9-]+$/', $name)) {
+        abort(404);
+    }
+
+    $cacheKey = "devicon_{$name}";
+    $svg = cache()->remember($cacheKey, now()->addYear(), function () use ($name) {
+        $url = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/{$name}/{$name}-original.svg";
+        $context = stream_context_create(['http' => ['ignore_errors' => true]]);
+        $content = @file_get_contents($url, false, $context);
+        return $content ?: null;
+    });
+
+    if (!$svg) {
+        abort(404);
+    }
+
+    return response($svg, 200, [
         'Content-Type' => 'image/svg+xml',
         'Cache-Control' => 'public, max-age=31536000, immutable',
     ]);
