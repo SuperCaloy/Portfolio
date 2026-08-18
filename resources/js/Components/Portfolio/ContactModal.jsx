@@ -156,7 +156,7 @@ export default function ContactModal({ isOpen, onClose }) {
                         <button
                             type="submit"
                             disabled={status.loading}
-                            className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm transition-all disabled:opacity-50"
+                            className="w-full py-2.5 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-medium text-sm transition-all disabled:opacity-50"
                         >
                             {status.loading ? 'Sending...' : 'Send Message'}
                         </button>

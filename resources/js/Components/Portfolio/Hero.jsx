@@ -61,7 +61,7 @@ export default function Hero({ personal, stats }) {
                                 document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
                                 window.history.pushState({}, '', '/contact');
                             }}
-                            className="group inline-flex items-center gap-4 pl-6 pr-2 py-3 md:py-2 rounded-full bg-emerald-600 text-white font-semibold text-base transition-all duration-700 ease-fluid shadow-[0_0_40px_-10px_rgba(5,150,105,0.4)] hover:shadow-[0_0_60px_-15px_rgba(5,150,105,0.6)] hover:bg-emerald-500 hover:-translate-y-1 active:scale-[0.98] no-underline ring-1 ring-white/20"
+                            className="group inline-flex items-center gap-4 pl-6 pr-2 py-3 md:py-2 rounded-full bg-emerald-800 text-white font-semibold text-base transition-all duration-700 ease-fluid shadow-[0_0_40px_-10px_rgba(5,150,105,0.4)] hover:shadow-[0_0_60px_-15px_rgba(5,150,105,0.6)] hover:bg-emerald-700 hover:-translate-y-1 active:scale-[0.98] no-underline ring-1 ring-white/20"
                         >
                             <span>Contact Me</span>
                             <span className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 group-hover:-translate-y-[1px] group-hover:scale-105 transition-all duration-700 ease-fluid">
