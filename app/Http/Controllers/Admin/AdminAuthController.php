@@ -25,14 +25,13 @@ class AdminAuthController extends Controller
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
             return response()->json([
-                'errors' => ['email' => ['Too many attempts, try again later.']],
+                'errors' => ['password' => ['Too many attempts, try again later.']],
             ], 429);
         }
 
         RateLimiter::hit($key, 600);
 
         $success = $this->authService->initiateLogin(
-            $request->string('email'),
             $request->string('password'),
         );
 
@@ -40,7 +39,7 @@ class AdminAuthController extends Controller
 
         if (! $success) {
             return response()->json([
-                'errors' => ['email' => ['Invalid credentials.']],
+                'errors' => ['password' => ['Invalid credentials.']],
             ], 422);
         }
 
@@ -60,7 +59,6 @@ class AdminAuthController extends Controller
         RateLimiter::hit($key, 600);
 
         $user = $this->authService->verifyOtp(
-            $request->string('email'),
             $request->string('otp_code'),
         );
 
@@ -71,6 +69,8 @@ class AdminAuthController extends Controller
                 'errors' => ['otp_code' => ['Invalid or expired code.']],
             ], 422);
         }
+
+        RateLimiter::clear($key);
 
         Auth::login($user);
         $request->session()->regenerate();
@@ -100,7 +100,7 @@ class AdminAuthController extends Controller
         $location = $this->lookupLocation($request->ip());
 
         LoginAttempt::create([
-            'email' => $request->string('email'),
+            'email' => 'admin', // Placeholder since email is removed from login flow
             'ip_address' => $request->ip(),
             'city' => $location['city'] ?? null,
             'region' => $location['region'] ?? null,

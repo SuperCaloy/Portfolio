@@ -9,6 +9,7 @@ import Experience from '../Components/Portfolio/Experience';
 import Certificates from '../Components/Portfolio/Certificates';
 import Contact from '../Components/Portfolio/Contact';
 import Footer from '../Components/Portfolio/Footer';
+import { calculateExperienceLabel } from '../utils/date';
 
 // Lazy loaded so this never ships in the public bundle until triggered
 const AdminLoginModal = lazy(() => import('../Components/Admin/AdminLoginModal'));
@@ -24,30 +25,7 @@ export default function Home({
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const name = personal?.full_name || 'Your Name';
     
-    // Experience label calculated by summing the actual duration of every
-    // experience entry, not the span since the earliest start date. This
-    // avoids overcounting gaps between jobs and correctly adds up multiple
-    // part time or short entries.
-    const experienceLabel = (() => {
-        if (experiences.length === 0) return null;
-
-        const totalMonths = experiences.reduce((sum, exp) => {
-            if (!exp.start_date) return sum;
-            const start = new Date(exp.start_date);
-            const end = exp.end_date ? new Date(exp.end_date) : new Date();
-            const months = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
-            return sum + Math.max(0, months);
-        }, 0);
-
-        const roundedMonths = Math.max(1, Math.round(totalMonths));
-
-        if (roundedMonths < 12) {
-            return `${roundedMonths} Month${roundedMonths > 1 ? 's' : ''} Experience`;
-        }
-
-        const years = Math.round(roundedMonths / 12);
-        return `${years}+ Year${years > 1 ? 's' : ''} Experience`;
-    })();
+    const experienceLabel = calculateExperienceLabel(experiences);
 
     const stats = {
         projects: projects.length,
@@ -80,13 +58,14 @@ export default function Home({
     }, []);
 
     const description = `${name}, ${personal?.professional_title || 'Software Engineer'}. ${personal?.bio || personal?.about_me || 'Portfolio showcasing projects, skills, and experience.'}`;
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://ramonpacilona.site';
     
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "Person",
         "name": name,
         "jobTitle": personal?.professional_title || 'Software Engineer',
-        "url": "https://ramonpacilona.site",
+        "url": baseUrl,
         "sameAs": [
             personal?.github_url,
             personal?.linkedin_url
@@ -95,7 +74,7 @@ export default function Home({
     };
 
     if (personal?.avatar_path) {
-        structuredData.image = "https://ramonpacilona.site" + personal.avatar_path;
+        structuredData.image = baseUrl + personal.avatar_path;
     }
 
     return (
@@ -104,19 +83,25 @@ export default function Home({
                 <meta name="description" content={description} />
                 <meta property="og:title" content={name} />
                 <meta property="og:description" content={description} />
-                <meta property="og:url" content="https://ramonpacilona.site" />
+                <meta property="og:url" content={baseUrl} />
                 <meta property="og:type" content="website" />
-                {personal?.avatar_path && <meta property="og:image" content={`https://ramonpacilona.site${personal.avatar_path}`} />}
+                {personal?.avatar_path && <meta property="og:image" content={`${baseUrl}${personal.avatar_path}`} />}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={name} />
                 <meta name="twitter:description" content={description} />
-                {personal?.avatar_path && <meta name="twitter:image" content={`https://ramonpacilona.site${personal.avatar_path}`} />}
+                {personal?.avatar_path && <meta name="twitter:image" content={`${baseUrl}${personal.avatar_path}`} />}
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
             </Head>
 
             <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-b from-zinc-300/20 dark:from-zinc-800/20 to-transparent blur-[120px] rounded-full" />
-                <div className="absolute top-[15%] right-[5%] w-[300px] h-[300px] bg-emerald-400/10 dark:bg-emerald-500/10 blur-[100px] rounded-full" />
+                <div 
+                    className="absolute -top-[300px] left-1/2 -translate-x-1/2 w-[800px] h-[600px] md:w-[1200px] md:h-[800px] opacity-[0.15] dark:opacity-[0.08]"
+                    style={{ background: 'radial-gradient(ellipse at top, var(--color-zinc-500), transparent 70%)' }}
+                />
+                <div 
+                    className="absolute top-0 right-[-10%] w-[500px] h-[500px] md:w-[800px] md:h-[800px] opacity-[0.08] dark:opacity-[0.05]"
+                    style={{ background: 'radial-gradient(circle, var(--color-emerald-500), transparent 60%)' }}
+                />
                 <div
                     className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
                     style={{

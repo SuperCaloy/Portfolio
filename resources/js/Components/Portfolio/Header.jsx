@@ -134,7 +134,7 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                         key={link.id}
                         href={link.path}
                         onClick={(e) => scrollToSection(e, link.id, link.path)}
-                        className={`block px-8 py-3 rounded-full transition-all duration-500 ease-fluid delay-[${i * 100}ms] active:scale-95 active:duration-150 ${menuOpen ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-12 opacity-0 blur-md'} ${
+                        className={`block px-8 py-3 rounded-full transition-all duration-500 ease-fluid delay-[${i * 100}ms] active:scale-95 active:duration-150 ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'} ${
                             activeSection === link.id
                                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                                 : 'text-zinc-900 dark:text-zinc-100 hover:text-emerald-600 dark:hover:text-emerald-400 active:bg-zinc-100 dark:active:bg-zinc-800/50'
@@ -146,7 +146,7 @@ export default function Header({ name, hasCertificates, theme, toggleTheme, onSe
                 <a
                     href="/contact"
                     onClick={(e) => scrollToSection(e, 'contact', '/contact')}
-                    className={`block px-8 py-3 rounded-full transition-all duration-500 ease-fluid delay-[${navLinks.length * 100}ms] active:scale-95 active:duration-150 ${menuOpen ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-12 opacity-0 blur-md'} ${
+                    className={`block px-8 py-3 rounded-full transition-all duration-500 ease-fluid delay-[${navLinks.length * 100}ms] active:scale-95 active:duration-150 ${menuOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'} ${
                         activeSection === 'contact'
                             ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                             : 'text-zinc-900 dark:text-zinc-100 hover:text-emerald-600 dark:hover:text-emerald-400 active:bg-zinc-100 dark:active:bg-zinc-800/50'
