@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
     <title inertia>Ramon Carlos E. Pacilona | Computer Science Student</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -74,15 +77,15 @@
             
             {{-- Module Preloads --}}
             @foreach($jsFiles as $jsFile)
-                <link rel="modulepreload" href="{{ asset('build/' . $jsFile) }}" />
+                <link rel="modulepreload" href="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $jsFile) : asset('build/' . $jsFile) }}" />
             @endforeach
             @foreach($preloadImports as $import)
-                <link rel="modulepreload" href="{{ asset('build/' . $import) }}" />
+                <link rel="modulepreload" href="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $import) : asset('build/' . $import) }}" />
             @endforeach
             
             {{-- Scripts --}}
             @foreach($jsFiles as $jsFile)
-                <script type="module" src="{{ asset('build/' . $jsFile) }}"></script>
+                <script type="module" src="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $jsFile) : asset('build/' . $jsFile) }}"></script>
             @endforeach
         @else
             @viteReactRefresh
