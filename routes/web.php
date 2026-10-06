@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\DashboardController;
 
 
 use App\Http\Controllers\Public\IconController;
+use App\Http\Controllers\Public\KeepAliveController;
+use App\Http\Controllers\Admin\LoginActivityController;
 
 Route::get('/', [HomeController::class, 'index']);
 foreach (['projects', 'tech', 'experience', 'certificates', 'contact'] as $section) {
@@ -30,64 +32,6 @@ Route::post('/api/contact', [ContactController::class, 'send'])
 
 Route::get('/api/icons/simple/{slug}', [IconController::class, 'simpleIcon']);
 Route::get('/api/icons/devicon/{name}', [IconController::class, 'devicon']);
-Route::get('/api/icons/simple/{slug}', function (Illuminate\Http\Request $request, $slug) {
-    // Basic slug validation
-    if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
-        abort(404);
-    }
-    
-    $path = base_path('node_modules/simple-icons/icons/' . $slug . '.svg');
-    
-    if (!file_exists($path)) {
-        abort(404);
-    }
-    
-    $svg = file_get_contents($path);
-    
-    // Inject brand color if provided
-    if ($request->has('color')) {
-        $color = $request->query('color');
-        if (preg_match('/^[a-fA-F0-9]{3,6}$/', $color)) {
-            $svg = str_replace('<svg ', '<svg fill="#' . $color . '" ', $svg);
-        }
-    }
-    
-    return response($svg, 200, [
-        'Content-Type' => 'image/svg+xml',
-        'Cache-Control' => 'public, max-age=31536000, immutable',
-    ]);
-});
-
-Route::get('/api/icons/devicon/{name}', function ($name) {
-    if (!preg_match('/^[a-z0-9-]+$/', $name)) {
-        abort(404);
-    }
-
-    $cacheKey = "devicon_{$name}";
-    $svg = cache()->remember($cacheKey, now()->addYear(), function () use ($name) {
-        $url = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/{$name}/{$name}-original.svg";
-        $context = stream_context_create(['http' => ['ignore_errors' => true]]);
-        $content = @file_get_contents($url, false, $context);
-        return $content ?: null;
-    });
-
-    if (!$svg) {
-        abort(404);
-    }
-
-    return response($svg, 200, [
-        'Content-Type' => 'image/svg+xml',
-        'Cache-Control' => 'public, max-age=31536000, immutable',
-    ]);
-});
-
-Route::get('/system/keep-alive', function (Illuminate\Http\Request $request) {
-    if ($request->query('token') !== config('app.keep_alive_token')) {
-        abort(403);
-    }
-
-use App\Http\Controllers\Public\KeepAliveController;
-
 Route::get('/system/keep-alive', KeepAliveController::class)->middleware('throttle:2,1');
 
 
@@ -134,7 +78,7 @@ Route::prefix(config('app.admin_slug'))->group(function () {
         Route::put('/dashboard/messages/{message}/notes', [MessageController::class, 'updateNotes'])->name('admin.messages.notes');
         Route::delete('/dashboard/messages/{message}', [MessageController::class, 'destroy'])->name('admin.messages.destroy');
         
-        Route::get('/dashboard/login-activity', [\App\Http\Controllers\Admin\LoginActivityController::class, 'index'])->name('admin.login-activity.index');
+        Route::get('/dashboard/login-activity', [LoginActivityController::class, 'index'])->name('admin.login-activity.index');
         });
 });
 
