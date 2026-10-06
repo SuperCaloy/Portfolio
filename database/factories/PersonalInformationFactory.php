@@ -14,6 +14,8 @@ class PersonalInformationFactory extends Factory
             'bio' => $this->faker->sentence(10),
             'about_me' => $this->faker->paragraph(3),
             'email' => $this->faker->safeEmail(),
+            'phone' => $this->faker->phoneNumber(),
+            'avatar_path' => 'avatars/sample.jpg',
             'github_url' => 'https://github.com',
             'linkedin_url' => 'https://linkedin.com',
             'resume_path' => 'resumes/sample-resume.pdf',

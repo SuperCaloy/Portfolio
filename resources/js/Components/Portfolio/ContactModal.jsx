@@ -1,42 +1,17 @@
-import axios from 'axios';
-import React, { useState } from 'react';
+import React from 'react';
 import Modal from '../Shared/Modal';
+import { useContactForm } from '../../hooks/useContactForm';
+import ContactFields from './ContactFields';
 
 export default function ContactModal({ isOpen, onClose }) {
-    const MESSAGE_MAX_LENGTH = 1000;
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-        website: '', // honeypot, must stay empty, hidden from real users
-    });
-    const [status, setStatus] = useState({ loading: false, success: false, error: null });
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setStatus({ loading: true, success: false, error: null });
-
-        try {
-            await axios.post('/api/contact', formData);
-            setStatus({ loading: false, success: true, error: null });
-            setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+    const { formData, status, setStatus, handleChange, handleSubmit } = useContactForm({
+        onSuccess: () => {
             setTimeout(() => {
                 onClose();
                 setStatus({ loading: false, success: false, error: null });
             }, 2000);
-        } catch (err) {
-            setStatus({
-                loading: false,
-                success: false,
-                error: err.response?.data?.message || 'Failed to send message. Please try again.',
-            });
-        }
-    };
+        },
+    });
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-xl" ariaLabel="Send a Message">
@@ -65,93 +40,7 @@ export default function ContactModal({ isOpen, onClose }) {
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {status.error && (
-                            <div
-                                className="p-3 text-sm rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400"
-                                role="alert"
-                                aria-live="assertive"
-                            >
-                                {status.error}
-                            </div>
-                        )}
-
-                        {/* Honeypot field, hidden from real users, bots tend to fill every field */}
-                        <input
-                            type="text"
-                            name="website"
-                            value={formData.website}
-                            onChange={handleChange}
-                            tabIndex="-1"
-                            autoComplete="off"
-                            className="absolute -left-[9999px] w-px h-px opacity-0"
-                            aria-hidden="true"
-                        />
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="space-y-1">
-                                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    id="name"
-                                    autoComplete="name"
-                                    required
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    placeholder="Your Name"
-                                    className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
-                                />
-                            </div>
-
-                            <div className="space-y-1">
-                                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    id="email"
-                                    autoComplete="email"
-                                    required
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="your@email.com"
-                                    className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Subject</label>
-                            <input
-                                type="text"
-                                name="subject"
-                                id="subject"
-                                autoComplete="off"
-                                value={formData.subject}
-                                onChange={handleChange}
-                                placeholder="Project Inquiry / Job Opportunity"
-                                className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
-                            />
-                        </div>
-
-                        <div className="space-y-1">
-                            <div className="flex items-center justify-between">
-                                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Message</label>
-                                <span className="text-xs font-mono text-zinc-400 dark:text-zinc-600">
-                                    {formData.message.length}/{MESSAGE_MAX_LENGTH}
-                                </span>
-                            </div>
-                            <textarea
-                                name="message"
-                                id="message"
-                                required
-                                rows="6"
-                                maxLength={MESSAGE_MAX_LENGTH}
-                                value={formData.message}
-                                onChange={handleChange}
-                                placeholder="Write your message here..."
-                                className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 resize-y"
-                            ></textarea>
-                        </div>
+                        <ContactFields formData={formData} handleChange={handleChange} status={status} compact={true} />
 
                         <button
                             type="submit"

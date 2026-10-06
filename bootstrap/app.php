@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->trustProxies(at: '*');
+        $trustedProxies = env('TRUSTED_PROXIES');
+        if (!empty($trustedProxies)) {
+            $middleware->trustProxies(at: array_map('trim', explode(',', $trustedProxies)));
+        }
 
         $middleware->web(prepend: [
             \Spatie\ResponseCache\Middlewares\CacheResponse::class,
@@ -25,13 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {
-            if ($request->inertia()) {
-                return redirect()->guest('/');
-            }
-        });
-
-        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException|\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
             if ($request->inertia()) {
                 return redirect()->guest('/');
             }

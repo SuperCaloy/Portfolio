@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from '../Shared/Modal';
 import { optimizeCloudinaryUrl } from '../../utils/image';
+import { GithubIcon, LinkedinIcon } from '../Shared/SocialIcons';
 
 export default function Hero({ personal, stats }) {
     const [showAboutModal, setShowAboutModal] = useState(false);
@@ -88,9 +89,7 @@ export default function Hero({ personal, stats }) {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-sm font-medium active:scale-95 transition-all"
                             >
-                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.58 2 12.17c0 4.51 2.87 8.33 6.84 9.68.5.1.68-.22.68-.5 0-.24-.01-1.04-.01-1.89-2.78.62-3.37-1.21-3.37-1.21-.45-1.18-1.11-1.49-1.11-1.49-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.74 0 0 .84-.28 2.75 1.05a9.3 9.3 0 015 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.43.2 2.48.1 2.74.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.5A10.02 10.02 0 0022 12.17C22 6.58 17.52 2 12 2z" />
-                                </svg>
+                                <GithubIcon />
                                 <span>GitHub</span>
                             </a>
                         )}
@@ -102,9 +101,7 @@ export default function Hero({ personal, stats }) {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-sm font-medium active:scale-95 transition-all"
                             >
-                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.86 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45z" />
-                                </svg>
+                                <LinkedinIcon />
                                 <span>LinkedIn</span>
                             </a>
                         )}

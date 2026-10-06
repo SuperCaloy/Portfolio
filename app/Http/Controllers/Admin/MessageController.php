@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\Searchable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\MessageNotesRequest;
 use App\Http\Requests\Admin\BulkMessageActionRequest;
@@ -11,14 +12,15 @@ use Inertia\Inertia;
 
 class MessageController extends Controller
 {
+    use Searchable;
+
     // List messages, newest first, supports search and pagination
     public function index(Request $request)
     {
-        $messages = Message::when($request->search, function ($query, $search) {
-                $query->where('sender_name', 'like', "%{$search}%")
-                      ->orWhere('subject', 'like', "%{$search}%");
-            })
-            ->orderBy('created_at', 'desc')
+        $query = Message::query();
+        $this->applySearch($query, $request->search, ['sender_name', 'subject']);
+
+        $messages = $query->orderBy('created_at', 'desc')
             ->paginate(15)
             ->withQueryString();
 

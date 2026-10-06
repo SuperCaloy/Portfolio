@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { router, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import ConfirmModal from '../../Components/Shared/ConfirmModal';
+import { useUnsavedGuard } from '../../hooks/useUnsavedGuard';
 
 export default function Profile({ profile }) {
     const { adminSlug } = usePage().props;
@@ -10,7 +11,6 @@ export default function Profile({ profile }) {
     const [confirmingRemoveAvatar, setConfirmingRemoveAvatar] = useState(false);
     const [confirmingSave, setConfirmingSave] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [pendingUrl, setPendingUrl] = useState(null);
 
     const { data, setData, post, processing, errors, recentlySuccessful, isDirty } = useForm({
         full_name: profile.full_name || '',
@@ -27,46 +27,31 @@ export default function Profile({ profile }) {
         _method: 'put',
     });
 
-    // Warns before closing or refreshing the tab while unsaved changes exist.
-    // Native browser dialog, cannot be styled, browsers block that for security.
+    const { pendingUrl, confirmLeave, cancelLeave } = useUnsavedGuard(isDirty);
+
     useEffect(() => {
-        const handleBeforeUnload = (e) => {
-            if (!isDirty) return;
-            e.preventDefault();
-            e.returnValue = '';
+        return () => {
+            if (avatarPreview && avatarPreview.startsWith('blob:')) {
+                URL.revokeObjectURL(avatarPreview);
+            }
         };
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [isDirty]);
-
-    // Intercepts in-app navigation while unsaved changes exist, holds the
-    // attempted destination and shows ConfirmModal instead of a native confirm.
-    useEffect(() => {
-        const removeListener = router.on('before', (event) => {
-            if (!isDirty || pendingUrl) return;
-            if (event.detail.visit.method !== 'get') return;
-            
-            event.preventDefault();
-            setPendingUrl(event.detail.visit.url.href);
-        });
-        return () => removeListener();
-    }, [isDirty, pendingUrl]);
-
-    const confirmLeave = () => {
-        const url = pendingUrl;
-        setPendingUrl(null);
-        router.visit(url);
-    };
+    }, [avatarPreview]);
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
         setData('avatar', file);
         setData('remove_avatar', false);
+        if (avatarPreview && avatarPreview.startsWith('blob:')) {
+            URL.revokeObjectURL(avatarPreview);
+        }
         setAvatarPreview(URL.createObjectURL(file));
     };
 
     const handleRemoveAvatar = () => {
+        if (avatarPreview && avatarPreview.startsWith('blob:')) {
+            URL.revokeObjectURL(avatarPreview);
+        }
         setData('avatar', null);
         setData('remove_avatar', true);
         setAvatarPreview(null);
@@ -258,7 +243,7 @@ export default function Profile({ profile }) {
                     message="You have unsaved changes. If you leave now, they will be lost."
                     danger
                     onConfirm={confirmLeave}
-                    onCancel={() => setPendingUrl(null)}
+                    onCancel={cancelLeave}
                 />
             )}
 

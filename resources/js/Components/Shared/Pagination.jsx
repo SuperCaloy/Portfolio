@@ -5,14 +5,27 @@ export default function Pagination({ links }) {
 
     const goToPage = (url) => {
         if (!url) return;
-        router.get(url, {}, { preserveState: true, preserveScroll: true });
+        router.get(url, {}, {
+            preserveState: true,
+            preserveScroll: true,
+            headers: { 'X-Silent-Navigation': 'true' },
+        });
+    };
+
+    const getAriaLabel = (label) => {
+        if (typeof label !== 'string') return undefined;
+        if (label.includes('&laquo;') || label.toLowerCase().includes('previous')) return 'Previous page';
+        if (label.includes('&raquo;') || label.toLowerCase().includes('next')) return 'Next page';
+        return `Page ${label.trim()}`;
     };
 
     return (
-        <nav className="flex flex-wrap items-center justify-center gap-1.5 pt-4">
+        <nav className="flex flex-wrap items-center justify-center gap-1.5 pt-4" aria-label="Pagination Navigation">
             {links.map((link, idx) => (
                 <button
                     key={idx}
+                    type="button"
+                    aria-label={getAriaLabel(link.label)}
                     disabled={!link.url}
                     onClick={() => goToPage(link.url)}
                     className={`px-3 py-1.5 rounded-md text-sm font-mono border transition-colors

@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
 import { router, usePage, useForm } from '@inertiajs/react';
 import ConfirmModal from '../../Components/Shared/ConfirmModal';
 import Pagination from '../../Components/Shared/Pagination';
+import AdminSearchInput from '../../Components/Admin/AdminSearchInput';
+import { useAdminSearch } from '../../hooks/useAdminSearch';
+import { useBulkSelection } from '../../hooks/useBulkSelection';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -159,28 +162,22 @@ function MessageRow({ message, isExpanded, onToggleExpand, adminSlug, isSelected
 export default function Messages({ messages, filters }) {
     const { adminSlug } = usePage().props;
     const [expandedId, setExpandedId] = useState(null);
-    const [search, setSearch] = useState(filters?.search || '');
-    const [isSearching, setIsSearching] = useState(false);
-    const [selectedIds, setSelectedIds] = useState([]);
     const [bulkProcessing, setBulkProcessing] = useState(false);
     const [confirmingBulkDelete, setConfirmingBulkDelete] = useState(false);
-    const debounceTimer = useRef(null);
-    const isFirstRender = useRef(true);
+    const { search, setSearch, isSearching } = useAdminSearch({
+        route: `/${adminSlug}/dashboard/messages`,
+        initialSearch: filters?.search || '',
+    });
+    const {
+        selectedIds,
+        setSelectedIds,
+        handleToggleSelect,
+        handleToggleSelectAll,
+        allOnPageSelected,
+    } = useBulkSelection(messages.data);
 
     const handleToggleExpand = (id) => {
         setExpandedId((prev) => (prev === id ? null : id));
-    };
-
-    const handleToggleSelect = (id) => {
-        setSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-        );
-    };
-
-    const handleToggleSelectAll = () => {
-        const pageIds = messages.data.map((m) => m.id);
-        const allSelected = pageIds.every((id) => selectedIds.includes(id));
-        setSelectedIds(allSelected ? [] : pageIds);
     };
 
     const handleBulkMarkRead = () => {
@@ -207,40 +204,7 @@ export default function Messages({ messages, filters }) {
         });
     };
 
-    // Debounced server side search, resets to page 1 on every new search term.
-    // showProgress: false stops Inertia's global top bar from firing here,
-    // the input's own spinner (isSearching) covers the loading feedback instead.
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
-
-        if (debounceTimer.current) clearTimeout(debounceTimer.current);
-
-        debounceTimer.current = setTimeout(() => {
-            router.get(`/${adminSlug}/dashboard/messages`, { search, page: 1 }, {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                showProgress: false,
-                headers: { 'X-Silent-Navigation': 'true' },
-                onStart: () => setIsSearching(true),
-                onFinish: () => setIsSearching(false),
-            });
-        }, 550);
-
-        return () => clearTimeout(debounceTimer.current);
-    }, [search]);
-
-    // Clears selection whenever the visible page of messages changes,
-    // covers pagination, search, and post bulk action reloads.
-    useEffect(() => {
-        setSelectedIds([]);
-    }, [messages.data]);
-
     const unreadCount = messages.data.filter((m) => !m.is_read).length;
-    const allOnPageSelected = messages.data.length > 0 && messages.data.every((m) => selectedIds.includes(m.id));
 
     return (
         <AdminLayout title="Messages" currentPath={`/${adminSlug}/dashboard/messages`}>
@@ -250,35 +214,12 @@ export default function Messages({ messages, filters }) {
                 </p>
             )}
 
-            <div className="relative mb-3">
-                <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search messages by sender or subject"
-                    className="w-full px-3 py-2 pr-9 rounded-lg text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
-                />
-                {isSearching && !search && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <div className="w-4 h-4 rounded-full border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-600 dark:border-t-zinc-300 animate-spin" />
-                    </div>
-                )}
-                {search && (
-                    <button
-                        type="button"
-                        onClick={() => setSearch('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
-                    >
-                        {isSearching ? (
-                            <div className="w-4 h-4 rounded-full border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-600 dark:border-t-zinc-300 animate-spin" />
-                        ) : (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        )}
-                    </button>
-                )}
-            </div>
+            <AdminSearchInput
+                value={search}
+                onChange={setSearch}
+                placeholder="Search messages by sender or subject"
+                isSearching={isSearching}
+            />
 
             {messages.data.length > 0 && (
                 <div className="flex items-center gap-3 mb-3 px-1">

@@ -9,6 +9,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ExperienceResource extends JsonResource
 {
+    use \App\Http\Resources\Concerns\FormatsDates;
+
     public function toArray(Request $request): array
     {
         return [
@@ -16,8 +18,8 @@ class ExperienceResource extends JsonResource
             'company' => $this->company,
             'role' => $this->role,
             'location' => $this->location,
-            'start_date' => $this->start_date?->format('Y-m-d'),
-            'end_date' => $this->end_date?->format('Y-m-d'),
+            'start_date' => $this->formatDate($this->start_date),
+            'end_date' => $this->formatDate($this->end_date),
             'is_current' => $this->is_current,
             'description' => $this->description,
             'achievements' => $this->achievements,

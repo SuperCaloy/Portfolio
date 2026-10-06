@@ -1,25 +1,11 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import Modal from '../Shared/Modal';
-const ViewCertificateModal = React.lazy(() => import('../Shared/ViewCertificateModal'));
+import AnimatedItem from '../Shared/AnimatedItem';
+import { formatMonthYear as formatDate } from '../../utils/date';
+import { CERTS_PREVIEW_COUNT } from '../../constants/admin';
 import useInView from '../../hooks/useInView';
 
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    if (isNaN(date)) return '';
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-};
-
-// Picks a column count that divides evenly into the item count so no
-// row is ever left with a lone card and empty gaps beside it. Falls
-// back to 3 columns for counts that do not divide cleanly, e.g. 5 or 7.
-function certGridCols(count) {
-    if (count <= 1) return 'grid-cols-1';
-    if (count === 2) return 'grid-cols-1 sm:grid-cols-2';
-    if (count % 3 === 0) return 'grid-cols-1 sm:grid-cols-3';
-    if (count % 2 === 0) return 'grid-cols-1 sm:grid-cols-2';
-    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
-}
+const ViewCertificateModal = React.lazy(() => import('../Shared/ViewCertificateModal'));
 
 function CertificateCard({ cert, onSelect }) {
     return (
@@ -42,20 +28,6 @@ function CertificateCard({ cert, onSelect }) {
     );
 }
 
-function AnimatedItem({ children, index = 0 }) {
-    const [ref, isInView] = useInView();
-    // UI/UX Pro Max: 50ms stagger per item, faster duration, subtle distance
-    return (
-        <div 
-            ref={ref} 
-            className={`transition-all duration-700 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            style={{ transitionDelay: `${index * 50}ms` }}
-        >
-            {children}
-        </div>
-    );
-}
-
 export default function Certificates({ certificates = [] }) {
     const [selectedCertificate, setSelectedCertificate] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -65,7 +37,7 @@ export default function Certificates({ certificates = [] }) {
     const sortedCertificates = [...certificates].sort((a, b) => {
         return new Date(b.issue_date || 0) - new Date(a.issue_date || 0);
     });
-    const displayCertificates = sortedCertificates.slice(0, 6);
+    const displayCertificates = sortedCertificates.slice(0, CERTS_PREVIEW_COUNT);
 
     if (certificates.length === 0) return null;
 
@@ -82,7 +54,7 @@ export default function Certificates({ certificates = [] }) {
                 <span className="text-sm text-zinc-500 dark:text-zinc-600 font-mono">{displayCertificates.length} shown</span>
             </div>
 
-           <div className={`grid ${certGridCols(displayCertificates.length)} gap-3`}>
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {displayCertificates.map((cert, idx) => (
                     <AnimatedItem key={`cert-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} index={idx}>
                         <CertificateCard cert={cert} onSelect={setSelectedCertificate} />
@@ -104,7 +76,7 @@ export default function Certificates({ certificates = [] }) {
 
             <Modal isOpen={showModal} onClose={() => setShowModal(false)} maxWidth="max-w-4xl" ariaLabel="All Certificates" title="All Certificates">
 
-                <div className={`p-6 grid ${certGridCols(sortedCertificates.length)} gap-3`}>
+                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {sortedCertificates.map((cert, idx) => (
                         <CertificateCard key={`cert-all-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
                     ))}

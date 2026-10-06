@@ -15,8 +15,8 @@ class HomeController extends Controller
     public function index()
     {
         $personal = $this->portfolio->getPersonalInformation();
-        if (!empty($personal->avatar_path)) {
-            \Illuminate\Support\Facades\View::share('avatar_path', $personal->avatar_path);
+        if (!empty($personal['avatar_path'])) {
+            \Illuminate\Support\Facades\View::share('avatar_path', $personal['avatar_path']);
         }
 
         return Inertia::render('Home', [
