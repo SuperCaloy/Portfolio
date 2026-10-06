@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\CertificateStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,7 +23,7 @@ class CertificateRequest extends FormRequest
             'credential_id' => ['nullable', 'string', 'max:255'],
             'credential_url' => ['nullable', 'url', 'max:255'],
             'image' => ['nullable', 'file', 'image', 'max:4096'],
-            'status' => ['required', Rule::in(['Completed', 'In Progress', 'Expired'])],
+            'status' => ['required', Rule::enum(CertificateStatus::class)],
             'remove_image' => ['nullable', 'boolean'],
         ];
     }

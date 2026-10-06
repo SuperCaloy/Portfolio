@@ -16,18 +16,20 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Admin\DashboardController;
 
 
+use App\Http\Controllers\Public\IconController;
+
 Route::get('/', [HomeController::class, 'index']);
-Route::get('/projects', [HomeController::class, 'index']);
-Route::get('/tech', [HomeController::class, 'index']);
-Route::get('/experience', [HomeController::class, 'index']);
-Route::get('/certificates', [HomeController::class, 'index']);
-Route::get('/contact', [HomeController::class, 'index']);
+foreach (['projects', 'tech', 'experience', 'certificates', 'contact'] as $section) {
+    Route::get("/{$section}", [HomeController::class, 'index']);
+}
 Route::get('/resume', [ResumeController::class, 'download'])->name('resume.download');
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
 Route::post('/api/contact', [ContactController::class, 'send'])
     ->middleware(['throttle:3,1', 'throttle:10,1440']);
 
+Route::get('/api/icons/simple/{slug}', [IconController::class, 'simpleIcon']);
+Route::get('/api/icons/devicon/{name}', [IconController::class, 'devicon']);
 Route::get('/api/icons/simple/{slug}', function (Illuminate\Http\Request $request, $slug) {
     // Basic slug validation
     if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
@@ -84,10 +86,9 @@ Route::get('/system/keep-alive', function (Illuminate\Http\Request $request) {
         abort(403);
     }
 
-    DB::select('select 1');
+use App\Http\Controllers\Public\KeepAliveController;
 
-    return response('OK', 200);
-})->middleware('throttle:2,1');
+Route::get('/system/keep-alive', KeepAliveController::class)->middleware('throttle:2,1');
 
 
 

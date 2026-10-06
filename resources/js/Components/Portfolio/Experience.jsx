@@ -1,27 +1,9 @@
-import React, { useState } from 'react';
-import ViewExperienceModal from '../Shared/ViewExperienceModal';
+import React, { useState, Suspense } from 'react';
 import useInView from '../../hooks/useInView';
+import AnimatedItem from '../Shared/AnimatedItem';
+import { formatMonthYear as formatDate } from '../../utils/date';
 
-const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    if (isNaN(date)) return '';
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-};
-
-function AnimatedItem({ children, index = 0 }) {
-    const [ref, isInView] = useInView();
-    // UI/UX Pro Max: 50ms stagger per item, faster duration, subtle distance
-    return (
-        <div 
-            ref={ref} 
-            className={`transition-all duration-700 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            style={{ transitionDelay: `${index * 50}ms` }}
-        >
-            {children}
-        </div>
-    );
-}
+const ViewExperienceModal = React.lazy(() => import('../Shared/ViewExperienceModal'));
 
 export default function Experience({ experiences = [] }) {
     const [selectedExperience, setSelectedExperience] = useState(null);
@@ -78,10 +60,12 @@ export default function Experience({ experiences = [] }) {
             </div>
 
             {selectedExperience && (
-                <ViewExperienceModal
-                    experience={selectedExperience}
-                    onClose={() => setSelectedExperience(null)}
-                />
+                <Suspense fallback={null}>
+                    <ViewExperienceModal
+                        experience={selectedExperience}
+                        onClose={() => setSelectedExperience(null)}
+                    />
+                </Suspense>
             )}
         </section>
     );

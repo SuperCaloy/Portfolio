@@ -11,10 +11,8 @@ class RemoveXPoweredByHeader
     {
         $response = $next($request);
         
-        if (method_exists($response, 'headers')) {
-            $response->headers->remove('X-Powered-By');
-        }
-        
+        $response->headers->remove('X-Powered-By');
+
         return $response;
     }
 }

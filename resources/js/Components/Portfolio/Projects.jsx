@@ -2,40 +2,11 @@ import React, { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import Modal from '../Shared/Modal';
 const ViewProjectModal = React.lazy(() => import('../Shared/ViewProjectModal'));
 import useInView from '../../hooks/useInView';
-import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
 import { optimizeCloudinaryUrl } from '../../utils/image';
-const STATUS_STYLES = {
-    'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
-    'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
-    'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
-};
-
-// Formats project dates for public display, month and year only, no day.
-// Shows a range when both dates exist, "Present" when still ongoing.
-function formatProjectDate(project) {
-    const monthYear = (value) => {
-        const date = new Date(value);
-        if (isNaN(date)) return null;
-        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    };
-
-    const start = project.start_date ? monthYear(project.start_date) : null;
-    const end = project.end_date ? monthYear(project.end_date) : null;
-
-    if (!start) return null;
-    if (!end) return `${start} – Present`;
-    if (start === end) return start;
-    return `${start} – ${end}`;
-}
-
-function TechTag({ tech, skills }) {
-    return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-xs">
-            <BrandIcon name={resolveProjectTechName(tech, skills)} className="w-3 h-3 shrink-0" />
-            {tech}
-        </span>
-    );
-}
+import { STATUS_STYLES, TechTag } from '../Shared/ProjectMeta';
+import AnimatedItem from '../Shared/AnimatedItem';
+import { formatProjectRange as formatProjectDate } from '../../utils/date';
+import { PROJECTS_FEATURED_COUNT } from '../../constants/admin';
 
 function ProjectListItem({ project, skills, onSelect }) {
     const [imageError, setImageError] = useState(false);
@@ -217,20 +188,6 @@ function ProjectCard({ project, skills, onSelect, index = 0 }) {
     );
 }
 
-function AnimatedItem({ children, index = 0 }) {
-    const [ref, isInView] = useInView();
-    // UI/UX Pro Max: 50ms stagger per item, faster duration, subtle distance
-    return (
-        <div 
-            ref={ref} 
-            className={`transition-all duration-700 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            style={{ transitionDelay: `${index * 50}ms` }}
-        >
-            {children}
-        </div>
-    );
-}
-
 export default function Projects({ projects = [], skills = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
@@ -254,7 +211,7 @@ export default function Projects({ projects = [], skills = [] }) {
         .sort((a, b) => getProjectDate(b) - getProjectDate(a));
 
     const allSortedProjects = [...featuredProjects, ...nonFeaturedProjects];
-    const displayProjects = allSortedProjects.slice(0, 4);
+    const displayProjects = allSortedProjects.slice(0, PROJECTS_FEATURED_COUNT);
 
     const observerTarget = useRef(null);
 

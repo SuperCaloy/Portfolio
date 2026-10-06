@@ -16,7 +16,9 @@ class ProjectFactory extends Factory
             'demo_url' => 'https://example.com',
             'github_url' => 'https://github.com',
             'image_path' => 'projects/sample.jpg',
-            'status' => 'Completed',
+            'status' => $this->faker->randomElement(['Completed', 'In Progress', 'Archived']),
+            'start_date' => $this->faker->date(),
+            'end_date' => $this->faker->date(),
             'is_featured' => $this->faker->boolean(70),
             'sort_order' => $this->faker->numberBetween(0, 10),
         ];

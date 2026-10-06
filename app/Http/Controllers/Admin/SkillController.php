@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\Searchable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SkillRequest;
 use App\Models\Skill;
@@ -10,6 +11,8 @@ use Inertia\Inertia;
 
 class SkillController extends Controller
 {
+    use Searchable;
+
     // Fixed category order, matches the enum and the public Tech section grouping
     protected const CATEGORY_ORDER = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
 
@@ -18,10 +21,10 @@ class SkillController extends Controller
     {
         $categoryOrder = implode(',', array_map(fn ($c) => "'{$c}'", self::CATEGORY_ORDER));
 
-        $skills = Skill::when($request->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
-            })
-            ->orderByRaw("FIELD(category, {$categoryOrder})")
+        $query = Skill::query();
+        $this->applySearch($query, $request->search, ['name']);
+
+        $skills = $query->orderByRaw("FIELD(category, {$categoryOrder})")
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();

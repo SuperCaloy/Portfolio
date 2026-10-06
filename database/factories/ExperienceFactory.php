@@ -19,4 +19,20 @@ class ExperienceFactory extends Factory
             'achievements' => [$this->faker->sentence(), $this->faker->sentence()],
         ];
     }
+
+    public function current(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_current' => true,
+            'end_date' => null,
+        ]);
+    }
+
+    public function past(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_current' => false,
+            'end_date' => $this->faker->date(),
+        ]);
+    }
 }

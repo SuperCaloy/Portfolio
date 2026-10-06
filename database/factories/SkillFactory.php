@@ -9,10 +9,10 @@ class SkillFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->randomElement(['PHP', 'JavaScript', 'React', 'Laravel', 'Docker', 'MySQL']),
+            'name' => 'Skill ' . $this->faker->unique()->numberBetween(1, 100000),
             'category' => $this->faker->randomElement(['Backend', 'Frontend', 'Database', 'DevOps', 'Tools']),
             'icon_name' => 'code',
-            'is_featured' => true,
+            'is_featured' => $this->faker->boolean(70),
             'sort_order' => $this->faker->numberBetween(0, 10),
         ];
     }

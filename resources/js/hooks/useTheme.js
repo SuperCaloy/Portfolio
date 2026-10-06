@@ -2,8 +2,12 @@ import { useState, useEffect } from 'react';
 
 export default function useTheme() {
     const [theme, setTheme] = useState(() => {
-        if (typeof window !== 'undefined' && window.localStorage) {
-            return localStorage.getItem('theme') || 'dark';
+        if (typeof window !== 'undefined') {
+            try {
+                return localStorage.getItem('theme') || 'dark';
+            } catch {
+                return 'dark';
+            }
         }
         return 'dark';
     });
@@ -15,7 +19,11 @@ export default function useTheme() {
         } else {
             root.classList.remove('dark');
         }
-        localStorage.setItem('theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch {
+            // Storage access blocked or restricted
+        }
     }, [theme]);
 
     const toggleTheme = () => {

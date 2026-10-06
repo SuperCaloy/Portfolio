@@ -2,28 +2,32 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\Searchable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProjectRequest;
 use App\Models\Project;
 use App\Models\Skill;
-use App\Services\CloudinaryService;
+use App\Services\MediaService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    public function __construct(protected CloudinaryService $cloudinary)
+    use Searchable;
+
+    public function __construct(protected MediaService $media)
     {
     }
 
     // List projects, most recent start date first, supports search and pagination
     public function index(Request $request)
     {
-        $projects = Project::when($request->search, function ($query, $search) {
-                $query->where('title', 'like', "%{$search}%")
-                      ->orWhereJsonContains('tech_stack', $search);
-            })
-            ->orderBy('start_date', 'desc')
+        $query = Project::query();
+        $this->applySearch($query, $request->search, ['title'], function ($builder, $search) {
+            $builder->orWhereJsonContains('tech_stack', $search);
+        });
+
+        $projects = $query->orderBy('start_date', 'desc')
             ->paginate(12)
             ->withQueryString();
 
@@ -40,7 +44,7 @@ class ProjectController extends Controller
         $data = $request->safe()->except(['image']);
 
         if ($request->hasFile('image')) {
-            $uploaded = $this->cloudinary->upload($request->file('image'), 'portfolio/projects');
+            $uploaded = $this->media->upload($request->file('image'), 'portfolio/projects');
             $data['image_path'] = $uploaded['url'];
             $data['image_public_id'] = $uploaded['public_id'];
         }
@@ -56,24 +60,12 @@ class ProjectController extends Controller
         $data = $request->safe()->except(['image', 'remove_image']);
 
         if ($request->boolean('remove_image')) {
-            if ($project->image_public_id) {
-                try {
-                    $this->cloudinary->delete($project->image_public_id);
-                } catch (\Throwable $e) {
-                    // Cloud asset may already be gone, do not block the database update
-                }
-            }
+            $this->media->deleteSafely($project->image_public_id);
             $data['image_path'] = null;
             $data['image_public_id'] = null;
         } elseif ($request->hasFile('image')) {
-            if ($project->image_public_id) {
-                try {
-                    $this->cloudinary->delete($project->image_public_id);
-                } catch (\Throwable $e) {
-                    // Old asset delete failed, proceed with new upload regardless
-                }
-            }
-            $uploaded = $this->cloudinary->upload($request->file('image'), 'portfolio/projects');
+            $this->media->deleteSafely($project->image_public_id);
+            $uploaded = $this->media->upload($request->file('image'), 'portfolio/projects');
             $data['image_path'] = $uploaded['url'];
             $data['image_public_id'] = $uploaded['public_id'];
         }
@@ -86,9 +78,7 @@ class ProjectController extends Controller
     // Delete a project and its Cloudinary image
     public function destroy(Project $project)
     {
-        if ($project->image_public_id) {
-            $this->cloudinary->delete($project->image_public_id);
-        }
+        $this->media->deleteSafely($project->image_public_id);
         $project->delete();
 
         return redirect()->back()->with('success', 'Project deleted.');

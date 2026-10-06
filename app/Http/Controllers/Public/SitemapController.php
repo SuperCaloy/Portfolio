@@ -9,7 +9,7 @@ class SitemapController extends Controller
 {
     public function index(): Response
     {
-        $domain = 'https://ramonpacilona.site';
+        $domain = rtrim(config('app.url'), '/');
         
         $urls = [
             '/',

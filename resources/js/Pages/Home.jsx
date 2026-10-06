@@ -45,18 +45,26 @@ export default function Home({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    // Scroll to matching section if landing directly on /projects, /tech, etc
+    // Scroll to matching section on direct land or browser back/forward navigation
     useEffect(() => {
-        const path = window.location.pathname;
-        if (path !== '/') {
-            const sectionId = path.replace('/', '');
-            const el = document.getElementById(sectionId);
-            if (el) {
-                requestAnimationFrame(() => {
-                    el.scrollIntoView({ behavior: 'auto', block: 'start' });
-                });
+        const scrollToPath = () => {
+            const path = window.location.pathname;
+            if (path !== '/') {
+                const sectionId = path.replace('/', '');
+                const el = document.getElementById(sectionId);
+                if (el) {
+                    requestAnimationFrame(() => {
+                        el.scrollIntoView({ behavior: 'auto', block: 'start' });
+                    });
+                }
+            } else {
+                window.scrollTo({ top: 0, behavior: 'auto' });
             }
-        }
+        };
+
+        scrollToPath();
+        window.addEventListener('popstate', scrollToPath);
+        return () => window.removeEventListener('popstate', scrollToPath);
     }, []);
 
     const description = `${name}, ${personal?.professional_title || 'Software Engineer'}. ${personal?.bio || personal?.about_me || 'Portfolio showcasing projects, skills, and experience.'}`;

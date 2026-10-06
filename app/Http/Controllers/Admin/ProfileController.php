@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateProfileRequest;
 use App\Models\PersonalInformation;
-use App\Services\CloudinaryService;
+use App\Services\MediaService;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
 {
-    public function __construct(protected CloudinaryService $cloudinary)
+    public function __construct(protected MediaService $media)
     {
     }
 
@@ -31,23 +31,19 @@ class ProfileController extends Controller
         $data = $request->safe()->except(['avatar', 'resume', 'remove_avatar']);
 
         if ($request->hasFile('avatar')) {
-            if ($profile->avatar_public_id) {
-                $this->cloudinary->delete($profile->avatar_public_id);
-            }
-            $uploaded = $this->cloudinary->upload($request->file('avatar'), 'portfolio/avatar');
+            $this->media->deleteSafely($profile->avatar_public_id);
+            $uploaded = $this->media->upload($request->file('avatar'), 'portfolio/avatar');
             $data['avatar_path'] = $uploaded['url'];
             $data['avatar_public_id'] = $uploaded['public_id'];
         } elseif ($request->boolean('remove_avatar') && $profile->avatar_public_id) {
-            $this->cloudinary->delete($profile->avatar_public_id);
+            $this->media->deleteSafely($profile->avatar_public_id);
             $data['avatar_path'] = null;
             $data['avatar_public_id'] = null;
         }
 
         if ($request->hasFile('resume')) {
-            if ($profile->resume_public_id) {
-                $this->cloudinary->delete($profile->resume_public_id);
-            }
-            $uploaded = $this->cloudinary->upload($request->file('resume'), 'portfolio/resume');
+            $this->media->deleteSafely($profile->resume_public_id);
+            $uploaded = $this->media->upload($request->file('resume'), 'portfolio/resume');
             $data['resume_path'] = $uploaded['url'];
             $data['resume_public_id'] = $uploaded['public_id'];
         }
