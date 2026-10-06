@@ -22,7 +22,6 @@
     <script>
         (function () {
             // Applies the saved theme before first paint, prevents a flash of the wrong theme on load
-            // Only toggle 'dark' if it's explicitly 'dark' or if no preference is set (default to dark)
             var theme = localStorage.getItem('theme') || 'dark';
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
@@ -31,8 +30,64 @@
             }
         })();
     </script>
-    @viteReactRefresh
-    @vite(['resources/js/app.jsx'])
+        <!-- Scripts -->
+        
+        @if (!file_exists(public_path('hot')))
+            @php
+                $manifestPath = public_path('build/manifest.json');
+                $manifest = file_exists($manifestPath) ? json_decode(file_get_contents($manifestPath), true) : [];
+                $cssFiles = [];
+                $jsFiles = [];
+                $preloadImports = [];
+                
+                $entries = ['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"];
+                
+                foreach ($entries as $entry) {
+                    if (isset($manifest[$entry])) {
+                        $jsFiles[] = $manifest[$entry]['file'];
+                        if (isset($manifest[$entry]['css'])) {
+                            foreach ($manifest[$entry]['css'] as $css) {
+                                $cssFiles[] = $css;
+                            }
+                        }
+                        if (isset($manifest[$entry]['imports'])) {
+                            foreach ($manifest[$entry]['imports'] as $import) {
+                                if (isset($manifest[$import]['file'])) {
+                                    $preloadImports[] = $manifest[$import]['file'];
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                $cssFiles = array_unique($cssFiles);
+                $jsFiles = array_unique($jsFiles);
+                $preloadImports = array_unique($preloadImports);
+            @endphp
+            
+            {{-- Inline Critical CSS --}}
+            @foreach($cssFiles as $cssFile)
+                @if(file_exists(public_path('build/' . $cssFile)))
+                    <style>{!! file_get_contents(public_path('build/' . $cssFile)) !!}</style>
+                @endif
+            @endforeach
+            
+            {{-- Module Preloads --}}
+            @foreach($jsFiles as $jsFile)
+                <link rel="modulepreload" href="{{ asset('build/' . $jsFile) }}" />
+            @endforeach
+            @foreach($preloadImports as $import)
+                <link rel="modulepreload" href="{{ asset('build/' . $import) }}" />
+            @endforeach
+            
+            {{-- Scripts --}}
+            @foreach($jsFiles as $jsFile)
+                <script type="module" src="{{ asset('build/' . $jsFile) }}"></script>
+            @endforeach
+        @else
+            @viteReactRefresh
+            @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
+        @endif
     @inertiaHead
 </head>
 <body class="antialiased">

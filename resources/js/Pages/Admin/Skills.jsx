@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useEffect } from 'react';
 import { useForm, router, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Components/Admin/AdminLayout';
+import AdminEditModal from '../../Components/Admin/AdminEditModal';
 import ConfirmModal from '../../Components/Shared/ConfirmModal';
 import Pagination from '../../Components/Shared/Pagination';
+import AdminSearchInput from '../../Components/Admin/AdminSearchInput';
+import { useAdminSearch } from '../../hooks/useAdminSearch';
 import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
 
 const CATEGORIES = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
@@ -70,94 +72,74 @@ function EditSkillModal({ skill, onClose, adminSlug }) {
         });
     };
 
-    return createPortal(
-        <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/90 backdrop-blur-md"
-            onClick={onClose}
-        >
-            <div
-                className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl space-y-4 p-6"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-white">Edit Skill</h2>
-                    <button
-                        onClick={onClose}
-                        className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+    return (
+        <AdminEditModal title="Edit Skill" onClose={onClose} maxWidth="max-w-md">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-1">
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
+                    <input
+                        type="text"
+                        value={data.name}
+                        onChange={(e) => setData('name', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                    />
+                    {errors.name && <p className="text-xs text-rose-500">{errors.name}</p>}
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
-                        <input
-                            type="text"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
-                        />
-                        {errors.name && <p className="text-xs text-rose-500">{errors.name}</p>}
-                    </div>
+                <div className="space-y-1">
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Category</label>
+                    <select
+                        value={data.category}
+                        onChange={(e) => setData('category', e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                    >
+                        {CATEGORIES.map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                        ))}
+                    </select>
+                </div>
 
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Category</label>
-                        <select
-                            value={data.category}
-                            onChange={(e) => setData('category', e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                <div className="space-y-1">
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Icon Override (optional)</label>
+                    <input
+                        type="text"
+                        value={data.icon_name}
+                        onChange={(e) => setData('icon_name', e.target.value)}
+                        placeholder="Leave blank to auto match from name"
+                        className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
+                    />
+                    <IconPreview name={data.name} iconOverride={data.icon_name} />
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <label className="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                        <input
+                            type="checkbox"
+                            checked={data.is_featured}
+                            onChange={(e) => setData('is_featured', e.target.checked)}
+                            className="rounded border-zinc-300 dark:border-zinc-700"
+                        />
+                        Featured
+                    </label>
+
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm font-medium"
                         >
-                            {CATEGORIES.map((c) => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
-                        </select>
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 text-sm font-medium disabled:opacity-50"
+                        >
+                            {processing ? 'Saving...' : 'Save'}
+                        </button>
                     </div>
-
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Icon Override (optional)</label>
-                        <input
-                            type="text"
-                            value={data.icon_name}
-                            onChange={(e) => setData('icon_name', e.target.value)}
-                            placeholder="Leave blank to auto match from name"
-                            className="w-full px-3 py-2 rounded-lg text-sm bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
-                        />
-                        <IconPreview name={data.name} iconOverride={data.icon_name} />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <label className="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                            <input
-                                type="checkbox"
-                                checked={data.is_featured}
-                                onChange={(e) => setData('is_featured', e.target.checked)}
-                                className="rounded border-zinc-300 dark:border-zinc-700"
-                            />
-                            Featured
-                        </label>
-
-                        <div className="flex gap-2">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm font-medium"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 text-sm font-medium disabled:opacity-50"
-                            >
-                                {processing ? 'Saving...' : 'Save'}
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                </div>
+            </form>
 
             {confirmingSave && (
                 <ConfirmModal
@@ -167,8 +149,7 @@ function EditSkillModal({ skill, onClose, adminSlug }) {
                     onCancel={() => setConfirmingSave(false)}
                 />
             )}
-        </div>,
-        document.body
+        </AdminEditModal>
     );
 }
 
@@ -177,10 +158,10 @@ export default function Skills({ skills, filters }) {
     const [editingSkill, setEditingSkill] = useState(null);
     const [deletingSkillId, setDeletingSkillId] = useState(null);
     const [confirmingCreate, setConfirmingCreate] = useState(false);
-    const [search, setSearch] = useState(filters?.search || '');
-    const [isSearching, setIsSearching] = useState(false);
-    const debounceTimer = useRef(null);
-    const isFirstRender = useRef(true);
+    const { search, setSearch, isSearching } = useAdminSearch({
+        route: `/${adminSlug}/dashboard/skills`,
+        initialSearch: filters?.search || '',
+    });
 
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
@@ -206,31 +187,7 @@ export default function Skills({ skills, filters }) {
         setDeletingSkillId(null);
     };
 
-    // Debounced server side search by name, resets to page 1 each time.
-    // Marked silent so AdminLayout's global overlay does not cover the list
-    // while typing, the input's own spinner handles that feedback instead.
-    useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
 
-        if (debounceTimer.current) clearTimeout(debounceTimer.current);
-
-        debounceTimer.current = setTimeout(() => {
-            router.get(`/${adminSlug}/dashboard/skills`, { search, page: 1 }, {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-                showProgress: false,
-                headers: { 'X-Silent-Navigation': 'true' },
-                onStart: () => setIsSearching(true),
-                onFinish: () => setIsSearching(false),
-            });
-        }, 550);
-
-        return () => clearTimeout(debounceTimer.current);
-    }, [search]);
 
     return (
         <AdminLayout title="Skills" currentPath={`/${adminSlug}/dashboard/skills`}>
@@ -296,20 +253,12 @@ export default function Skills({ skills, filters }) {
                 </div>
             </form>
 
-            <div className="relative mb-3">
-                <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search skills by name"
-                    className="w-full px-3 py-2 pr-9 rounded-lg text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600"
-                />
-                {isSearching && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <div className="w-4 h-4 rounded-full border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-600 dark:border-t-zinc-300 animate-spin" />
-                    </div>
-                )}
-            </div>
+            <AdminSearchInput
+                value={search}
+                onChange={setSearch}
+                placeholder="Search skills by name"
+                isSearching={isSearching}
+            />
 
             <div className="space-y-2">
                 {skills.data.length === 0 && (

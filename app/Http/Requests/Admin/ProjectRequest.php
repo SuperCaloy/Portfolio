@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,11 +24,12 @@ class ProjectRequest extends FormRequest
             'demo_url' => ['nullable', 'url', 'max:255'],
             'github_url' => ['nullable', 'url', 'max:255'],
             'image' => ['nullable', 'file', 'image', 'max:4096'],
-            'status' => ['required', Rule::in(['Completed', 'In Progress', 'Archived'])],
+            'status' => ['required', Rule::enum(ProjectStatus::class)],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'is_featured' => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
+            'remove_image' => ['nullable', 'boolean'],
         ];
     }
 }

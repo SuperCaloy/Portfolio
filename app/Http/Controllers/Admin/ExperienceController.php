@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\Searchable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ExperienceRequest;
 use App\Models\Experience;
@@ -10,14 +11,15 @@ use Inertia\Inertia;
 
 class ExperienceController extends Controller
 {
+    use Searchable;
+
     // List experiences, most recent start date first, supports search and pagination
     public function index(Request $request)
     {
-        $experiences = Experience::when($request->search, function ($query, $search) {
-                $query->where('role', 'like', "%{$search}%")
-                      ->orWhere('company', 'like', "%{$search}%");
-            })
-            ->orderBy('start_date', 'desc')
+        $query = Experience::query();
+        $this->applySearch($query, $request->search, ['role', 'company']);
+
+        $experiences = $query->orderBy('start_date', 'desc')
             ->paginate(12)
             ->withQueryString();
 

@@ -20,10 +20,10 @@ class AdminAuthService
 
         $otp = random_int(100000, 999999);
 
-        $user->update([
+        $user->forceFill([
             'otp_code' => Hash::make((string) $otp),
             'otp_expires_at' => now()->addMinutes(5),
-        ]);
+        ])->save();
 
         Mail::to($user->email)->send(new OtpCodeMail($otp));
 
@@ -40,10 +40,10 @@ class AdminAuthService
             return null;
         }
 
-        $user->update([
+        $user->forceFill([
             'otp_code' => null,
             'otp_expires_at' => null,
-        ]);
+        ])->save();
 
         return $user;
     }

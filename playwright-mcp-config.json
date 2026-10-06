@@ -1,0 +1,17 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "executablePath": "C:/Users/caloy/AppData/Local/ms-playwright/chromium-1237/chrome-win64/chrome.exe",
+    "launchOptions": {
+      "headless": true
+    }
+  },
+  "capabilities": ["pdf", "devtools"],
+  "testIdAttribute": "data-testid",
+  "outputDir": "testing/ui-screenshots",
+  "timeouts": {
+    "action": 10000,
+    "navigation": 30000,
+    "settle": 500
+  }
+}

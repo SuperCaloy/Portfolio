@@ -16,45 +16,24 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Admin\DashboardController;
 
 
+use App\Http\Controllers\Public\IconController;
+
 Route::get('/', [HomeController::class, 'index']);
-Route::get('/projects', [HomeController::class, 'index']);
-Route::get('/tech', [HomeController::class, 'index']);
-Route::get('/experience', [HomeController::class, 'index']);
-Route::get('/certificates', [HomeController::class, 'index']);
-Route::get('/contact', [HomeController::class, 'index']);
+foreach (['projects', 'tech', 'experience', 'certificates', 'contact'] as $section) {
+    Route::get("/{$section}", [HomeController::class, 'index']);
+}
 Route::get('/resume', [ResumeController::class, 'download'])->name('resume.download');
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
 Route::post('/api/contact', [ContactController::class, 'send'])
     ->middleware(['throttle:3,1', 'throttle:10,1440']);
 
-Route::get('/api/icons/simple/{slug}', function ($slug) {
-    // Basic slug validation
-    if (!preg_match('/^[a-z0-9-]+$/', $slug)) {
-        abort(404);
-    }
-    
-    $path = base_path('node_modules/simple-icons/icons/' . $slug . '.svg');
-    
-    if (!file_exists($path)) {
-        abort(404);
-    }
-    
-    return response()->file($path, [
-        'Content-Type' => 'image/svg+xml',
-        'Cache-Control' => 'public, max-age=31536000, immutable',
-    ]);
-});
+Route::get('/api/icons/simple/{slug}', [IconController::class, 'simpleIcon']);
+Route::get('/api/icons/devicon/{name}', [IconController::class, 'devicon']);
 
-Route::get('/system/keep-alive', function (Illuminate\Http\Request $request) {
-    if ($request->query('token') !== config('app.keep_alive_token')) {
-        abort(403);
-    }
+use App\Http\Controllers\Public\KeepAliveController;
 
-    DB::select('select 1');
-
-    return response('OK', 200);
-})->middleware('throttle:2,1');
+Route::get('/system/keep-alive', KeepAliveController::class)->middleware('throttle:2,1');
 
 
 

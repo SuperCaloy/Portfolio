@@ -139,11 +139,18 @@ class DatabaseSeeder extends Seeder
             Certificate::create($certificate);
         }
 
-        User::create([
-            'name' => 'Ramon Carlos E. Pacilona',
-            'email' => 'ramoncarlospacilona22@gmail.com',
-            'password' => Hash::make(env('ADMIN_SEED_PASSWORD')),
-            'email_verified_at' => now(),
-        ]);
+        if (app()->isProduction()) {
+            return;
+        }
+
+        $seedPassword = env('ADMIN_SEED_PASSWORD');
+        if (!empty($seedPassword)) {
+            User::create([
+                'name' => 'Ramon Carlos E. Pacilona',
+                'email' => 'ramoncarlospacilona22@gmail.com',
+                'password' => Hash::make($seedPassword),
+                'email_verified_at' => now(),
+            ]);
+        }
     }
 }

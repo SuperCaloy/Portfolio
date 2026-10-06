@@ -35,8 +35,8 @@ return new class extends Migration
     public function down(): void
     {
         foreach (['projects', 'experiences', 'certificates'] as $tableName) {
-            Schema::table($tableName, function (Blueprint $table) use ($tableName) {
-                $table->dropUnique([$tableName . '_public_id_unique']);
+            Schema::table($tableName, function (Blueprint $table) {
+                $table->dropUnique(['public_id']);
                 $table->dropColumn('public_id');
             });
         }

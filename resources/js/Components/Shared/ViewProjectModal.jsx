@@ -1,40 +1,9 @@
 import React, { useState } from 'react';
 import Modal from '../Shared/Modal';
 import Lightbox from '../Shared/Lightbox';
-import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
 import { optimizeCloudinaryUrl } from '../../utils/image';
-const STATUS_STYLES = {
-    'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
-    'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
-    'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
-};
-
-// Formats project dates for public display, month and year only, no day.
-// Shows a range when both dates exist, "Present" when still ongoing.
-function formatProjectDate(project) {
-    const monthYear = (value) => {
-        const date = new Date(value);
-        if (isNaN(date)) return null;
-        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    };
-
-    const start = project.start_date ? monthYear(project.start_date) : null;
-    const end = project.end_date ? monthYear(project.end_date) : null;
-
-    if (!start) return null;
-    if (!end) return `${start} – Present`;
-    if (start === end) return start;
-    return `${start} – ${end}`;
-}
-
-function TechTag({ tech, skills }) {
-    return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-sm">
-            <BrandIcon name={resolveProjectTechName(tech, skills)} className="w-3.5 h-3.5 shrink-0" />
-            {tech}
-        </span>
-    );
-}
+import { STATUS_STYLES, TechTag } from './ProjectMeta';
+import { formatProjectRange as formatProjectDate } from '../../utils/date';
 export default function ViewProjectModal({ project, skills = [], onClose, onEdit }) {
     const [showLightbox, setShowLightbox] = useState(false);
 

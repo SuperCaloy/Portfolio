@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import useInView from '../../hooks/useInView';
 import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
-// Fixed display order, matches the category enum in the database.
-const CATEGORY_ORDER = ['Backend', 'Frontend', 'Database', 'DevOps', 'Tools'];
+import AnimatedItem from '../Shared/AnimatedItem';
+import { SKILL_CATEGORIES as CATEGORY_ORDER } from '../../constants/admin';
 const MAX_VISIBLE = 6;
 
 function SkillTag({ skill }) {
@@ -48,19 +48,6 @@ function SkillCard({ category, items, spanFull }) {
     );
 }
 
-function AnimatedItem({ children, index = 0 }) {
-    const [ref, isInView] = useInView();
-    // UI/UX Pro Max: 50ms stagger per item, faster duration, subtle distance
-    return (
-        <div 
-            ref={ref} 
-            className={`transition-all duration-700 ease-fluid ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-            style={{ transitionDelay: `${index * 50}ms` }}
-        >
-            {children}
-        </div>
-    );
-}
 
 export default function Skills({ skills = [] }) {
     const [sectionRef, isInView] = useInView();

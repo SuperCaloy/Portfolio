@@ -39,3 +39,22 @@ pnpm-debug.log*
 claude.md
 .memory
 .claude
+
+// Agent working files (never commit or push)
+AGENTS.md
+notes/
+
+// Testing artifacts
+testing/
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+.playwright-mcp/
+.github/
+.opencode/
+recommended-ui-ux/

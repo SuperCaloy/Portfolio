@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\ProjectStatus;
+use App\Models\Concerns\ClearsResponseCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, ClearsResponseCache;
+
+    protected string $cacheKey = 'projects';
 
     // Mass assignable attributes
     protected $fillable = [
@@ -27,8 +31,9 @@ class Project extends Model
         'sort_order',
     ];
 
-    // Attribute casting for JSON array, date, and boolean conversion
+    // Attribute casting for JSON array, date, enum, and boolean conversion
     protected $casts = [
+        'status' => ProjectStatus::class,
         'tech_stack' => 'array',
         'is_featured' => 'boolean',
         'sort_order' => 'integer',
@@ -36,32 +41,14 @@ class Project extends Model
         'end_date' => 'date',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
 
-protected static function boot()
-{
-    parent::boot();
-
-    static::creating(function ($model) {
-        if (empty($model->public_id)) {
-            $model->public_id = Str::random(20);
-        }
-    });
-}
-
-protected static function booted(): void
-{
-    static::saved(function () {
-        \Illuminate\Support\Facades\Cache::forget('projects');
-        if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
-            \Spatie\ResponseCache\Facades\ResponseCache::clear();
-        }
-    });
-    static::deleted(function () {
-        \Illuminate\Support\Facades\Cache::forget('projects');
-        if (class_exists(\Spatie\ResponseCache\Facades\ResponseCache::class)) {
-            \Spatie\ResponseCache\Facades\ResponseCache::clear();
-        }
-    });
-}
-
+        static::creating(function ($model) {
+            if (empty($model->public_id)) {
+                $model->public_id = Str::random(20);
+            }
+        });
+    }
 }
