@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $trustedProxies = env('TRUSTED_PROXIES');
         if (!empty($trustedProxies)) {
             $middleware->trustProxies(at: array_map('trim', explode(',', $trustedProxies)));
+        } elseif (env('APP_ENV') === 'production') {
+            $middleware->trustProxies(at: '*');
         }
 
         $middleware->web(prepend: [
