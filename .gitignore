@@ -48,6 +48,7 @@ notes/
 testing/
 
 # Playwright
+playwright/
 node_modules/
 /test-results/
 /playwright-report/
@@ -58,3 +59,5 @@ node_modules/
 .github/
 .opencode/
 recommended-ui-ux/
+scratch/
+screenshot-*.png

@@ -21,14 +21,11 @@ export default function Contact() {
                 <div className="flex flex-col md:flex-row gap-12 lg:gap-24">
                     {/* Editorial Split: Left Side */}
                     <div className="w-full md:w-5/12 flex flex-col justify-start">
-                        <div className="inline-flex px-3 py-1 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 w-max mb-8">
-                            <span className="text-[10px] font-bold tracking-[0.2em] text-zinc-500 dark:text-zinc-400 uppercase">Contact</span>
-                        </div>
                         <h2 className="text-5xl sm:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white leading-[1.05] text-balance">
-                            Let's build<br/><span className="text-emerald-600 dark:text-emerald-400">together.</span>
+                            Let's<br/><span className="text-emerald-600 dark:text-emerald-400">connect.</span>
                         </h2>
-                        <p className="mt-6 text-lg text-zinc-500 dark:text-zinc-400 max-w-sm">
-                            Have a project in mind or looking for an engineer? Drop a message and I'll get back to you shortly.
+                        <p className="mt-6 text-base sm:text-lg text-zinc-400 max-w-sm leading-relaxed">
+                            Open to internships, junior developer roles, and cybersecurity collaborations. Drop a message and I will get back to you shortly.
                         </p>
                     </div>
 
@@ -53,10 +50,10 @@ export default function Contact() {
                                         <button
                                             type="submit"
                                             disabled={status.loading}
-                                            className="group flex items-center justify-between w-full pl-6 pr-2 py-2 rounded-full bg-emerald-800 text-white font-semibold text-base transition-all duration-700 ease-fluid shadow-[0_0_40px_-10px_rgba(5,150,105,0.4)] hover:shadow-[0_0_60px_-15px_rgba(5,150,105,0.6)] hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 ring-1 ring-white/20"
+                                            className="group flex items-center justify-between w-full pl-6 pr-2 py-2 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-base transition-all duration-300 shadow-[0_8px_30px_rgba(16,185,129,0.35)] hover:shadow-[0_12px_40px_rgba(16,185,129,0.5)] active:scale-[0.98] disabled:opacity-50 ring-1 ring-emerald-400/50 cursor-pointer"
                                         >
                                             <span>{status.loading ? 'Sending...' : 'Send Message'}</span>
-                                            <span className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 group-hover:scale-105 transition-all duration-700 ease-fluid">
+                                            <span className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center group-hover:translate-x-1 group-hover:scale-105 transition-all duration-300">
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 002-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                 </svg>

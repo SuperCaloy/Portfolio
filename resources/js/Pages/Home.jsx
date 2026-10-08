@@ -1,14 +1,17 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { Head } from '@inertiajs/react';
-import useTheme from '../hooks/useTheme';
+import Atmosphere from '../Components/Portfolio/Atmosphere';
 import Header from '../Components/Portfolio/Header';
 import Hero from '../Components/Portfolio/Hero';
+import ShowcaseReel from '../Components/Portfolio/ShowcaseReel';
+import About from '../Components/Portfolio/About';
 import Projects from '../Components/Portfolio/Projects';
 import Skills from '../Components/Portfolio/Skills';
 import Experience from '../Components/Portfolio/Experience';
 import Certificates from '../Components/Portfolio/Certificates';
 import Contact from '../Components/Portfolio/Contact';
 import Footer from '../Components/Portfolio/Footer';
+import BackToTop from '../Components/Portfolio/BackToTop';
 import { calculateExperienceLabel } from '../utils/date';
 
 // Lazy loaded so this never ships in the public bundle until triggered
@@ -21,9 +24,9 @@ export default function Home({
     experiences = [],
     certificates = []
 }) {
-    const { theme, toggleTheme } = useTheme();
     const [showAdminLogin, setShowAdminLogin] = useState(false);
-    const name = personal?.full_name || 'Your Name';
+    const [selectedProject, setSelectedProject] = useState(null);
+    const name = 'Ramon Pacilona';
     
     const experienceLabel = calculateExperienceLabel(experiences);
 
@@ -48,16 +51,19 @@ export default function Home({
     // Scroll to matching section on direct land or browser back/forward navigation
     useEffect(() => {
         const scrollToPath = () => {
+            const hash = window.location.hash;
             const path = window.location.pathname;
-            if (path !== '/') {
-                const sectionId = path.replace('/', '');
+            const sectionId = hash ? hash.replace('#', '') : (path !== '/' ? path.replace('/', '') : '');
+            if (sectionId) {
                 const el = document.getElementById(sectionId);
                 if (el) {
                     requestAnimationFrame(() => {
                         el.scrollIntoView({ behavior: 'auto', block: 'start' });
                     });
+                    return;
                 }
-            } else {
+            }
+            if (!hash) {
                 window.scrollTo({ top: 0, behavior: 'auto' });
             }
         };
@@ -88,7 +94,7 @@ export default function Home({
     }
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-[#050505] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-emerald-500/20 dark:selection:bg-emerald-500/30 selection:text-emerald-900 dark:selection:text-emerald-100 transition-colors duration-700 ease-fluid">
+        <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-100">
             <Head title={name}>
                 <meta name="description" content={description} />
                 <meta property="og:title" content={name} />
@@ -103,35 +109,24 @@ export default function Home({
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
             </Head>
 
-            <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-                <div 
-                    className="absolute -top-[300px] left-1/2 -translate-x-1/2 w-[800px] h-[600px] md:w-[1200px] md:h-[800px] opacity-[0.15] dark:opacity-[0.08]"
-                    style={{ background: 'radial-gradient(ellipse at top, var(--color-zinc-500), transparent 70%)' }}
-                />
-                <div 
-                    className="absolute top-0 right-[-10%] w-[500px] h-[500px] md:w-[800px] md:h-[800px] opacity-[0.08] dark:opacity-[0.05]"
-                    style={{ background: 'radial-gradient(circle, var(--color-emerald-500), transparent 60%)' }}
-                />
-                <div
-                    className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
-                    style={{
-                        backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
-                        backgroundSize: '32px 32px',
-                    }}
-                />
-            </div>
-            <div className="grain-overlay" />           
+            <div className="grain-overlay" />
+            <Atmosphere />
             <Header
                 name={name}
                 hasCertificates={certificates.length > 0}
-                theme={theme}
-                toggleTheme={toggleTheme}
                 onSecretTrigger={() => setShowAdminLogin(true)}
             />
 
-            <main className="relative z-10 max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24 space-y-24 sm:space-y-32 lg:space-y-40">
-                <Hero personal={personal} stats={stats} />
-                <Projects projects={projects} skills={skills} />
+            <main className="relative z-10 w-full">
+                <Hero personal={personal} />
+                <ShowcaseReel projects={projects} onSelectProject={setSelectedProject} />
+                <About personal={personal} skills={skills} />
+                <Projects
+                    projects={projects}
+                    skills={skills}
+                    selectedProject={selectedProject}
+                    setSelectedProject={setSelectedProject}
+                />
                 <Skills skills={skills} />
                 <Experience experiences={experiences} />
                 <Certificates certificates={certificates} />
@@ -141,6 +136,8 @@ export default function Home({
                 <Contact />
                 <Footer name={name} githubUrl={personal?.github_url} linkedinUrl={personal?.linkedin_url} />
             </div>
+
+            <BackToTop />
 
             {showAdminLogin && (
                 <Suspense fallback={null}>

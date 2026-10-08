@@ -1,96 +1,159 @@
-import React, { useState, Suspense } from 'react';
-import Modal from '../Shared/Modal';
-import AnimatedItem from '../Shared/AnimatedItem';
+import React, { useState } from 'react';
 import { formatMonthYear as formatDate } from '../../utils/date';
-import { CERTS_PREVIEW_COUNT } from '../../constants/admin';
-import useInView from '../../hooks/useInView';
-
-const ViewCertificateModal = React.lazy(() => import('../Shared/ViewCertificateModal'));
-
-function CertificateCard({ cert, onSelect }) {
-    return (
-        <button
-            onClick={() => onSelect(cert)}
-            className="group p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-900/80 hover:shadow-soft hover:-translate-y-0.5 transition-all text-left w-full space-y-1"
-        >
-            <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-950 dark:group-hover:text-white transition-colors">
-                {cert.title}
-            </h3>
-            <div className="flex items-center gap-2 text-sm">
-                <span className="text-zinc-600 dark:text-zinc-400">{cert.issuer}</span>
-                <span className="text-zinc-300 dark:text-zinc-700">·</span>
-                <span className="font-mono font-medium text-zinc-600 dark:text-zinc-300">{formatDate(cert.issue_date)}</span>
-            </div>
-            <span className="inline-block text-xs font-mono text-zinc-400 dark:text-zinc-600 opacity-60 group-hover:opacity-100 transition-opacity">
-                View details →
-            </span>
-        </button>
-    );
-}
+import Modal from '../Shared/Modal';
+import ViewCertificateModal from '../Shared/ViewCertificateModal';
 
 export default function Certificates({ certificates = [] }) {
     const [selectedCertificate, setSelectedCertificate] = useState(null);
-    const [showModal, setShowModal] = useState(false);
-    const [sectionRef, isInView] = useInView();
+    const [showAllModal, setShowAllModal] = useState(false);
 
-    // Latest first, fallback to 0 if issue_date missing
+    if (certificates.length === 0) return null;
+
     const sortedCertificates = [...certificates].sort((a, b) => {
         return new Date(b.issue_date || 0) - new Date(a.issue_date || 0);
     });
-    const displayCertificates = sortedCertificates.slice(0, CERTS_PREVIEW_COUNT);
 
-    if (certificates.length === 0) return null;
+    const displayCertificates = sortedCertificates.slice(0, 6);
 
     return (
         <section
             id="certificates"
-            ref={sectionRef}
-            className={`space-y-4 transition-all duration-700 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
+            className="certs-sec relative z-10 py-16 sm:py-24 px-4 sm:px-6 max-w-6xl mx-auto w-full"
+            aria-label="Certifications & Accreditations"
         >
-            <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase font-mono">
-                    Certifications
-                </h2>
-                <span className="text-sm text-zinc-500 dark:text-zinc-600 font-mono">{displayCertificates.length} shown</span>
+            <div id="certificate" className="absolute -top-12 pointer-events-none" />
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10 sm:mb-14">
+                <div>
+                    <h2
+                        className="font-black uppercase text-3xl sm:text-5xl md:text-6xl text-white hero-heading tracking-tight"
+                        style={{ fontFamily: "'Kanit', sans-serif" }}
+                    >
+                        Certifications
+                    </h2>
+                </div>
+
+                {sortedCertificates.length > 6 && (
+                    <button
+                        onClick={() => setShowAllModal(true)}
+                        className="inline-flex items-center gap-2 font-mono text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2 rounded-full hover:bg-emerald-500 hover:text-black transition-all cursor-pointer select-none"
+                    >
+                        <span>View All Credentials ({sortedCertificates.length})</span>
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                )}
             </div>
 
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* Double-Bezel Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {displayCertificates.map((cert, idx) => (
-                    <AnimatedItem key={`cert-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} index={idx}>
-                        <CertificateCard cert={cert} onSelect={setSelectedCertificate} />
-                    </AnimatedItem>
+                    <div
+                        key={cert.id ?? `${cert.title}-${idx}`}
+                        onClick={() => setSelectedCertificate(cert)}
+                        className="cert-shell p-1.5 rounded-[26px] bg-white/[0.03] border border-white/10 hover:border-emerald-500/40 transition-all duration-300 cursor-pointer group hover:-translate-y-1"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setSelectedCertificate(cert);
+                            }
+                        }}
+                    >
+                        <div className="cert-core rounded-[20px] p-6 bg-[#121216] relative overflow-hidden shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] h-full flex flex-col justify-between space-y-4">
+                            {/* Holographic Ambient Watermark */}
+                            <div className="cert-sheen absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-emerald-500/5 blur-2xl group-hover:bg-emerald-500/15 transition-all pointer-events-none" />
+
+                            <div className="space-y-3 relative z-[1]">
+                                <div className="flex justify-between items-center">
+                                    <span className="font-mono text-[10px] text-emerald-400 font-semibold tracking-wider uppercase">
+                                        {cert.issuer || 'Accredited Issuer'}
+                                    </span>
+                                    <span className="cert-badge inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono text-[9px] font-bold tracking-wider uppercase">
+                                        <span className="cert-beacon verify-beacon relative flex h-1.5 w-1.5">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                                        </span>
+                                        <span>VERIFIED</span>
+                                    </span>
+                                </div>
+
+                                <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors leading-snug">
+                                    {cert.title}
+                                </h3>
+
+                                <div className="font-mono text-xs text-zinc-400 space-y-1">
+                                    <p>ISSUED: {formatDate(cert.issue_date)}</p>
+                                    {cert.credential_id && (
+                                        <p className="truncate">ID: {cert.credential_id}</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedCertificate(cert);
+                                }}
+                                className="cert-trigger-btn pt-2 border-t border-white/10 flex items-center justify-between text-xs font-mono text-emerald-400 font-semibold hover:text-emerald-300 transition-colors w-full cursor-pointer text-left"
+                            >
+                                <span>Inspect credential</span>
+                                <svg className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 ))}
             </div>
 
-            {sortedCertificates.length > displayCertificates.length && (
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white text-sm font-medium transition-all"
-                >
-                    <span>View All Certificates</span>
-                    <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </button>
-            )}
+            {/* Modals */}
+            <ViewCertificateModal
+                certificate={selectedCertificate}
+                onClose={() => setSelectedCertificate(null)}
+            />
 
-            <Modal isOpen={showModal} onClose={() => setShowModal(false)} maxWidth="max-w-4xl" ariaLabel="All Certificates" title="All Certificates">
-
-                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <Modal
+                id="allCertsModal"
+                isOpen={showAllModal}
+                onClose={() => setShowAllModal(false)}
+                maxWidth="max-w-4xl"
+                title={`All Verified Certifications (${sortedCertificates.length})`}
+                ariaLabel="All Certifications Archive"
+            >
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-6">
                     {sortedCertificates.map((cert, idx) => (
-                        <CertificateCard key={`cert-all-${cert.id ?? cert.title ?? 'unknown'}-${idx}`} cert={cert} onSelect={setSelectedCertificate} />
+                        <div
+                            key={cert.id ?? `all-${idx}`}
+                            onClick={() => {
+                                setShowAllModal(false);
+                                setTimeout(() => {
+                                    setSelectedCertificate(cert);
+                                }, 50);
+                            }}
+                            className="p-4 rounded-xl bg-zinc-50 dark:bg-[#121216] border border-zinc-200/80 dark:border-white/10 hover:border-emerald-500/60 cursor-pointer group transition-all"
+                        >
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="font-mono text-[10px] text-emerald-500 uppercase tracking-wider">
+                                    {cert.issuer}
+                                </span>
+                                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    VERIFIED
+                                </span>
+                            </div>
+                            <h4 className="text-base font-bold text-zinc-900 dark:text-white group-hover:text-emerald-400 mb-1">
+                                {cert.title}
+                            </h4>
+                            <p className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                                Issued: {formatDate(cert.issue_date)}
+                            </p>
+                        </div>
                     ))}
                 </div>
             </Modal>
-
-            {selectedCertificate && (
-                <Suspense fallback={null}>
-                    <ViewCertificateModal
-                        certificate={selectedCertificate}
-                        onClose={() => setSelectedCertificate(null)}
-                    />
-                </Suspense>
-            )}
         </section>
     );
 }

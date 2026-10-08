@@ -111,7 +111,7 @@ export function BrandIcon({ name, className, onStatusChange }) {
 
     if (!url) return null;
 
-    return React.createElement('img', { src: url, alt: '', loading: 'lazy', className });
+    return React.createElement('img', { src: url, alt: '', decoding: 'async', className });
 }
 
 // Matches a project tech stack tag (plain string) to a Skill record by

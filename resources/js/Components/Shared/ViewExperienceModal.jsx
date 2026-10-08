@@ -11,6 +11,7 @@ const formatDate = (dateString) => {
 export default function ViewExperienceModal({ experience, onClose, onEdit }) {
     return (
         <Modal
+            id="experienceModal"
             isOpen={!!experience}
             onClose={onClose}
             maxWidth="max-w-2xl"
@@ -19,28 +20,30 @@ export default function ViewExperienceModal({ experience, onClose, onEdit }) {
         >
             {experience && (
                 <div className="p-6 space-y-4">
-                    <p className="text-base font-medium text-zinc-500 dark:text-zinc-400">
+                    <p className="text-base font-semibold text-emerald-400">
                         {experience.company}
-                        {experience.location && ` · ${experience.location}`}
+                        {experience.location && (
+                            <span className="text-zinc-400 font-normal"> · {experience.location}</span>
+                        )}
                     </p>
 
-                    <p className="text-sm font-mono font-medium text-zinc-700 dark:text-zinc-300">
-                        {formatDate(experience.start_date)} — {experience.end_date ? formatDate(experience.end_date) : 'Present'}
+                    <p className="text-xs font-mono font-medium text-zinc-300">
+                        {formatDate(experience.start_date)} to {experience.end_date ? formatDate(experience.end_date) : 'Present'}
                     </p>
 
                     {experience.description && (
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                        <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
                             {experience.description}
                         </p>
                     )}
 
                     {experience.achievements && Array.isArray(experience.achievements) && experience.achievements.length > 0 && (
-                        <div className="space-y-1.5">
-                            <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Key Achievements</p>
-                            <ul className="space-y-1">
+                        <div className="space-y-2 pt-2 border-t border-white/10">
+                            <p className="text-xs font-mono uppercase tracking-wider font-semibold text-emerald-400">Key Achievements</p>
+                            <ul className="space-y-1.5">
                                 {experience.achievements.map((item, idx) => (
-                                    <li key={idx} className="text-sm text-zinc-600 dark:text-zinc-400 flex gap-2">
-                                        <span className="text-zinc-400 dark:text-zinc-600 shrink-0">•</span>
+                                    <li key={idx} className="text-sm text-zinc-300 flex gap-2.5">
+                                        <span className="text-emerald-400 shrink-0 font-bold">•</span>
                                         <span>{item}</span>
                                     </li>
                                 ))}
@@ -49,10 +52,10 @@ export default function ViewExperienceModal({ experience, onClose, onEdit }) {
                     )}
 
                     {onEdit && (
-                        <div className="flex justify-end pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                        <div className="flex justify-end pt-3 border-t border-white/10">
                             <button
                                 onClick={() => onEdit(experience)}
-                                className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-950 text-xs font-medium"
+                                className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-mono font-semibold transition-all"
                             >
                                 Edit
                             </button>

@@ -1,10 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import Lenis from 'lenis';
 
 // Shared modal shell. Handles backdrop, scroll lock, escape key, focus trap,
 // and entry animation so every modal in the app behaves identically.
-export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 'max-w-2xl', ariaLabel, title }) {
+export default function Modal({
+    id,
+    isOpen,
+    onClose,
+    onEscape,
+    children,
+    maxWidth = 'max-w-2xl',
+    ariaLabel,
+    title,
+    bodyClassName = '',
+}) {
     const modalRef = useRef(null);
     const previouslyFocused = useRef(null);
 
@@ -40,75 +49,66 @@ export default function Modal({ isOpen, onClose, onEscape, children, maxWidth = 
         document.body.style.overflow = 'hidden';
         window.lenis?.stop();
 
-        let modalLenis;
-        let rafId;
-
-        if (modalRef.current) {
-            modalLenis = new Lenis({
-                wrapper: modalRef.current,
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            });
-
-            function raf(time) {
-                modalLenis.raf(time);
-                rafId = requestAnimationFrame(raf);
-            }
-            rafId = requestAnimationFrame(raf);
-        }
-
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.body.style.overflow = '';
             previouslyFocused.current?.focus?.();
             window.lenis?.start();
-            
-            if (modalLenis) {
-                cancelAnimationFrame(rafId);
-                modalLenis.destroy();
-            }
         };
     }, [isOpen, onClose, onEscape]);
 
-    if (!isOpen) return null;
+    if (typeof document === 'undefined') return null;
+    if (!isOpen && !id) return null;
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-zinc-950/40 backdrop-blur-sm overflow-y-auto [transform:translateZ(0)] [will-change:backdrop-filter]"
+            id={id}
+            data-lenis-prevent
+            aria-hidden={!isOpen}
+            className={`fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-hidden [transform:translateZ(0)] transition-all duration-300 ${
+                isOpen ? 'active opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none hidden'
+            }`}
             onClick={onClose}
         >
-            <style>{`
-                @keyframes modalIn {
-                    from { opacity: 0; transform: scale(0.97) translateY(4px); }
-                    to { opacity: 1; transform: scale(1) translateY(0); }
-                }
-            `}</style>
-            <div
-                ref={modalRef}
-                role="dialog"
-                aria-modal="true"
-                aria-label={ariaLabel || title}
-                className={`bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto styled-scrollbar shadow-2xl shadow-black/10 dark:shadow-black/40 ring-1 ring-black/5 dark:ring-white/5 animate-[modalIn_0.18s_ease-out] flex flex-col`}
-                onClick={(e) => e.stopPropagation()}
-            >
-                {title && (
-                    <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80">
-                        <h2 className="text-lg font-bold text-zinc-900 dark:text-white tracking-tight">{title}</h2>
-                        <button
-                            onClick={onClose}
-                            className="w-11 h-11 flex items-center justify-center -mr-2 rounded-full text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                            aria-label="Close modal"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+            {isOpen && (
+                <>
+                    <style>{`
+                        @keyframes modalIn {
+                            from { opacity: 0; transform: scale(0.96) translateY(8px); }
+                            to { opacity: 1; transform: scale(1) translateY(0); }
+                        }
+                    `}</style>
+                    <div
+                        ref={modalRef}
+                        data-lenis-prevent
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={ariaLabel || title}
+                        className={`bg-[#121216] border border-white/15 rounded-2xl sm:rounded-3xl w-full ${maxWidth} max-h-[90dvh] sm:max-h-[85vh] overflow-hidden shadow-2xl shadow-black/90 ring-1 ring-white/10 animate-[modalIn_0.22s_cubic-bezier(0.16,1,0.3,1)] flex flex-col text-white`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {title && (
+                            <div className="shrink-0 flex items-center justify-between px-5 sm:px-6 py-4 bg-[#121216] border-b border-white/10">
+                                <h2 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                                    {title}
+                                </h2>
+                                <button
+                                    onClick={onClose}
+                                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center -mr-1 sm:-mr-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50 cursor-pointer"
+                                    aria-label="Close modal"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
+                        <div className={`relative z-10 flex-1 min-h-0 ${bodyClassName || 'overflow-y-auto styled-scrollbar p-6'}`}>
+                            {children}
+                        </div>
                     </div>
-                )}
-                <div className="relative z-10 flex-1">
-                    {children}
-                </div>
-            </div>
+                </>
+            )}
         </div>,
         document.body
     );

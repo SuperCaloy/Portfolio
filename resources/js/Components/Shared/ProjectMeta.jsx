@@ -2,26 +2,36 @@ import React from 'react';
 import { BrandIcon, resolveProjectTechName } from '../../utils/skillIcon';
 
 export const STATUS_STYLES = {
-    'Completed': 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
-    'In Progress': 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
-    'Archived': 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
+    'Completed': 'bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.2)]',
+    'In Progress': 'bg-amber-500/20 border-amber-400/50 text-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.2)]',
+    'Archived': 'bg-zinc-800/80 border-zinc-600/50 text-zinc-300 shadow-none',
 };
 
-export function StatusBadge({ status }) {
+export const STATUS_DOT_STYLES = {
+    'Completed': 'bg-emerald-400 shadow-[0_0_8px_#10B981]',
+    'In Progress': 'bg-amber-400 shadow-[0_0_8px_#F59E0B] animate-[live-pulse_2s_infinite]',
+    'Archived': 'bg-zinc-400',
+};
+
+export function StatusBadge({ status, className = '' }) {
     if (!status) return null;
-    const style = STATUS_STYLES[status] || STATUS_STYLES['Archived'];
+    const statusText = typeof status === 'object' && status?.value ? status.value : String(status);
+    const style = STATUS_STYLES[statusText] || 'bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.2)]';
+    const dotStyle = STATUS_DOT_STYLES[statusText] || 'bg-emerald-400 shadow-[0_0_8px_#10B981]';
     return (
-        <span className={`px-2 py-0.5 rounded-full text-xs font-mono font-medium ${style}`}>
-            {status}
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono font-bold uppercase tracking-wider ${style} ${className}`}>
+            <span className={`w-2 h-2 rounded-full inline-block shrink-0 ${dotStyle}`} />
+            <span>{statusText}</span>
         </span>
     );
 }
 
-export function TechTag({ tech, skills, size = 'w-3 h-3' }) {
+export function TechTag({ tech, skills, size = 'w-3.5 h-3.5', className = '' }) {
+    const rawName = typeof tech === 'string' ? tech : tech?.name || '';
     return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono text-xs">
-            <BrandIcon name={resolveProjectTechName(tech, skills)} className={`${size} shrink-0`} />
-            {tech}
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/10 hover:border-emerald-500/30 text-zinc-300 hover:text-white font-mono text-[11px] transition-colors select-none ${className}`}>
+            <BrandIcon name={resolveProjectTechName(rawName, skills)} className={`${size} shrink-0 object-contain`} />
+            <span>{rawName}</span>
         </span>
     );
 }

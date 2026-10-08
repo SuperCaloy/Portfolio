@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import Modal from '../Shared/Modal';
 import Lightbox from '../Shared/Lightbox';
 import { optimizeCloudinaryUrl } from '../../utils/image';
-import { STATUS_STYLES, TechTag } from './ProjectMeta';
+import { StatusBadge, TechTag } from './ProjectMeta';
 import { formatProjectRange as formatProjectDate } from '../../utils/date';
 export default function ViewProjectModal({ project, skills = [], onClose, onEdit }) {
     const [showLightbox, setShowLightbox] = useState(false);
 
     return (
         <Modal
+            id="projectModal"
             isOpen={!!project}
             onClose={onClose}
             onEscape={() => (showLightbox ? setShowLightbox(false) : onClose())}
@@ -20,9 +21,7 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
                 <div className="p-6 space-y-4">
                     <div className="flex items-center gap-3">
                         {project.status && (
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${STATUS_STYLES[project.status] || STATUS_STYLES['Archived']}`}>
-                                {project.status}
-                            </span>
+                            <StatusBadge status={project.status} />
                         )}
                         {formatProjectDate(project) && (
                             <span className="text-sm font-mono font-medium text-zinc-500 dark:text-zinc-400">
@@ -37,39 +36,39 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
                             alt={project.title}
                             loading="lazy"
                             decoding="async"
-                            className="w-full max-h-[50vh] object-contain rounded-lg border border-zinc-200 dark:border-zinc-800 cursor-zoom-in bg-zinc-50 dark:bg-zinc-900"
+                            className="w-full max-h-[50vh] object-contain rounded-xl border border-white/10 cursor-zoom-in bg-[#0a0a0a] shadow-lg"
                             onClick={() => setShowLightbox(true)}
                             onError={(e) => { e.target.style.display = 'none'; }}
                         />
                     )}
 
                     {project.subtitle && (
-                        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap [text-wrap:pretty]">
+                        <p className="text-sm font-semibold text-zinc-200 leading-relaxed whitespace-pre-wrap [text-wrap:pretty]">
                             {project.subtitle}
                         </p>
                     )}
 
                     {project.description && (
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap [text-wrap:pretty]">
+                        <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap [text-wrap:pretty]">
                             {project.description}
                         </p>
                     )}
 
                     {project.tech_stack && Array.isArray(project.tech_stack) && project.tech_stack.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-1.5 pt-1">
                             {project.tech_stack.map((tech, idx) => (
                                 <TechTag key={idx} tech={tech} skills={skills} />
                             ))}
                         </div>
                     )}
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 pt-2">
                         {project.github_url && (
                             <a
                                 href={project.github_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                                className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
                             >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -83,7 +82,7 @@ export default function ViewProjectModal({ project, skills = [], onClose, onEdit
                                 href={project.demo_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                                className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
                             >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />

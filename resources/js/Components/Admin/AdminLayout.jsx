@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import useTheme from '../../hooks/useTheme';
 import ConfirmModal from '../Shared/ConfirmModal';
 
 export default function AdminLayout({ title, currentPath, children }) {
@@ -49,7 +48,6 @@ export default function AdminLayout({ title, currentPath, children }) {
             removeFinish();
         };
     }, []);
-    const { theme, toggleTheme } = useTheme();
 
     const NAV_ITEMS = [
         { label: 'Dashboard', href: `/${adminSlug}/dashboard` },
@@ -178,22 +176,6 @@ export default function AdminLayout({ title, currentPath, children }) {
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                             <span>session active</span>
                         </div>
-
-                        <button
-                            onClick={toggleTheme}
-                            className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                            title="Toggle theme"
-                        >
-                            {theme === 'dark' ? (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                            ) : (
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                </svg>
-                            )}
-                        </button>
                     </div>
                 </header>
 

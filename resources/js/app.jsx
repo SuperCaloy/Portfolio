@@ -18,7 +18,13 @@ createInertiaApp({
             <App {...props} />
         </SmoothScroll>
     );
-    document.getElementById('initial-loader')?.remove();
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.transform = 'scale(0.98)';
+            loader.style.pointerEvents = 'none';
+            setTimeout(() => loader.remove(), 400);
+        }
     },
     progress: {
         color: '#3B82F6',

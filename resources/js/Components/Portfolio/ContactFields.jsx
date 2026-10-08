@@ -73,7 +73,7 @@ export default function ContactFields({ formData, handleChange, status, compact 
                     id="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    placeholder="Project Inquiry / Job Opportunity"
+                    placeholder="Internship / Junior Role / Collaboration"
                     className={inputClass}
                 />
             </div>
