@@ -1,7 +1,7 @@
-import React, { useMemo, useRef, useEffect, useState } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { optimizeCloudinaryUrl } from '../../utils/image';
 
-function ReelRow({ id = 'marqueeTrack', baseSpeed = -70, projects, onSelectProject, isPaused = false }) {
+function ReelRow({ id = 'marqueeTrack', baseSpeed = -70, projects, onSelectProject }) {
     const trackRef = useRef(null);
     const setRef = useRef(null);
     const posRef = useRef(0);
@@ -62,7 +62,7 @@ function ReelRow({ id = 'marqueeTrack', baseSpeed = -70, projects, onSelectProje
                     velocityRef.current *= Math.pow(0.005, dt);
                 } else {
                     velocityRef.current = 0;
-                    if (!isHoveredRef.current && !isFocusedRef.current && !isPaused) {
+                    if (!isHoveredRef.current && !isFocusedRef.current) {
                         posRef.current += cruiseSpeed * dt;
                     }
                 }
@@ -97,7 +97,7 @@ function ReelRow({ id = 'marqueeTrack', baseSpeed = -70, projects, onSelectProje
             observer.disconnect();
             if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
         };
-    }, [baseSpeed, isPaused]);
+    }, [baseSpeed]);
 
     // Global pointer move and up handlers to guarantee smooth drag tracking across entire window
     useEffect(() => {
@@ -278,8 +278,6 @@ function ReelRow({ id = 'marqueeTrack', baseSpeed = -70, projects, onSelectProje
 }
 
 export default function ShowcaseReel({ projects = [], onSelectProject }) {
-    const [isPaused, setIsPaused] = useState(false);
-
     // Filter projects that have displayable preview content
     const baseProjects = useMemo(() => {
         if (!projects || projects.length === 0) return [];
@@ -299,40 +297,9 @@ export default function ShowcaseReel({ projects = [], onSelectProject }) {
     return (
         <section
             id="reel"
-            className="marquee-sec bg-[#0C0C0C] py-10 sm:py-14 overflow-hidden relative z-[2] border-y border-white/5 w-full max-w-[100vw]"
+            className="marquee-sec bg-[#0C0C0C] py-8 sm:py-12 overflow-hidden relative z-[2] border-y border-white/5 w-full max-w-[100vw]"
             aria-label="Showcase Reel"
         >
-            {/* Header with Pause/Play accessibility control */}
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-4 flex items-center justify-between gap-4 relative z-20">
-                <span className="font-mono text-xs text-zinc-400 uppercase tracking-widest flex items-center gap-2 select-none">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]" />
-                    Featured Project Showcase
-                </span>
-                <button
-                    type="button"
-                    onClick={() => setIsPaused((prev) => !prev)}
-                    aria-label={isPaused ? "Resume showcase marquee" : "Pause showcase marquee"}
-                    aria-pressed={isPaused}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 min-h-[36px] rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 text-xs font-mono text-zinc-300 hover:text-white transition-all cursor-pointer select-none active:scale-95"
-                >
-                    {isPaused ? (
-                        <>
-                            <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <span>Resume Reel</span>
-                        </>
-                    ) : (
-                        <>
-                            <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                            </svg>
-                            <span>Pause Reel</span>
-                        </>
-                    )}
-                </button>
-            </div>
-
             {/* Ambient edge gradient masks for smooth entering and exiting */}
             <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-28 bg-gradient-to-r from-[#0C0C0C] to-transparent z-20" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-28 bg-gradient-to-l from-[#0C0C0C] to-transparent z-20" />
@@ -343,7 +310,6 @@ export default function ShowcaseReel({ projects = [], onSelectProject }) {
                 baseSpeed={-70}
                 projects={baseProjects}
                 onSelectProject={onSelectProject}
-                isPaused={isPaused}
             />
         </section>
     );
