@@ -11,7 +11,10 @@ class KeepAliveController extends Controller
 {
     public function __invoke(Request $request): Response
     {
-        if ($request->query('token') !== config('app.keep_alive_token')) {
+        $configuredToken = config('app.keep_alive_token');
+        $providedToken = $request->query('token');
+
+        if (empty($configuredToken) || empty($providedToken) || ! hash_equals((string) $configuredToken, (string) $providedToken)) {
             abort(403);
         }
 

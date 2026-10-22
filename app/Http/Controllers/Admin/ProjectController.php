@@ -64,8 +64,8 @@ class ProjectController extends Controller
             $data['image_path'] = null;
             $data['image_public_id'] = null;
         } elseif ($request->hasFile('image')) {
-            $this->media->deleteSafely($project->image_public_id);
             $uploaded = $this->media->upload($request->file('image'), 'portfolio/projects');
+            $this->media->deleteSafely($project->image_public_id);
             $data['image_path'] = $uploaded['url'];
             $data['image_public_id'] = $uploaded['public_id'];
         }

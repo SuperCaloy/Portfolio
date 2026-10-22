@@ -19,9 +19,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Public\IconController;
 
 Route::get('/', [HomeController::class, 'index']);
-foreach (['projects', 'tech', 'experience', 'certificates', 'contact'] as $section) {
-    Route::get("/{$section}", [HomeController::class, 'index']);
-}
+Route::redirect('/projects', '/#projects', 301);
+Route::redirect('/tech', '/#tech', 301);
+Route::redirect('/experience', '/#experience', 301);
+Route::redirect('/certificates', '/#certificates', 301);
+Route::redirect('/contact', '/#contact', 301);
 Route::get('/resume', [ResumeController::class, 'download'])->name('resume.download');
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 

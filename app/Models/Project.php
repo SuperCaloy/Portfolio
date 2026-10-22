@@ -4,13 +4,13 @@ namespace App\Models;
 
 use App\Enums\ProjectStatus;
 use App\Models\Concerns\ClearsResponseCache;
+use App\Models\Concerns\HasPublicId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 class Project extends Model
 {
-    use HasFactory, ClearsResponseCache;
+    use HasFactory, ClearsResponseCache, HasPublicId;
 
     protected string $cacheKey = 'projects';
 
@@ -40,15 +40,4 @@ class Project extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->public_id)) {
-                $model->public_id = Str::random(20);
-            }
-        });
-    }
 }
