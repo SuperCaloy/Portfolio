@@ -21,7 +21,7 @@ export default function Hero({ personal, skills = [] }) {
     };
 
     return (
-        <header className="min-h-[85vh] min-h-[85dvh] flex flex-col justify-center items-center text-center relative z-[2] pt-28 sm:pt-36 pb-16 px-4 max-w-5xl mx-auto w-full" id="about">
+        <section className="min-h-[85vh] min-h-[85dvh] flex flex-col justify-center items-center text-center relative z-[2] pt-28 sm:pt-36 pb-16 px-4 max-w-5xl mx-auto w-full" id="about" aria-label="Introduction">
             {/* Dynamic Profile Photo / Monogram Fallback from Database */}
             <div className="mb-6 sm:mb-8 relative group inline-block select-none">
                 <div className="p-1 sm:p-1.5 rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/50 transition-all duration-500 shadow-[0_0_35px_rgba(16,185,129,0.18)] hover:shadow-[0_0_50px_rgba(16,185,129,0.35)]">
@@ -30,9 +30,11 @@ export default function Hero({ personal, skills = [] }) {
                             <img
                                 src={optimizeCloudinaryUrl(personal.avatar_path, 800)}
                                 alt={`${name}, profile photo`}
+                                width={176}
+                                height={176}
                                 fetchPriority="high"
                                 loading="eager"
-                                className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-fluid"
+                                className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ease-out"
                             />
                         ) : (
                             <span className="font-mono text-3xl sm:text-4xl md:text-5xl font-black text-emerald-400 select-none tracking-wider">
@@ -98,6 +100,6 @@ export default function Hero({ personal, skills = [] }) {
                     </svg>
                 </a>
             </div>
-        </header>
+        </section>
     );
 }

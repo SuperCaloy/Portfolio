@@ -12,12 +12,24 @@
     <meta property="og:type" content="website" inertia>
     <meta property="og:title" content="Ramon Pacilona | Backend Developer & Cybersecurity" inertia>
     <meta property="og:description" content="Portfolio of Ramon Pacilona: Backend Developer and Cybersecurity Specialist specializing in Laravel, React, and Software-Defined Networking." inertia>
-    <meta property="og:url" content="{{ config('app.url') }}" inertia>
-    <meta property="og:image" content="{{ url('/images/og-preview.png') }}" inertia>
+@php
+    $appUrl = rtrim((string) config('app.url'), '/');
+    $currentHost = request()->getHost();
+    $primaryDomain = 'https://ramonpacilona.site';
+
+    $canonicalBase = (str_contains($currentHost, 'ramonpacilona.site') || str_contains($appUrl, 'onrender.com'))
+        ? $primaryDomain
+        : ($appUrl ?: 'https://ramonpacilona.site');
+
+    $path = request()->getPathInfo();
+    $canonicalUrl = $path === '/' ? $canonicalBase . '/' : $canonicalBase . $path;
+@endphp
+    <meta property="og:url" content="{{ $canonicalUrl }}" inertia>
+    <meta property="og:image" content="{{ $canonicalBase . '/images/og-preview.png' }}" inertia>
     <meta name="twitter:card" content="summary_large_image" inertia>
     <meta name="twitter:title" content="Ramon Pacilona | Backend Developer & Cybersecurity" inertia>
     <meta name="twitter:description" content="Portfolio of Ramon Pacilona: Backend Developer and Cybersecurity Specialist specializing in Laravel, React, and Software-Defined Networking." inertia>
-    <meta name="twitter:image" content="{{ url('/images/og-preview.png') }}" inertia>
+    <meta name="twitter:image" content="{{ $canonicalBase . '/images/og-preview.png' }}" inertia>
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -25,7 +37,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 
-    <link rel="canonical" href="{{ config('app.url') }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
     <meta name="theme-color" content="#09090b">
 
     <script type="application/ld+json">
@@ -34,7 +46,8 @@
       chr(64) . 'type' => 'Person',
       'name' => 'Ramon Pacilona',
       'jobTitle' => 'Backend Developer & Cybersecurity Specialist',
-      'url' => config('app.url'),
+      'url' => $canonicalBase,
+      'image' => $canonicalBase . '/images/og-preview.png',
       'sameAs' => [
         'https://github.com/SuperCaloy',
         'https://www.linkedin.com/in/ramoncarlospacilona',
@@ -43,9 +56,6 @@
     </script>
 
     <link rel="preconnect" href="https://res.cloudinary.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap&subset=latin" rel="stylesheet">
         <!-- Scripts -->
         
         @if (!file_exists(public_path('hot')))
@@ -81,11 +91,9 @@
                 $preloadImports = array_unique($preloadImports);
             @endphp
             
-            {{-- Inline Critical CSS --}}
+            {{-- External Cached Stylesheet --}}
             @foreach($cssFiles as $cssFile)
-                @if(file_exists(public_path('build/' . $cssFile)))
-                    <style>{!! file_get_contents(public_path('build/' . $cssFile)) !!}</style>
-                @endif
+                <link rel="stylesheet" href="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $cssFile) : asset('build/' . $cssFile) }}" />
             @endforeach
             
             {{-- Module Preloads --}}
@@ -107,24 +115,6 @@
     @inertiaHead
 </head>
 <body class="antialiased">
-    <div id="initial-loader" style="position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#09090B;transition:opacity 0.4s ease, transform 0.4s ease;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;">
-            <div style="font-family:'Kanit',system-ui,sans-serif;font-size:32px;font-weight:900;letter-spacing:0.04em;text-transform:uppercase;background:linear-gradient(180deg,#828A98 0%,#D4E2EC 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;color:transparent;">
-                Ramon Pacilona
-            </div>
-            <div style="width:160px;height:2px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;position:relative;">
-                <div style="position:absolute;inset:0;background:linear-gradient(90deg,#10B981,#34D399,#60A5FA);animation:loaderPulse 1.2s ease-in-out infinite;"></div>
-            </div>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:#10B981;">INITIALIZING SYSTEM</span>
-        </div>
-        <style>
-            @keyframes loaderPulse {
-                0% { transform: translateX(-100%); }
-                50% { transform: translateX(0); }
-                100% { transform: translateX(100%); }
-            }
-        </style>
-    </div>
     @inertia
 </body>
 </html>
