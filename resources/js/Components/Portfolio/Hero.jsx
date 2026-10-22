@@ -28,12 +28,15 @@ export default function Hero({ personal, skills = [] }) {
                     <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full overflow-hidden bg-[#121216] relative flex items-center justify-center">
                         {hasPhoto ? (
                             <img
-                                src={optimizeCloudinaryUrl(personal.avatar_path, 800)}
+                                src={optimizeCloudinaryUrl(personal.avatar_path, 400)}
+                                srcSet={`${optimizeCloudinaryUrl(personal.avatar_path, 240)} 240w, ${optimizeCloudinaryUrl(personal.avatar_path, 400)} 400w, ${optimizeCloudinaryUrl(personal.avatar_path, 800)} 800w`}
+                                sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 176px"
                                 alt={`${name}, profile photo`}
                                 width={176}
                                 height={176}
                                 fetchPriority="high"
                                 loading="eager"
+                                decoding="async"
                                 className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ease-out"
                             />
                         ) : (

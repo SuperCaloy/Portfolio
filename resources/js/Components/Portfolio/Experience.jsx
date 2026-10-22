@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { formatMonthYear as formatDate } from '../../utils/date';
-import ViewExperienceModal from '../Shared/ViewExperienceModal';
+
+const ViewExperienceModal = lazy(() => import('../Shared/ViewExperienceModal'));
 
 export default function Experience({ experiences = [] }) {
     const [selectedExperience, setSelectedExperience] = useState(null);
@@ -74,10 +75,14 @@ export default function Experience({ experiences = [] }) {
                 ))}
             </div>
 
-            <ViewExperienceModal
-                experience={selectedExperience}
-                onClose={() => setSelectedExperience(null)}
-            />
+            {selectedExperience && (
+                <Suspense fallback={null}>
+                    <ViewExperienceModal
+                        experience={selectedExperience}
+                        onClose={() => setSelectedExperience(null)}
+                    />
+                </Suspense>
+            )}
         </section>
     );
 }

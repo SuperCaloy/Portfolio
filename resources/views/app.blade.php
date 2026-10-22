@@ -56,6 +56,15 @@
     </script>
 
     <link rel="preconnect" href="https://res.cloudinary.com">
+    @if(!empty($page['props']['personal']['avatar_path']))
+        @php
+            $avatarRaw = $page['props']['personal']['avatar_path'];
+            $mobileAvatarPreload = str_contains($avatarRaw, '/upload/')
+                ? str_replace('/upload/', '/upload/f_auto,q_auto,w_240/', $avatarRaw)
+                : $avatarRaw;
+        @endphp
+        <link rel="preload" as="image" href="{{ $mobileAvatarPreload }}" fetchpriority="high">
+    @endif
         <!-- Scripts -->
         
         @if (!file_exists(public_path('hot')))
@@ -93,20 +102,20 @@
             
             {{-- External Cached Stylesheet --}}
             @foreach($cssFiles as $cssFile)
-                <link rel="stylesheet" href="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $cssFile) : asset('build/' . $cssFile) }}" />
+                <link rel="stylesheet" href="/build/{{ $cssFile }}" />
             @endforeach
             
             {{-- Module Preloads --}}
             @foreach($jsFiles as $jsFile)
-                <link rel="modulepreload" href="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $jsFile) : asset('build/' . $jsFile) }}" />
+                <link rel="modulepreload" href="/build/{{ $jsFile }}" />
             @endforeach
             @foreach($preloadImports as $import)
-                <link rel="modulepreload" href="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $import) : asset('build/' . $import) }}" />
+                <link rel="modulepreload" href="/build/{{ $import }}" />
             @endforeach
             
             {{-- Scripts --}}
             @foreach($jsFiles as $jsFile)
-                <script type="module" src="{{ (app()->environment('production') || request()->isSecure() || str_starts_with((string) config('app.url'), 'https://')) ? secure_asset('build/' . $jsFile) : asset('build/' . $jsFile) }}"></script>
+                <script type="module" src="/build/{{ $jsFile }}"></script>
             @endforeach
         @else
             @viteReactRefresh

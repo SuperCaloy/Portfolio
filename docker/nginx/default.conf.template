@@ -40,9 +40,10 @@ server {
         fastcgi_param PATH_INFO $fastcgi_path_info;
 
         # Forward reverse proxy client IP and protocols
+        fastcgi_param HTTP_HOST $host;
         fastcgi_param HTTP_X_FORWARDED_FOR $http_x_forwarded_for;
         fastcgi_param HTTP_X_FORWARDED_PROTO $http_x_forwarded_proto;
-        fastcgi_param HTTP_X_FORWARDED_HOST $http_x_forwarded_host;
+        fastcgi_param HTTP_X_FORWARDED_HOST $host;
         fastcgi_param HTTP_X_FORWARDED_PORT $http_x_forwarded_port;
 
         # Hide PHP version banner from FastCGI responses

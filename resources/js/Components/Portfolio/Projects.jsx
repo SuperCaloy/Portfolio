@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { optimizeCloudinaryUrl } from '../../utils/image';
 import { formatProjectRange } from '../../utils/date';
 import { GithubIcon } from '../Shared/SocialIcons';
 import { StatusBadge, TechTag } from '../Shared/ProjectMeta';
-import ViewProjectModal from '../Shared/ViewProjectModal';
-import ViewAllProjectsModal from './ViewAllProjectsModal';
+
+const ViewProjectModal = lazy(() => import('../Shared/ViewProjectModal'));
+const ViewAllProjectsModal = lazy(() => import('./ViewAllProjectsModal'));
 
 export default function Projects({
     projects = [],
@@ -208,21 +209,29 @@ export default function Projects({
             </div>
 
             {/* Modals */}
-            <ViewProjectModal
-                project={selectedProject}
-                skills={skills}
-                onClose={() => setSelectedProject(null)}
-            />
+            {selectedProject && (
+                <Suspense fallback={null}>
+                    <ViewProjectModal
+                        project={selectedProject}
+                        skills={skills}
+                        onClose={() => setSelectedProject(null)}
+                    />
+                </Suspense>
+            )}
 
-            <ViewAllProjectsModal
-                isOpen={showAllWorks}
-                projects={projects}
-                onClose={() => setShowAllWorks(false)}
-                onSelectProject={(p) => {
-                    setShowAllWorks(false);
-                    setSelectedProject(p);
-                }}
-            />
+            {showAllWorks && (
+                <Suspense fallback={null}>
+                    <ViewAllProjectsModal
+                        isOpen={showAllWorks}
+                        projects={projects}
+                        onClose={() => setShowAllWorks(false)}
+                        onSelectProject={(p) => {
+                            setShowAllWorks(false);
+                            setSelectedProject(p);
+                        }}
+                    />
+                </Suspense>
+            )}
         </section>
     );
 }
