@@ -39,7 +39,7 @@ export default function Footer({ name = 'Ramon Pacilona', githubUrl, linkedinUrl
                         <a
                             href={githubUrl}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel="me noopener noreferrer"
                             aria-label="GitHub Profile"
                             className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] min-w-[44px] rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all hover:-translate-y-0.5"
                         >
@@ -51,7 +51,7 @@ export default function Footer({ name = 'Ramon Pacilona', githubUrl, linkedinUrl
                         <a
                             href={linkedinUrl}
                             target="_blank"
-                            rel="noopener noreferrer"
+                            rel="me noopener noreferrer"
                             aria-label="LinkedIn Profile"
                             className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] min-w-[44px] rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all hover:-translate-y-0.5"
                         >

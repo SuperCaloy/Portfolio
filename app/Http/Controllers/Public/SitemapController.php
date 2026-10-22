@@ -15,7 +15,11 @@ class SitemapController extends Controller
 {
     public function index(): Response
     {
-        $domain = rtrim(config('app.url'), '/');
+        $appUrl = rtrim((string) config('app.url'), '/');
+        $host = request()->getHost();
+        $domain = (str_contains($host, 'ramonpacilona.site') || str_contains($appUrl, 'onrender.com'))
+            ? 'https://ramonpacilona.site'
+            : ($appUrl ?: 'https://ramonpacilona.site');
 
         $latestUpdate = collect([
             Project::max('updated_at'),

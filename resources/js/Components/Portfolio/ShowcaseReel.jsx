@@ -214,6 +214,8 @@ function ReelRow({ id = 'marqueeTrack', baseSpeed = -70, projects, onSelectProje
             <img
                 src={optimizeCloudinaryUrl(project.image_path, 800)}
                 alt={project.title}
+                width={460}
+                height={275}
                 className="w-full h-full object-cover filter brightness-[0.88] group-hover:brightness-100 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none"
                 loading="lazy"
                 decoding="async"
@@ -229,9 +231,9 @@ function ReelRow({ id = 'marqueeTrack', baseSpeed = -70, projects, onSelectProje
                                 {project.subtitle}
                             </span>
                         ) : null}
-                        <h4 className="reel-card-title text-sm sm:text-base font-bold text-white tracking-tight line-clamp-1 group-hover:text-emerald-300 transition-colors drop-shadow-sm leading-snug">
+                        <h3 className="reel-card-title text-sm sm:text-base font-bold text-white tracking-tight line-clamp-1 group-hover:text-emerald-300 transition-colors drop-shadow-sm leading-snug">
                             {project.title}
-                        </h4>
+                        </h3>
                     </div>
 
                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 border border-white/20 group-hover:border-emerald-400 group-hover:bg-emerald-500/20 flex items-center justify-center shrink-0 text-white/70 group-hover:text-emerald-300 transition-all duration-300 mb-0.5">
@@ -300,6 +302,8 @@ export default function ShowcaseReel({ projects = [], onSelectProject }) {
             className="marquee-sec bg-[#0C0C0C] py-8 sm:py-12 overflow-hidden relative z-[2] border-y border-white/5 w-full max-w-[100vw]"
             aria-label="Showcase Reel"
         >
+            <h2 className="sr-only">Featured Projects Showcase</h2>
+
             {/* Ambient edge gradient masks for smooth entering and exiting */}
             <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-28 bg-gradient-to-r from-[#0C0C0C] to-transparent z-20" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-28 bg-gradient-to-l from-[#0C0C0C] to-transparent z-20" />

@@ -27,6 +27,7 @@ export default function Home({
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
     const name = personal?.full_name || 'Ramon Pacilona';
+    const fullTitle = `${name} | ${personal?.professional_title || 'Backend Developer & Cybersecurity'}`;
 
     const experienceLabel = calculateExperienceLabel(experiences);
 
@@ -102,15 +103,15 @@ export default function Home({
                 Skip to content
             </a>
 
-            <Head title={name}>
+            <Head title={fullTitle}>
                 <meta name="description" content={description} />
-                <meta property="og:title" content={name} />
+                <meta property="og:title" content={fullTitle} />
                 <meta property="og:description" content={description} />
                 <meta property="og:url" content={baseUrl} />
                 <meta property="og:type" content="website" />
                 {personal?.avatar_path && <meta property="og:image" content={`${baseUrl}${personal.avatar_path}`} />}
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={name} />
+                <meta name="twitter:title" content={fullTitle} />
                 <meta name="twitter:description" content={description} />
                 {personal?.avatar_path && <meta name="twitter:image" content={`${baseUrl}${personal.avatar_path}`} />}
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
@@ -137,12 +138,10 @@ export default function Home({
                 <Skills skills={skills} />
                 <Experience experiences={experiences} />
                 <Certificates certificates={certificates} />
+                <Contact />
             </main>
 
-            <div className="relative z-10">
-                <Contact />
-                <Footer name={name} githubUrl={personal?.github_url} linkedinUrl={personal?.linkedin_url} />
-            </div>
+            <Footer name={name} githubUrl={personal?.github_url} linkedinUrl={personal?.linkedin_url} />
 
             <BackToTop />
 

@@ -170,6 +170,9 @@ export default function Projects({
                                                 <img
                                                     src={optimizeCloudinaryUrl(project.image_path, 800)}
                                                     alt={project.title}
+                                                    width={800}
+                                                    height={450}
+                                                    decoding="async"
                                                     className="w-full h-full object-cover filter brightness-95 group-hover:scale-105 transition-transform duration-500"
                                                     loading="lazy"
                                                 />
