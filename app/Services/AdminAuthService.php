@@ -25,7 +25,12 @@ class AdminAuthService
             'otp_expires_at' => now()->addMinutes(5),
         ])->save();
 
-        Mail::to($user->email)->send(new OtpCodeMail($otp));
+        try {
+            Mail::to($user->email)->send(new OtpCodeMail($otp));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Admin OTP mail delivery failed: ' . $e->getMessage());
+            throw new \RuntimeException('Authentication email delivery service temporarily unavailable.');
+        }
 
         return true;
     }

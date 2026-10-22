@@ -19,7 +19,12 @@ class IconController extends Controller
             abort(404);
         }
 
-        $path = base_path('node_modules/simple-icons/icons/' . $slug . '.svg');
+        $aliases = [
+            'css3' => 'css',
+        ];
+        $targetSlug = $aliases[$slug] ?? $slug;
+
+        $path = base_path('node_modules/simple-icons/icons/' . $targetSlug . '.svg');
 
         if (!file_exists($path)) {
             abort(404);

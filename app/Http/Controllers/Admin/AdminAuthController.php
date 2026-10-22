@@ -26,9 +26,15 @@ class AdminAuthController extends Controller
             return $response;
         }
 
-        $success = $this->authService->initiateLogin(
-            $request->validated()['password'],
-        );
+        try {
+            $success = $this->authService->initiateLogin(
+                $request->validated()['password'],
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 503);
+        }
 
         $this->logger->log($request, 'otp_sent', $success ? 'success' : 'failed');
 

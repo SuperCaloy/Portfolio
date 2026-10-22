@@ -1,4 +1,7 @@
 User-agent: *
-Disallow:
+Disallow: /panel-*/
+Disallow: /admin
+Disallow: /api/
+Disallow: /system/
 
 Sitemap: https://ramonpacilona.site/sitemap.xml

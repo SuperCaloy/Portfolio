@@ -30,8 +30,15 @@ class CloudinaryService
         ];
     }
 
-    public function delete(string $publicId): void
+    public function delete(string $publicId, array $options = []): void
     {
-        $this->cloudinary->uploadApi()->destroy($publicId);
+        $isPdf = str_contains($publicId, '/resume/') || str_ends_with(strtolower($publicId), '.pdf');
+        $resourceType = $options['resource_type'] ?? ($isPdf ? 'raw' : 'image');
+
+        $result = $this->cloudinary->uploadApi()->destroy($publicId, ['resource_type' => $resourceType]);
+
+        if (is_array($result) && isset($result['result']) && $result['result'] === 'not found' && $resourceType === 'image') {
+            $this->cloudinary->uploadApi()->destroy($publicId, ['resource_type' => 'raw']);
+        }
     }
 }

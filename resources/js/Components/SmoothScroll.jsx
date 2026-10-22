@@ -3,9 +3,14 @@ import Lenis from 'lenis';
 
 export default function SmoothScroll({ children }) {
     useEffect(() => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion) {
+            return;
+        }
+
         const lenis = new Lenis({
             duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // standard ease-out-expo
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             direction: 'vertical',
             gestureDirection: 'vertical',
             smooth: true,

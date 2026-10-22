@@ -15,8 +15,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('otp_code', 6)->nullable()->change();
-        });
+        // Safe no-op to prevent truncating hashed OTP codes on rollback.
     }
 };

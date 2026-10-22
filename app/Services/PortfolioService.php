@@ -12,14 +12,15 @@ use App\Models\Experience;
 use App\Models\PersonalInformation;
 use App\Models\Project;
 use App\Models\Skill;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Cache;
 
 class PortfolioService
 {
+    protected const TTL = 3600;
+
     public function getPersonalInformation(): ?array
     {
-        return Cache::rememberForever('personal_information', function () {
+        return Cache::remember('personal_information', self::TTL, function () {
             $info = PersonalInformation::first([
                 'id',
                 'full_name',
@@ -33,14 +34,14 @@ class PortfolioService
                 'avatar_path',
                 'resume_path',
             ]);
-            
+
             return $info ? (new PersonalInformationResource($info))->resolve() : null;
         });
     }
 
     public function getSkills(): array
     {
-        return Cache::rememberForever('skills', function () {
+        return Cache::remember('skills', self::TTL, function () {
             $skills = Skill::orderBy('sort_order')->get([
                 'id',
                 'name',
@@ -48,14 +49,14 @@ class PortfolioService
                 'icon_name',
                 'is_featured',
             ]);
-            
+
             return SkillResource::collection($skills)->resolve();
         });
     }
 
     public function getProjects(): array
     {
-        return Cache::rememberForever('projects', function () {
+        return Cache::remember('projects', self::TTL, function () {
             $projects = Project::orderBy('is_featured', 'desc')
                 ->orderBy('sort_order')
                 ->get([
@@ -72,14 +73,14 @@ class PortfolioService
                     'end_date',
                     'is_featured',
                 ]);
-                
+
             return ProjectResource::collection($projects)->resolve();
         });
     }
 
     public function getExperiences(): array
     {
-        return Cache::rememberForever('experiences', function () {
+        return Cache::remember('experiences', self::TTL, function () {
             $experiences = Experience::orderBy('start_date', 'desc')
                 ->get([
                     'public_id',
@@ -92,14 +93,14 @@ class PortfolioService
                     'description',
                     'achievements',
                 ]);
-                
+
             return ExperienceResource::collection($experiences)->resolve();
         });
     }
 
     public function getCertificates(): array
     {
-        return Cache::rememberForever('certificates', function () {
+        return Cache::remember('certificates', self::TTL, function () {
             $certificates = Certificate::orderBy('issue_date', 'desc')
                 ->get([
                     'public_id',
@@ -111,7 +112,7 @@ class PortfolioService
                     'credential_url',
                     'image_path',
                 ]);
-                
+
             return CertificateResource::collection($certificates)->resolve();
         });
     }

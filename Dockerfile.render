@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # ---- Stage 2: PHP runtime ----
-FROM php:8.4-fpm AS app
+FROM php:8.4.27-fpm AS app
 
 RUN apt-get update && apt-get install -y \
     git \

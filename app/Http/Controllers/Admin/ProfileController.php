@@ -31,8 +31,8 @@ class ProfileController extends Controller
         $data = $request->safe()->except(['avatar', 'resume', 'remove_avatar']);
 
         if ($request->hasFile('avatar')) {
-            $this->media->deleteSafely($profile->avatar_public_id);
             $uploaded = $this->media->upload($request->file('avatar'), 'portfolio/avatar');
+            $this->media->deleteSafely($profile->avatar_public_id);
             $data['avatar_path'] = $uploaded['url'];
             $data['avatar_public_id'] = $uploaded['public_id'];
         } elseif ($request->boolean('remove_avatar') && $profile->avatar_public_id) {
@@ -42,8 +42,8 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('resume')) {
-            $this->media->deleteSafely($profile->resume_public_id);
             $uploaded = $this->media->upload($request->file('resume'), 'portfolio/resume');
+            $this->media->deleteSafely($profile->resume_public_id);
             $data['resume_path'] = $uploaded['url'];
             $data['resume_public_id'] = $uploaded['public_id'];
         }

@@ -9,7 +9,7 @@ return [
     /*
      * Determine if the response cache middleware should be enabled.
      */
-    'enabled' => env('RESPONSE_CACHE_ENABLED', true),
+    'enabled' => env('RESPONSE_CACHE_ENABLED', false),
 
     'cache' => [
         /*

@@ -19,12 +19,17 @@ class SkillController extends Controller
     // List skills, grouped by fixed category order then alphabetically, supports search and pagination
     public function index(Request $request)
     {
-        $categoryOrder = implode(',', array_map(fn ($c) => "'{$c}'", self::CATEGORY_ORDER));
+        $caseClauses = [];
+        foreach (self::CATEGORY_ORDER as $index => $category) {
+            $order = $index + 1;
+            $caseClauses[] = "WHEN '{$category}' THEN {$order}";
+        }
+        $orderSql = 'CASE category ' . implode(' ', $caseClauses) . ' ELSE 999 END';
 
         $query = Skill::query();
         $this->applySearch($query, $request->search, ['name']);
 
-        $skills = $query->orderByRaw("FIELD(category, {$categoryOrder})")
+        $skills = $query->orderByRaw($orderSql)
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();

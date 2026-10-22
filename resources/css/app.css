@@ -1,11 +1,11 @@
-@import '@fontsource/plus-jakarta-sans/400.css';
-@import '@fontsource/plus-jakarta-sans/500.css';
-@import '@fontsource/plus-jakarta-sans/600.css';
-@import '@fontsource/plus-jakarta-sans/700.css';
-@import '@fontsource/jetbrains-mono/400.css';
-@import '@fontsource/jetbrains-mono/500.css';
-@import '@fontsource/jetbrains-mono/600.css';
-@import '@fontsource/jetbrains-mono/700.css';
+@import '@fontsource/plus-jakarta-sans/latin-400.css';
+@import '@fontsource/plus-jakarta-sans/latin-500.css';
+@import '@fontsource/plus-jakarta-sans/latin-600.css';
+@import '@fontsource/plus-jakarta-sans/latin-700.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-700.css';
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -15,6 +15,7 @@
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    --font-display: 'Kanit', system-ui, sans-serif;
 
     /* Shadows tinted toward the zinc palette instead of generic pure black */
     --shadow-soft: 0 4px 16px -4px rgb(24 24 27 / 0.08), 0 2px 6px -2px rgb(24 24 27 / 0.04);
@@ -22,6 +23,119 @@
 
     /* Diffused, wider shadow for the Double-Bezel outer shell */
     --shadow-ambient: 0 40px 80px -24px rgb(24 24 27 / 0.12), 0 12px 32px -12px rgb(24 24 27 / 0.08);
+}
+
+/* Global Layout & Overflow Containment */
+html, body {
+    overflow-x: clip;
+    max-width: 100vw;
+    width: 100%;
+}
+html.lenis, html.lenis body {
+    height: auto;
+}
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+/* Metallic Chrome Gradient Typography */
+.hero-heading {
+    background: linear-gradient(180deg, #828A98 0%, #D4E2EC 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+.accent-emerald {
+    color: #10B981;
+    -webkit-text-fill-color: #10B981;
+}
+
+/* Atmospheric Lighting & Spotlight */
+.spotlight {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(600px, 90vw);
+    height: min(600px, 90vw);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.04) 45%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s ease;
+    will-change: transform;
+}
+.glow-fixed {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    width: min(850px, 100vw);
+    height: min(850px, 100vw);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.05) 50%, transparent 70%);
+}
+.grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Progress Hairline */
+.progress-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    z-index: 120;
+    background: linear-gradient(90deg, #10B981, #34D399, #60A5FA);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    will-change: transform;
+}
+
+/* Character Lighting & Corner Keyframes */
+.reveal-text .ch {
+    display: inline-block;
+    opacity: 0.25;
+    transition: opacity 0.12s linear;
+}
+@keyframes live-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.8); opacity: 0.5; }
+}
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.85); }
+}
+@keyframes float-1 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px) rotate(3deg); }
+}
+@keyframes float-2 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(12px) rotate(-3deg); }
+}
+@keyframes float-3 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px) rotate(-3deg); }
+}
+@keyframes float-4 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(14px) rotate(3deg); }
 }
 
 /* Weighted, spring-like easing curve for premium interactive motion.
@@ -145,4 +259,86 @@ html.theme-transitioning *::after {
    width instead of shifting as digits change. */
 .font-mono {
     font-variant-numeric: tabular-nums;
+}
+
+/* 3D Corner Floating Artifacts */
+@keyframes float-1 {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(4deg); }
+}
+@keyframes float-2 {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(13px) rotate(-4deg); }
+}
+@keyframes float-3 {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-13px) rotate(-4deg); }
+}
+@keyframes float-4 {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(14px) rotate(4deg); }
+}
+
+.animate-float-1 { animation: float-1 7s ease-in-out infinite; }
+.animate-float-2 { animation: float-2 8s ease-in-out infinite; }
+.animate-float-3 { animation: float-3 7.5s ease-in-out infinite; }
+.animate-float-4 { animation: float-4 6.5s ease-in-out infinite; }
+
+.corner-artifact img {
+    filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.75));
+    transition: filter 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.corner-artifact:hover img {
+    filter: drop-shadow(0 22px 35px rgba(0, 0, 0, 0.9)) brightness(1.1);
+}
+
+/* Custom Styled Scrollbar (Slim emerald glow with no default arrow buttons) */
+.styled-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(16, 185, 129, 0.45) rgba(255, 255, 255, 0.03);
+}
+
+.styled-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 9999px;
+    margin: 6px 0;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.45);
+    border-radius: 9999px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.75);
+    border-color: rgba(16, 185, 129, 0.4);
+}
+
+.styled-scrollbar::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Showcase Reel Interactive Drag & GPU Momentum Runway */
+.marquee-track {
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+}
+
+.marquee-track.is-dragging,
+.marquee-track:active {
+    cursor: grabbing;
+}
+
+.reel-card img {
+    -webkit-user-drag: none;
+    user-select: none;
 }
