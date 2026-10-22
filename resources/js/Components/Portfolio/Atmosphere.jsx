@@ -114,7 +114,7 @@ export default function Atmosphere() {
             <div
                 id="spotlight"
                 ref={spotlightRef}
-                className="spotlight pointer-events-none fixed top-0 left-0 w-[700px] h-[700px] -ml-[350px] -mt-[350px] rounded-full z-[1] opacity-50 dark:opacity-40 blur-[90px] transition-opacity duration-500 will-change-transform"
+                className="spotlight pointer-events-none fixed top-0 left-0 w-[320px] h-[320px] -ml-[160px] -mt-[160px] blur-[40px] sm:w-[700px] sm:h-[700px] sm:-ml-[350px] sm:-mt-[350px] sm:blur-[90px] rounded-full z-[1] opacity-50 dark:opacity-40 transition-opacity duration-500 will-change-transform"
                 style={{
                     background: 'radial-gradient(circle, rgba(16,185,129,0.22) 0%, rgba(5,150,105,0.12) 40%, rgba(6,78,59,0.05) 65%, transparent 80%)',
                 }}
@@ -123,7 +123,7 @@ export default function Atmosphere() {
 
             {/* Ambient Fixed Top Glow */}
             <div
-                className="glow-fixed fixed top-[-220px] left-1/2 -translate-x-1/2 w-[1100px] h-[550px] rounded-full pointer-events-none z-0 opacity-25 dark:opacity-20 blur-[130px]"
+                className="glow-fixed fixed top-[-100px] sm:top-[-220px] left-1/2 -translate-x-1/2 w-[420px] h-[280px] sm:w-[1100px] sm:h-[550px] rounded-full pointer-events-none z-0 opacity-25 dark:opacity-20 blur-[50px] sm:blur-[130px]"
                 style={{
                     background: 'radial-gradient(ellipse at center, rgba(16,185,129,0.25), rgba(6,78,59,0.08) 50%, transparent 75%)',
                 }}

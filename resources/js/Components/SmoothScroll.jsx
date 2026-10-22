@@ -4,7 +4,8 @@ import Lenis from 'lenis';
 export default function SmoothScroll({ children }) {
     useEffect(() => {
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduceMotion) {
+        const isTouchOrMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches || window.innerWidth < 768;
+        if (reduceMotion || isTouchOrMobile) {
             return;
         }
 

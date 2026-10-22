@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { formatMonthYear as formatDate } from '../../utils/date';
 import Modal from '../Shared/Modal';
-import ViewCertificateModal from '../Shared/ViewCertificateModal';
+
+const ViewCertificateModal = lazy(() => import('../Shared/ViewCertificateModal'));
 
 export default function Certificates({ certificates = [] }) {
     const [selectedCertificate, setSelectedCertificate] = useState(null);
@@ -93,10 +94,14 @@ export default function Certificates({ certificates = [] }) {
             </div>
 
             {/* Modals */}
-            <ViewCertificateModal
-                certificate={selectedCertificate}
-                onClose={() => setSelectedCertificate(null)}
-            />
+            {selectedCertificate && (
+                <Suspense fallback={null}>
+                    <ViewCertificateModal
+                        certificate={selectedCertificate}
+                        onClose={() => setSelectedCertificate(null)}
+                    />
+                </Suspense>
+            )}
 
             <Modal
                 id="allCertsModal"

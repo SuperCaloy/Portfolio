@@ -31,9 +31,11 @@ class AppServiceProvider extends ServiceProvider
         // Global unwrapped JSON resources for public API and Inertia responses
         JsonResource::withoutWrapping();
 
-        // Enforce HTTPS scheme in production or when configured with an HTTPS URL
+        // Enforce HTTPS scheme and root URL in production or when configured with an HTTPS URL
         if ($this->app->environment('production') || str_starts_with((string) config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
+            $rootUrl = config('app.url') ?: 'https://ramonpacilona.site';
+            \Illuminate\Support\Facades\URL::forceRootUrl(rtrim($rootUrl, '/'));
         }
     }
 }

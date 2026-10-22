@@ -21,6 +21,7 @@ use App\Http\Controllers\Public\KeepAliveController;
 use App\Http\Controllers\Admin\LoginActivityController;
 
 Route::get('/', [HomeController::class, 'index']);
+Route::redirect('/https:/', '/', 301);
 Route::redirect('/projects', '/#projects', 301);
 Route::redirect('/tech', '/#tech', 301);
 Route::redirect('/experience', '/#experience', 301);
