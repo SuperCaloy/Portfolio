@@ -46,6 +46,8 @@ notes/
 
 // Testing artifacts
 testing/
+tests/
+e2e/
 
 # Playwright
 playwright/

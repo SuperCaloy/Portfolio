@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.4.27-fpm
 
 # Install system dependencies & Node.js 20.x in a single layer to reduce size
 RUN apt-get update && apt-get install -y --no-install-recommends \
