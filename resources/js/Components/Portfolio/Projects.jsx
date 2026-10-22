@@ -25,13 +25,13 @@ export default function Projects({
             className="projects-sec bg-[#0C0C0C] rounded-t-[36px] sm:rounded-t-[44px] -mt-9 relative z-10 py-16 sm:py-24 px-4 sm:px-6 shadow-[0_-25px_50px_rgba(0,0,0,0.7)]"
             aria-label="Projects"
         >
-            <div id="projects" className="absolute -top-12 pointer-events-none" />
+            <div id="projects" className="absolute top-0 pointer-events-none" />
             <div className="max-w-5xl mx-auto">
                 {/* Header with Title and View All Trigger */}
                 <div className="sec-top-flex flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10 sm:mb-14">
                     <div>
                         <h2
-                            className="section-title font-black uppercase text-3xl sm:text-5xl md:text-6xl text-white hero-heading"
+                            className="section-title font-black uppercase text-3xl sm:text-5xl md:text-6xl text-white"
                             style={{ fontFamily: "'Kanit', sans-serif" }}
                         >
                             Featured Works
@@ -40,7 +40,7 @@ export default function Projects({
 
                     <button
                         onClick={() => setShowAllWorks(true)}
-                        className="view-all-btn inline-flex items-center gap-2 font-mono text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2 rounded-full hover:bg-emerald-500 hover:text-black transition-all cursor-pointer select-none"
+                        className="view-all-btn inline-flex items-center gap-2 font-mono text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2.5 min-h-[44px] rounded-full hover:bg-emerald-500 hover:text-black transition-all cursor-pointer select-none"
                     >
                         <span>View All Works ({projects.length})</span>
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,24 +49,15 @@ export default function Projects({
                     </button>
                 </div>
 
-                {/* Notebook Stack Container: Cards Stick and Pin with Safe Header Clearance */}
+                {/* Notebook Stack Container: Cards Stick and Pin with Safe Header Clearance on Desktop, Linear on Mobile */}
                 <div className="notebook-deck relative pb-10">
                     {featuredProjects.map((project, idx) => (
-                        <div
+                        <article
                             key={project.id || idx}
-                            onClick={() => setSelectedProject(project)}
-                            className="notebook-card project-shell sticky bg-[#121216] border border-white/10 rounded-[22px] sm:rounded-[36px] p-1.5 sm:p-2 mb-8 sm:mb-24 shadow-[0_-16px_36px_rgba(0,0,0,0.95),0_25px_60px_rgba(0,0,0,0.9)] cursor-pointer hover:border-emerald-500/50 transition-all duration-300 group touch-manipulation min-h-[810px] sm:min-h-[600px] md:min-h-[580px] flex flex-col"
+                            className="notebook-card project-shell sticky bg-[#121216] border border-white/10 rounded-[22px] sm:rounded-[36px] p-1.5 sm:p-2 mb-8 sm:mb-24 shadow-[0_-16px_36px_rgba(0,0,0,0.95),0_25px_60px_rgba(0,0,0,0.9)] hover:border-emerald-500/50 transition-all duration-300 group touch-manipulation min-h-[460px] sm:min-h-[540px] md:min-h-[580px] flex flex-col"
                             style={{
                                 top: `calc(clamp(78px, 10vh, 98px) + ${idx} * clamp(8px, 1.2vh, 16px))`,
                                 zIndex: idx + 1,
-                            }}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault();
-                                    setSelectedProject(project);
-                                }
                             }}
                         >
                             <div className="notebook-core project-core bg-[#121216] rounded-[18px] sm:rounded-[30px] p-4 sm:p-8 shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)] flex-1 flex flex-col justify-between w-full">
@@ -87,7 +78,7 @@ export default function Projects({
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             onClick={(e) => e.stopPropagation()}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-emerald-400/50 text-xs text-zinc-300 hover:text-white transition-all font-mono group/gh shrink-0 self-start mt-0.5 sm:mt-1"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-emerald-400/50 text-xs text-zinc-300 hover:text-white transition-all font-mono group/gh shrink-0 self-start mt-0.5 sm:mt-1 relative z-10"
                                             aria-label={`GitHub repository for ${project.title}`}
                                         >
                                             <GithubIcon className="w-3.5 h-3.5 text-zinc-300 group-hover/gh:text-white transition-colors" />
@@ -102,13 +93,11 @@ export default function Projects({
                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-5 flex-1">
                                     <div className="md:col-span-5 flex flex-col justify-between space-y-4">
                                         <div className="space-y-3">
-                                            {/* Subtitle Architecture Pill */}
+                                            {/* Subtitle Architecture Monospace Label */}
                                             {project.subtitle && (
-                                                <div className="inline-block">
-                                                    <span className="font-mono text-[11px] sm:text-xs text-emerald-400 font-semibold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/25">
-                                                        {project.subtitle}
-                                                    </span>
-                                                </div>
+                                                <span className="font-mono text-[11px] sm:text-xs text-emerald-400 font-semibold uppercase tracking-wider block">
+                                                    {project.subtitle}
+                                                </span>
                                             )}
 
                                             {/* Rich Description */}
@@ -131,7 +120,7 @@ export default function Projects({
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         onClick={(e) => e.stopPropagation()}
-                                                        className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold transition-colors group/demo"
+                                                        className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold transition-colors group/demo relative z-10"
                                                     >
                                                         <span>Live Demo</span>
                                                         <svg className="w-3 h-3 group-hover/demo:translate-x-0.5 group-hover/demo:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,20 +189,17 @@ export default function Projects({
                                     <StatusBadge status={project.status || 'Completed'} />
                                     <button
                                         type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSelectedProject(project);
-                                        }}
-                                        className="project-spec-btn text-emerald-400 font-semibold flex items-center gap-1.5 hover:text-emerald-300 transition-colors cursor-pointer group/spec"
+                                        onClick={() => setSelectedProject(project)}
+                                        className="project-spec-btn text-emerald-400 font-semibold flex items-center gap-1.5 hover:text-emerald-300 transition-colors cursor-pointer group/spec after:absolute after:inset-0 after:content-[''] after:cursor-pointer after:z-[1] focus:outline-none"
                                     >
                                         <span>Explore project specifications</span>
-                                        <svg className="w-3.5 h-3.5 group-hover/spec:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-3.5 h-3.5 group-hover/spec:translate-x-1 transition-transform relative z-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                         </svg>
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </article>
                     ))}
                 </div>
             </div>

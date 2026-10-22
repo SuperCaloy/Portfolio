@@ -2,7 +2,7 @@ import React from 'react';
 import { optimizeCloudinaryUrl } from '../../utils/image';
 
 export default function Hero({ personal, skills = [] }) {
-    const name = 'Ramon Pacilona';
+    const name = personal?.full_name || 'Ramon Pacilona';
     const title = personal?.professional_title || 'Full Stack Software Engineer';
     const bio = personal?.bio || personal?.about_me || 'Crafting calm, high-performance web applications and monolithic systems with modern frameworks. Focused on clean relational data boundaries and memorable interaction craft.';
     const hasPhoto = Boolean(personal?.avatar_path);
@@ -17,6 +17,7 @@ export default function Hero({ personal, skills = [] }) {
                 target.scrollIntoView({ behavior: 'smooth' });
             }
         }
+        window.history.pushState({}, '', '#' + id);
     };
 
     return (
@@ -48,7 +49,8 @@ export default function Hero({ personal, skills = [] }) {
 
             {/* Massive Typographic Authority */}
             <h1 className="hero-name font-black uppercase tracking-tight leading-[0.95] text-4xl sm:text-6xl md:text-7xl lg:text-8xl mb-4 text-balance hero-heading" style={{ fontFamily: "'Kanit', sans-serif" }}>
-                {name}
+                <span className="hidden sm:inline">{name}</span>
+                <span className="inline sm:hidden">{name}</span>
             </h1>
 
             {/* Subtitle */}
@@ -66,7 +68,7 @@ export default function Hero({ personal, skills = [] }) {
                 <a
                     href="#contact"
                     onClick={scrollTo('contact')}
-                    className="cta inline-flex items-center gap-2.5 rounded-full text-black font-bold uppercase tracking-wider text-xs px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 shadow-[0_8px_24px_rgba(16,185,129,0.35)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.5)] transition-all duration-300 hover:-translate-y-0.5 no-underline cursor-pointer"
+                    className="cta inline-flex items-center gap-2.5 rounded-full text-black font-bold uppercase tracking-wider text-xs px-6 py-3 min-h-[44px] bg-emerald-500 hover:bg-emerald-400 shadow-[0_8px_24px_rgba(16,185,129,0.35)] hover:shadow-[0_12px_32px_rgba(16,185,129,0.5)] transition-all duration-300 hover:-translate-y-0.5 no-underline cursor-pointer"
                 >
                     <span>Get In Touch</span>
                     <span className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center transition-transform duration-200">
@@ -79,7 +81,7 @@ export default function Hero({ personal, skills = [] }) {
                 <a
                     href="#featured-works"
                     onClick={scrollTo('featured-works')}
-                    className="ghost inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-zinc-200 hover:text-white font-semibold uppercase tracking-wider text-xs px-5 py-3 transition-all duration-300 hover:-translate-y-0.5 no-underline cursor-pointer"
+                    className="ghost inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-zinc-200 hover:text-white font-semibold uppercase tracking-wider text-xs px-5 py-3 min-h-[44px] transition-all duration-300 hover:-translate-y-0.5 no-underline cursor-pointer"
                 >
                     <span>Explore Featured Works</span>
                 </a>
@@ -88,7 +90,7 @@ export default function Hero({ personal, skills = [] }) {
                     href={personal?.resume_path || '/resume'}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="resume-btn inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 font-semibold uppercase tracking-wider text-xs px-5 py-3 transition-all duration-300 hover:-translate-y-0.5 no-underline cursor-pointer"
+                    className="resume-btn inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-300 font-semibold uppercase tracking-wider text-xs px-5 py-3 min-h-[44px] transition-all duration-300 hover:-translate-y-0.5 no-underline cursor-pointer"
                 >
                     <span>Resume</span>
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

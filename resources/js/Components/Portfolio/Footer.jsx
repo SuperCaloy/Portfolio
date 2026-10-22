@@ -22,15 +22,18 @@ export default function Footer({ name = 'Ramon Pacilona', githubUrl, linkedinUrl
     }, []);
 
     return (
-        <footer className="footbar pt-20 pb-12 border-t border-white/10 max-w-6xl mx-auto px-4 sm:px-6 w-full text-xs font-mono text-zinc-400">
+        <footer
+            className="footbar pt-20 pb-12 border-t border-white/10 max-w-6xl mx-auto px-4 sm:px-6 w-full text-xs font-mono text-zinc-400"
+            style={{ paddingBottom: 'calc(3rem + env(safe-area-inset-bottom, 0px))' }}
+        >
             <div className="flex flex-col sm:flex-row justify-between items-center gap-6 mb-8">
-                {/* Local Time Display */}
-                <div className="flex items-center gap-2 bg-white/[0.03] border border-white/10 px-3.5 py-1.5 rounded-full">
+                {/* Local Time Display (Clean Monospace) */}
+                <div className="flex items-center gap-2 font-mono text-xs">
                     <span className="text-zinc-500">LOCAL TIME:</span>
                     <span className="text-emerald-400 font-semibold">{time || '...'}</span>
                 </div>
 
-                {/* Social Links */}
+                {/* Social Links with 44px Tap Target Floor */}
                 <div className="soc flex items-center flex-wrap gap-3">
                     {githubUrl && (
                         <a
@@ -38,7 +41,7 @@ export default function Footer({ name = 'Ramon Pacilona', githubUrl, linkedinUrl
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="GitHub Profile"
-                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all hover:-translate-y-0.5"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] min-w-[44px] rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all hover:-translate-y-0.5"
                         >
                             <GithubIcon className="w-3.5 h-3.5" />
                             <span className="font-mono text-xs uppercase tracking-wider">GitHub</span>
@@ -50,7 +53,7 @@ export default function Footer({ name = 'Ramon Pacilona', githubUrl, linkedinUrl
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label="LinkedIn Profile"
-                            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all hover:-translate-y-0.5"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] min-w-[44px] rounded-full bg-white/[0.04] border border-white/10 hover:border-emerald-500/40 text-zinc-300 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all hover:-translate-y-0.5"
                         >
                             <LinkedinIcon className="w-3.5 h-3.5" />
                             <span className="font-mono text-xs uppercase tracking-wider">LinkedIn</span>
@@ -59,7 +62,7 @@ export default function Footer({ name = 'Ramon Pacilona', githubUrl, linkedinUrl
                 </div>
             </div>
 
-            <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-3 text-zinc-500 text-[11px]">
+            <div className="pt-6 pb-12 sm:pb-0 pr-16 sm:pr-0 border-t border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-zinc-500 text-[11px]">
                 <span>&copy; {new Date().getFullYear()} {name}. All rights reserved.</span>
             </div>
         </footer>

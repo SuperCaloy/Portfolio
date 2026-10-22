@@ -20,7 +20,11 @@ export default function Modal({
     useEffect(() => {
         if (!isOpen) return;
 
-        previouslyFocused.current = document.activeElement;
+        const active = document.activeElement;
+        if (active && active !== document.body) {
+            previouslyFocused.current = active;
+        }
+
         const focusable = modalRef.current?.querySelectorAll('input, textarea, button, a[href], [tabindex]:not([tabindex="-1"])');
         (focusable?.[0] || modalRef.current)?.focus();
 
@@ -52,7 +56,14 @@ export default function Modal({
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.body.style.overflow = '';
-            previouslyFocused.current?.focus?.();
+            const toFocus = previouslyFocused.current;
+            if (toFocus && typeof toFocus.focus === 'function' && document.contains(toFocus)) {
+                setTimeout(() => {
+                    if (document.contains(toFocus)) {
+                        toFocus.focus();
+                    }
+                }, 10);
+            }
             window.lenis?.start();
         };
     }, [isOpen, onClose, onEscape]);
@@ -94,7 +105,7 @@ export default function Modal({
                                 </h2>
                                 <button
                                     onClick={onClose}
-                                    className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center -mr-1 sm:-mr-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50 cursor-pointer"
+                                    className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center -mr-1 sm:-mr-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 active:scale-90 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/50 cursor-pointer"
                                     aria-label="Close modal"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

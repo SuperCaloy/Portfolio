@@ -50,14 +50,50 @@ function findDeviconName(index, raw) {
     return match ? match.name : null;
 }
 
+const STATIC_BRAND_ICONS = {
+    'php': '/api/icons/simple/php?color=777BB4',
+    'laravel': '/api/icons/simple/laravel?color=FF2D20',
+    'react': '/api/icons/simple/react?color=61DAFB',
+    'mysql': '/api/icons/simple/mysql?color=4479A1',
+    'docker': '/api/icons/simple/docker?color=2496ED',
+    'java': '/api/icons/devicon/java',
+    'python': '/api/icons/simple/python?color=3776AB',
+    'css': '/api/icons/simple/css?color=1572B6',
+    'css3': '/api/icons/simple/css?color=1572B6',
+    'tailwind': '/api/icons/simple/tailwindcss?color=06B6D4',
+    'tailwind css': '/api/icons/simple/tailwindcss?color=06B6D4',
+    'tailwindcss': '/api/icons/simple/tailwindcss?color=06B6D4',
+    'git': '/api/icons/simple/git?color=F05032',
+    'node': '/api/icons/simple/nodedotjs?color=5FA04E',
+    'node.js': '/api/icons/simple/nodedotjs?color=5FA04E',
+    'nodejs': '/api/icons/simple/nodedotjs?color=5FA04E',
+    'typescript': '/api/icons/simple/typescript?color=3178C6',
+    'javascript': '/api/icons/simple/javascript?color=F7DF1E',
+    'next.js': '/api/icons/simple/nextdotjs?color=FFFFFF',
+    'nextjs': '/api/icons/simple/nextdotjs?color=FFFFFF',
+    'inertia': '/api/icons/simple/inertia?color=9553E9',
+    'inertia.js': '/api/icons/simple/inertia?color=9553E9',
+    'scikit-learn': '/api/icons/simple/scikitlearn?color=F7931E',
+    'scikitlearn': '/api/icons/simple/scikitlearn?color=F7931E',
+    'mongodb': '/api/icons/simple/mongodb?color=47A248',
+    'vue': '/api/icons/simple/vuedotjs?color=4FC08D',
+    'ryu sdn': '/api/icons/devicon/python',
+    'mininet': '/api/icons/devicon/linux',
+};
+
 // Resolved URLs are cached by input name so the same tag never triggers
 // a repeat lookup across renders or across components on the page.
 const resolvedCache = new Map();
 
 async function resolveIconUrl(raw) {
-    const key = raw?.toLowerCase();
+    const key = raw?.toLowerCase()?.trim();
     if (!key) return null;
     if (resolvedCache.has(key)) return resolvedCache.get(key);
+
+    if (STATIC_BRAND_ICONS[key]) {
+        resolvedCache.set(key, STATIC_BRAND_ICONS[key]);
+        return STATIC_BRAND_ICONS[key];
+    }
 
     const [simpleIndex, deviconIndex] = await Promise.all([loadSimpleIconsIndex(), loadDeviconIndex()]);
 

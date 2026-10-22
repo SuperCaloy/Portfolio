@@ -66,18 +66,9 @@ function InteractiveArtifact({ artifact, mousePos, isVisible, reduceMotion }) {
                 willChange: isVisible ? 'transform' : 'auto',
             }}
             onClick={handleClick}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleClick();
-                }
-            }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            role="button"
-            tabIndex={0}
-            aria-label={artifact.alt}
-            title="Click to inspect 3D core"
+            aria-hidden="true"
         >
             <div
                 className={`w-full h-full ${reduceMotion || !isVisible ? '' : artifact.floatClass}`}
@@ -88,6 +79,8 @@ function InteractiveArtifact({ artifact, mousePos, isVisible, reduceMotion }) {
                 <img
                     src={artifact.src}
                     alt={artifact.alt}
+                    width={112}
+                    height={112}
                     loading="lazy"
                     decoding="async"
                     className="w-full h-auto block select-none pointer-events-none transition-all duration-500 ease-out"
@@ -205,9 +198,9 @@ export default function About({ personal = {}, skills = [] }) {
             const vh = window.innerHeight;
             const total = rect.height;
             const current = vh - rect.top;
-            const progress = Math.max(0, Math.min(1, current / (total + vh * 0.4)));
+            const progress = Math.max(0, Math.min(1, current / (total + vh * 0.25)));
 
-            const litCount = Math.floor(progress * totalCharactersCount * 1.3);
+            const litCount = Math.floor(progress * totalCharactersCount * 1.4);
 
             charsRef.current.forEach((el, idx) => {
                 if (!el) return;
@@ -215,8 +208,8 @@ export default function About({ personal = {}, skills = [] }) {
                     el.style.opacity = '1';
                     el.style.color = '#FFFFFF';
                 } else {
-                    el.style.opacity = '0.25';
-                    el.style.color = '#94A3B8';
+                    el.style.opacity = '0.55';
+                    el.style.color = '#CBD5E1';
                 }
             });
 
@@ -257,7 +250,7 @@ export default function About({ personal = {}, skills = [] }) {
             <div className="about-center relative z-10 max-w-4xl w-full flex flex-col items-center text-center">
                 {/* Dynamic Role / Title from Database */}
                 <h2
-                    className="about-h font-black uppercase text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-8 hero-heading"
+                    className="about-h font-black uppercase text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight mb-8 text-white"
                     style={{ fontFamily: "'Kanit', sans-serif" }}
                 >
                     {headingText}

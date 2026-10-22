@@ -49,16 +49,19 @@ export default function ViewAllProjectsModal({ isOpen, projects = [], onClose, o
             {filterOptions.length > 1 && (
                 <div className="catalog-filter-bar status-filter-bar shrink-0 px-5 sm:px-6 py-3.5 bg-[#121216] border-b border-white/10 flex items-center justify-between gap-3 flex-wrap">
                     <div className="flex flex-wrap items-center gap-2">
-                        {filterOptions.map((opt) => (
-                            <button
-                                key={opt.key}
-                                onClick={() => setFilter(opt.key)}
-                                className={`filter-pill status-filter-btn inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer ${
-                                    filter.toLowerCase() === opt.key.toLowerCase()
-                                        ? 'active bg-emerald-500 text-black font-bold shadow-[0_0_15px_rgba(16,185,129,0.35)]'
-                                        : 'bg-white/[0.04] border border-white/10 text-zinc-400 hover:text-white hover:border-emerald-500/30 hover:bg-white/[0.08]'
-                                }`}
-                            >
+                        {filterOptions.map((opt) => {
+                            const isSelected = filter.toLowerCase() === opt.key.toLowerCase();
+                            return (
+                                <button
+                                    key={opt.key}
+                                    onClick={() => setFilter(opt.key)}
+                                    aria-pressed={isSelected}
+                                    className={`filter-pill status-filter-btn inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 min-h-[36px] rounded-full text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer ${
+                                        isSelected
+                                            ? 'active bg-emerald-500 text-black font-bold shadow-[0_0_15px_rgba(16,185,129,0.35)]'
+                                            : 'bg-white/[0.04] border border-white/10 text-zinc-400 hover:text-white hover:border-emerald-500/30 hover:bg-white/[0.08]'
+                                    }`}
+                                >
                                 <span>{opt.label}</span>
                                 <span
                                     className={`text-[10px] px-1.5 py-0.2 rounded-full ${
@@ -70,7 +73,8 @@ export default function ViewAllProjectsModal({ isOpen, projects = [], onClose, o
                                     {opt.count}
                                 </span>
                             </button>
-                        ))}
+                        );
+                    })}
                     </div>
                     <span className="font-mono text-xs text-zinc-500 hidden sm:inline">
                         Showing {filtered.length} of {projects.length}

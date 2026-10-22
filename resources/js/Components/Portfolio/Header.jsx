@@ -7,6 +7,52 @@ export default function Header({ name, onSecretTrigger }) {
     const [activeSection, setActiveSection] = useState(null);
     const [hoveredSection, setHoveredSection] = useState(null);
 
+    const mobileNavRef = useRef(null);
+
+    // Manage mobile menu open state: lock scroll, shift focus, trap Tab, and handle Escape
+    useEffect(() => {
+        if (!menuOpen) return;
+
+        document.body.style.overflow = 'hidden';
+        window.lenis?.stop();
+
+        // Shift focus to the first mobile nav link
+        const timer = setTimeout(() => {
+            const firstLink = mobileNavRef.current?.querySelector('a');
+            firstLink?.focus();
+        }, 50);
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setMenuOpen(false);
+                const btn = document.getElementById('mobileMenuBtn');
+                if (btn) btn.focus();
+                return;
+            }
+            if (e.key === 'Tab' && mobileNavRef.current) {
+                const links = mobileNavRef.current.querySelectorAll('a');
+                if (links.length === 0) return;
+                const first = links[0];
+                const last = links[links.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = '';
+            window.lenis?.start();
+        };
+    }, [menuOpen]);
+
     const navLinksRef = useRef(null);
     const linkRefs = useRef({});
     const [pillStyle, setPillStyle] = useState({ left: 0, top: 0, width: 0, height: 0, opacity: 0 });
@@ -59,7 +105,7 @@ export default function Header({ name, onSecretTrigger }) {
         { id: 'projects', path: '#projects', label: 'Projects', targetIds: ['projects', 'featured-works'] },
         { id: 'tech', path: '#tech', label: 'Tech', targetIds: ['tech'] },
         { id: 'experience', path: '#experience', label: 'Experience', targetIds: ['experience'] },
-        { id: 'certificates', path: '#certificates', label: 'Certificate', targetIds: ['certificates', 'certificate'] },
+        { id: 'certificates', path: '#certificates', label: 'Certifications', targetIds: ['certificates', 'certificate'] },
         { id: 'contact', path: '#contact', label: 'Contact', targetIds: ['contact'] },
     ];
 
@@ -160,17 +206,25 @@ export default function Header({ name, onSecretTrigger }) {
         <>
             {/* Mobile Fullscreen Overlay */}
             <div
+                ref={mobileNavRef}
                 id="mobileNav"
-                className={`fixed inset-0 z-[95] bg-[#09090B]/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-4 transition-opacity duration-300 md:hidden ${
-                    menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                aria-hidden={!menuOpen}
+                inert={!menuOpen ? true : undefined}
+                className={`fixed inset-0 z-[95] bg-[#09090B]/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-4 transition-all duration-300 md:hidden ${
+                    menuOpen ? 'opacity-100 pointer-events-auto visible' : 'opacity-0 pointer-events-none invisible'
                 }`}
+                style={{
+                    paddingTop: 'calc(1rem + env(safe-area-inset-top, 0px))',
+                    paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
+                }}
             >
                 {navLinks.map((link) => (
                     <a
                         key={link.id}
                         href={link.path}
                         onClick={(e) => scrollToSection(e, link.id, link.path)}
-                        className={`text-xl font-sans font-semibold tracking-wide px-6 py-2.5 rounded-full transition-all duration-200 select-none ${
+                        aria-current={activeSection === link.id ? 'page' : undefined}
+                        className={`text-xl font-sans font-semibold tracking-wide px-6 py-3 min-h-[44px] flex items-center justify-center rounded-full transition-all duration-200 select-none ${
                             activeSection === link.id
                                 ? 'text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 shadow-[0_0_16px_rgba(16,185,129,0.25)]'
                                 : 'text-zinc-400 hover:text-white hover:bg-white/5 active:scale-95'
@@ -182,7 +236,10 @@ export default function Header({ name, onSecretTrigger }) {
             </div>
 
             {/* Dynamic Floating Header */}
-            <header className="fixed top-4 sm:top-5 left-0 right-0 z-[100] flex justify-center px-4 pointer-events-none">
+            <header
+                className="fixed top-4 sm:top-5 left-0 right-0 z-[100] flex justify-center px-4 pointer-events-none"
+                style={{ top: 'calc(1rem + env(safe-area-inset-top, 0px))' }}
+            >
                 <nav
                     className="header-nav pointer-events-auto px-4 sm:px-6 py-2 sm:py-2.5 flex justify-between items-center gap-4 max-w-4xl w-full bg-[#121216]/90 backdrop-blur-2xl border border-white/10 rounded-full shadow-[0_16px_40px_rgba(0,0,0,0.7)] transition-all duration-300"
                     aria-label="Primary"
@@ -190,7 +247,7 @@ export default function Header({ name, onSecretTrigger }) {
                     <a
                         href="#top"
                         onClick={handleNameTap}
-                        className="brand-link text-xs sm:text-sm font-bold tracking-wider uppercase text-white flex items-center gap-2 sm:gap-2.5 no-underline shrink-0 select-none group"
+                        className="brand-link text-xs sm:text-sm font-bold tracking-wider uppercase text-white flex items-center gap-2 sm:gap-2.5 no-underline shrink-0 select-none group min-h-[44px]"
                     >
                         <span className="dot-brand w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10B981] inline-block animate-[live-pulse_2s_infinite_ease-in-out]" />
                         <span className="group-hover:text-emerald-400 transition-colors font-mono tracking-tight font-bold">{name}</span>
@@ -235,7 +292,8 @@ export default function Header({ name, onSecretTrigger }) {
                                     href={link.path}
                                     onClick={(e) => scrollToSection(e, link.id, link.path)}
                                     onMouseEnter={() => setHoveredSection(link.id)}
-                                    className={`relative z-10 text-xs sm:text-[13px] font-sans px-3.5 py-1.5 rounded-full whitespace-nowrap transition-colors duration-200 select-none no-underline flex items-center justify-center ${textColor}`}
+                                    aria-current={isActive ? 'page' : undefined}
+                                    className={`relative z-10 text-xs sm:text-[13px] font-sans px-3.5 py-2 min-h-[44px] rounded-full whitespace-nowrap transition-colors duration-200 select-none no-underline flex items-center justify-center ${textColor}`}
                                 >
                                     {link.label}
                                 </a>
@@ -251,6 +309,7 @@ export default function Header({ name, onSecretTrigger }) {
                             className="p-2 min-w-[44px] min-h-[44px] flex flex-col justify-center items-center gap-1 text-white active:scale-90 transition-all cursor-pointer"
                             aria-label="Toggle navigation menu"
                             aria-expanded={menuOpen}
+                            aria-controls="mobileNav"
                         >
                             <span className={`w-5 h-0.5 bg-white rounded-full transition-transform duration-300 ${menuOpen ? 'translate-y-1.5 rotate-45' : ''}`} />
                             <span className={`w-5 h-0.5 bg-white rounded-full transition-opacity duration-300 ${menuOpen ? 'opacity-0' : ''}`} />

@@ -158,7 +158,7 @@ export default function Skills({ skills = [] }) {
             {/* Header */}
             <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
                 <h2
-                    className="font-black uppercase text-3xl sm:text-5xl md:text-6xl text-white hero-heading tracking-tight"
+                    className="font-black uppercase text-3xl sm:text-5xl md:text-6xl text-white tracking-tight"
                     style={{ fontFamily: "'Kanit', sans-serif" }}
                 >
                     Tech Stack & Ecosystem
@@ -180,14 +180,15 @@ export default function Skills({ skills = [] }) {
                         <button
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
-                            className={`filter-pill inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full font-mono text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                            aria-pressed={isActive}
+                            className={`filter-pill inline-flex items-center gap-2 px-4 py-2.5 min-h-[44px] min-w-[44px] rounded-full font-mono text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer ${
                                 isActive
                                     ? 'active bg-emerald-500 text-black font-bold shadow-[0_0_15px_rgba(16,185,129,0.4)] border-emerald-400'
                                     : 'bg-white/[0.04] border border-white/10 text-zinc-400 hover:text-white hover:border-white/20'
                             }`}
                         >
                             <span>{cat}</span>
-                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
                                 isActive ? 'bg-black/20 text-black font-black' : 'bg-white/10 text-zinc-400'
                             }`}>
                                 {count}
@@ -197,7 +198,7 @@ export default function Skills({ skills = [] }) {
                 })}
             </div>
 
-            {/* Balanced Bento Grid */}
+            {/* Balanced Bento Grid with Divided Technical Card Layout */}
             <div className="tech-bento grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
                 {displayedGroups.map((group, idx) => {
                     const total = displayedGroups.length;
@@ -212,21 +213,20 @@ export default function Skills({ skills = [] }) {
                     return (
                         <div
                             key={group.category}
-                            className={`tech-card tech-shell p-1.5 rounded-[22px] bg-white/[0.03] border ${theme.shellBorder} transition-all duration-300 hover:-translate-y-0.5 ${theme.hoverGlow} ${colSpanClass}`}
+                            className={`tech-card rounded-[20px] bg-[#111115] border ${theme.shellBorder} p-5 sm:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] transition-all duration-300 hover:-translate-y-0.5 ${theme.hoverGlow} ${colSpanClass} flex flex-col justify-between`}
                         >
-                            <div className="tech-core rounded-[18px] p-5 sm:p-6 bg-[#111115] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)] h-full flex flex-col justify-between">
-                                <div>
-                                    <div className="tech-head flex justify-between items-center mb-4 pb-3 border-b border-white/10">
-                                        <div className="flex items-center gap-2.5">
-                                            <span className={`w-2 h-2 rounded-full ${theme.dotColor}`} />
-                                            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                                                {group.category}
-                                            </h3>
-                                        </div>
-                                        <span className={`tech-count font-mono text-[10px] sm:text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${theme.badgeBg} ${theme.badgeText} border ${theme.badgeBorder}`}>
-                                            {group.items.length} {group.items.length === 1 ? 'TECH' : 'TECHS'}
-                                        </span>
+                            <div>
+                                <div className="tech-head flex justify-between items-center mb-4 pb-3 border-b border-white/10">
+                                    <div className="flex items-center gap-2.5">
+                                        <span className={`w-2 h-2 rounded-full ${theme.dotColor}`} />
+                                        <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                                            {group.category}
+                                        </h3>
                                     </div>
+                                    <span className="tech-count font-mono text-xs text-zinc-400">
+                                        {group.items.length} {group.items.length === 1 ? 'TECH' : 'TECHS'}
+                                    </span>
+                                </div>
 
                                     <div className="flex flex-wrap gap-2 sm:gap-2.5">
                                         {visibleItems.map((skill) => (
@@ -244,8 +244,7 @@ export default function Skills({ skills = [] }) {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    );
+                        );
                 })}
             </div>
         </section>

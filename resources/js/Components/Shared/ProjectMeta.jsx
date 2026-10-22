@@ -19,7 +19,7 @@ export function StatusBadge({ status, className = '' }) {
     const style = STATUS_STYLES[statusText] || 'bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.2)]';
     const dotStyle = STATUS_DOT_STYLES[statusText] || 'bg-emerald-400 shadow-[0_0_8px_#10B981]';
     return (
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-mono font-bold uppercase tracking-wider ${style} ${className}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono font-bold uppercase tracking-wider ${style} ${className}`}>
             <span className={`w-2 h-2 rounded-full inline-block shrink-0 ${dotStyle}`} />
             <span>{statusText}</span>
         </span>
