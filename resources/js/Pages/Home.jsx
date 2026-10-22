@@ -26,8 +26,8 @@ export default function Home({
 }) {
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const [selectedProject, setSelectedProject] = useState(null);
-    const name = 'Ramon Pacilona';
-    
+    const name = personal?.full_name || 'Ramon Pacilona';
+
     const experienceLabel = calculateExperienceLabel(experiences);
 
     const stats = {
@@ -95,6 +95,13 @@ export default function Home({
 
     return (
         <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-100">
+            <a
+                href="#main"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[99999] focus:px-4 focus:py-2.5 focus:bg-emerald-500 focus:text-black focus:font-semibold focus:rounded-lg focus:shadow-2xl focus:outline-none"
+            >
+                Skip to content
+            </a>
+
             <Head title={name}>
                 <meta name="description" content={description} />
                 <meta property="og:title" content={name} />
@@ -117,7 +124,7 @@ export default function Home({
                 onSecretTrigger={() => setShowAdminLogin(true)}
             />
 
-            <main className="relative z-10 w-full">
+            <main id="main" tabIndex={-1} className="relative z-10 w-full outline-none">
                 <Hero personal={personal} />
                 <ShowcaseReel projects={projects} onSelectProject={setSelectedProject} />
                 <About personal={personal} skills={skills} />

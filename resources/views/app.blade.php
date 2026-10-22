@@ -7,20 +7,45 @@
 
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
-    <title inertia>Ramon Carlos E. Pacilona | Computer Science Student</title>
+    <title inertia>Ramon Pacilona | Backend Developer & Cybersecurity</title>
+    <meta name="description" content="Portfolio of Ramon Pacilona: Backend Developer and Cybersecurity Specialist specializing in Laravel, React, and Software-Defined Networking." inertia>
+    <meta property="og:type" content="website" inertia>
+    <meta property="og:title" content="Ramon Pacilona | Backend Developer & Cybersecurity" inertia>
+    <meta property="og:description" content="Portfolio of Ramon Pacilona: Backend Developer and Cybersecurity Specialist specializing in Laravel, React, and Software-Defined Networking." inertia>
+    <meta property="og:url" content="{{ config('app.url') }}" inertia>
+    <meta property="og:image" content="{{ url('/images/og-preview.png') }}" inertia>
+    <meta name="twitter:card" content="summary_large_image" inertia>
+    <meta name="twitter:title" content="Ramon Pacilona | Backend Developer & Cybersecurity" inertia>
+    <meta name="twitter:description" content="Portfolio of Ramon Pacilona: Backend Developer and Cybersecurity Specialist specializing in Laravel, React, and Software-Defined Networking." inertia>
+    <meta name="twitter:image" content="{{ url('/images/og-preview.png') }}" inertia>
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 
-    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="canonical" href="{{ config('app.url') }}">
     <meta name="theme-color" content="#09090b">
+
+    <script type="application/ld+json">
+    {!! json_encode([
+      chr(64) . 'context' => 'https://schema.org',
+      chr(64) . 'type' => 'Person',
+      'name' => 'Ramon Pacilona',
+      'jobTitle' => 'Backend Developer & Cybersecurity Specialist',
+      'url' => config('app.url'),
+      'sameAs' => [
+        'https://github.com/SuperCaloy',
+        'https://www.linkedin.com/in/ramoncarlospacilona',
+      ],
+    ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
 
     <link rel="preconnect" href="https://res.cloudinary.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&display=swap&subset=latin" rel="stylesheet">
         <!-- Scripts -->
         
         @if (!file_exists(public_path('hot')))

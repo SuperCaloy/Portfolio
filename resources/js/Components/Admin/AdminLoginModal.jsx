@@ -118,15 +118,16 @@ export default function AdminLoginModal({ onClose }) {
                         {step === 'credentials' ? (
                             <form onSubmit={handleSendOtp} className="space-y-4">
                                 <div className="space-y-1.5">
-                                    <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Password</label>
+                                    <label htmlFor="admin-password" className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Password</label>
                                     <div className="relative">
                                         <input
+                                            id="admin-password"
                                             type={showPassword ? 'text' : 'password'}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="Enter your password"
                                             required
-                                            autoComplete="off"
+                                            autoComplete="current-password"
                                             className="w-full text-sm px-4 py-3 pr-16 rounded-xl border border-zinc-300 dark:border-white/10 bg-white dark:bg-black/20 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
                                         />
                                         <button
@@ -149,8 +150,10 @@ export default function AdminLoginModal({ onClose }) {
                             </form>
                         ) : (
                             <form onSubmit={handleVerifyOtp} className="space-y-4">
+                                <label htmlFor="admin-otp" className="sr-only">Verification Code</label>
                                 <input
                                     ref={otpInputRef}
+                                    id="admin-otp"
                                     type="text"
                                     inputMode="numeric"
                                     maxLength={6}
@@ -158,7 +161,7 @@ export default function AdminLoginModal({ onClose }) {
                                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                     placeholder="000000"
                                     required
-                                    autoComplete="off"
+                                    autoComplete="one-time-code"
                                     className="w-full text-center tracking-[0.6em] text-2xl font-semibold px-4 py-4 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-shadow"
                                 />
                                 <button
